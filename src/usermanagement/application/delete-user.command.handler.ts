@@ -1,0 +1,25 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { IUserRepository } from '../domain/user.repository.interface';
+import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
+import { NotFoundByIdException } from 'src/shared/error/exception/not-found-by-id.exception';
+import { ErrorSpecification } from 'src/shared/error/specs/error-specification';
+
+@Injectable()
+export class DeleteUserCommandHandler {
+  constructor(
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository
+  ) {}
+
+  @LogMethod()
+  async handle(id: string): Promise<void> {
+    // Check if user exists
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw NotFoundByIdException.notFoundByIdException(id, ErrorSpecification.USER_NOT_FOUND);
+    }
+
+    user.deletedAt = new Date();
+    await this.userRepository.update(user);
+  }
+}
