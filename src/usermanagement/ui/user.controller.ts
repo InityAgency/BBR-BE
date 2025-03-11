@@ -35,19 +35,13 @@ export class UserController {
   ) {}
 
   @Post()
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'User created successfully', type: UserResponse })
   @ApiResponse({ status: 400, description: 'Bad request (validation error)' })
   @ApiResponse({ status: 409, description: 'Conflict - Email already exists.' })
   @ApiResponse({ status: 400, description: 'Not Saved - User could not be saved.' })
-  async create(@Body() request: CreateUserRequest): Promise<UserResponse> {
-    const command = {
-      firstName: request.firstName,
-      lastName: request.lastName,
-      email: request.email,
-      password: request.password,
-    };
+  async create(@Body() command: CreateUserRequest): Promise<UserResponse> {
     const user = await this.createUserHandler.handle(command);
     return new UserResponse(user);
   }

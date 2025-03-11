@@ -1,65 +1,57 @@
-import { HttpStatus, Logger } from '@nestjs/common';
-import { Response } from 'express';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 
-import { Catch, ArgumentsHost, ExceptionFilter } from '@nestjs/common';
-import { LogicalException } from '../exception/logical.exception';
-import { ErrorSpecification, getErrorSpecificationDetails } from '../specs/error-specification';
-import { ErrorResponse } from '../model/error.response';
-import { Error } from '../model/error';
-import { ValidationException } from '../exception/validation.exception';
 @Catch()
-export class RestExceptionHandler implements ExceptionFilter {
-  private readonly logger = new Logger(RestExceptionHandler.name);
+export class RestExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(RestExceptionFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
 
-    if (exception instanceof LogicalException) {
-      this.handleLogicalException(exception, response);
-    } else if (exception instanceof ValidationException) {
-      this.handleValidationErrorException(exception, response);
-    } else {
-      this.handleUnknownException(exception, response);
+    // Podrazumevane vrednosti za nepoznate greške
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let error = 'Internal Server Error';
+    let message: string | object = 'Internal server error';
+
+    // Ako je greška HttpException (ugrađena Nest greška)
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      const exceptionResponse = exception.getResponse();
+      // Ekstrahujemo poruku i opis greške iz HttpException odgovora
+      if (typeof exceptionResponse === 'string') {
+        message = exceptionResponse;
+      } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        const responseObj = exceptionResponse as any;
+        message = responseObj.message || responseObj.error || exception.message;
+        error = responseObj.error || exception.name;
+      }
+      // U slučaju da je poruka niz (npr. greške validacije), zadržavamo ceo niz
     }
-  }
 
-  private handleLogicalException(exception: LogicalException, response: Response) {
-    this.logger.error(exception.message, exception.stack);
-
-    const errorSpec = exception.errorSpecification;
-    const details = getErrorSpecificationDetails(errorSpec);
-    const error = new Error(details.code, exception.message, details.target, undefined, undefined);
-    const errorResponse = new ErrorResponse(error);
-    response.status(exception.getHttpStatus()).json(errorResponse);
-  }
-
-  private handleValidationErrorException(exception: ValidationException, response: Response) {
-    this.logger.error(exception.message, exception.details);
-
-    const error = new Error(
-      'InputValidationError',
-      exception.message,
-      undefined,
-      exception.getDetails(),
-      undefined
+    // Logovanje greške (metod, URL, status i stack trace)
+    this.logger.error(
+      `HTTP ${request.method} ${request.url} -> ${status} ${error}: ${JSON.stringify(message)}`,
+      exception instanceof Error ? exception.stack : ''
     );
-    const errorResponse = new ErrorResponse(error);
-    response.status(HttpStatus.BAD_REQUEST).json(errorResponse);
-  }
 
-  private handleUnknownException(exception: unknown, response: Response) {
-    this.logger.error('Unknown error occurred', exception);
+    // Formiranje standardizovanog JSON odgovora za grešku
+    const errorResponse = {
+      statusCode: status,
+      error: error,
+      message: message,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+    };
 
-    const errorSpec = getErrorSpecificationDetails(ErrorSpecification.UNKNOWN);
-    const error = new Error(
-      errorSpec.code,
-      'An unexpected error occurred',
-      errorSpec.target,
-      undefined,
-      undefined
-    );
-    const errorResponse = new ErrorResponse(error);
-    response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(errorResponse);
+    response.status(status).json(errorResponse);
   }
 }

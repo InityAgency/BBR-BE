@@ -22,12 +22,31 @@ export class UserRepositoryImpl implements IUserRepository {
 
   @LogMethod()
   async findById(id: string): Promise<User | null> {
-    return this.knexService.connection(this.tableName).where({ id }).first();
+    return this.knexService
+      .connection(this.tableName)
+      .where('users.id', id)
+      .whereNull('deleted_at')
+      .leftJoin('roles', 'users.role_id', 'roles.id')
+      .select(
+        'users.*',
+        this.knexService.connection.raw(
+          `
+          CASE 
+            WHEN users.role_id IS NULL THEN NULL
+            ELSE json_build_object('id', roles.id, 'name', roles.name)
+          END as role`
+        )
+      )
+      .first();
   }
 
   @LogMethod()
   async findByEmail(email: string): Promise<User | null> {
-    return this.knexService.connection(this.tableName).where({ email }).first();
+    return this.knexService
+      .connection(this.tableName)
+      .where({ email })
+      .whereNull('deleted_at')
+      .first();
   }
 
   @LogMethod()
@@ -61,6 +80,10 @@ export class UserRepositoryImpl implements IUserRepository {
 
   @LogMethod()
   async delete(id: string): Promise<void> {
-    await this.knexService.connection(this.tableName).where({ id }).del();
+    // Soft delete
+    await this.knexService
+      .connection(this.tableName)
+      .where('users.id', id)
+      .update({ deleted_at: this.knexService.connection.fn.now() });
   }
 }

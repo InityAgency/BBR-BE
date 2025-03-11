@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './shared/infrastructure/database/database.module';
 import { UserModule } from './usermanagement/user.module';
 import { LoggerModule } from './shared/infrastructure/logger/logger.module';
-import { RestExceptionHandler } from './shared/error/handler/rest.exception.handler';
 
 @Module({
   imports: [
@@ -15,6 +14,6 @@ import { RestExceptionHandler } from './shared/error/handler/rest.exception.hand
     UserModule,
     LoggerModule,
   ],
-  providers: [RestExceptionHandler],
+  providers: [],
 })
 export class AppModule {}

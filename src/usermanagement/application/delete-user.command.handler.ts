@@ -20,6 +20,6 @@ export class DeleteUserCommandHandler {
     }
 
     user.deletedAt = new Date();
-    await this.userRepository.update(user);
+    await this.userRepository.delete(user.id);
   }
 }

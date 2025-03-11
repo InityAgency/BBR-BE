@@ -7,10 +7,9 @@ export class User {
   email: string;
   password: string;
   signupMethod: string;
-  isVerified: boolean;
-  userStatus: 'active' | 'inactive';
+  emailVerified?: boolean;
+  status?: 'active' | 'inactive';
   roleId?: string;
-  role?: any;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -27,6 +26,9 @@ export class User {
     if (user.password) {
       user.password = await bcrypt.hash(user.password, 10);
     }
+
+    console.log('role', user.roleId);
+
     return {
       ...user,
       createdAt: new Date(),

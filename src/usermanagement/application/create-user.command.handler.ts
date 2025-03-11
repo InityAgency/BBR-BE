@@ -1,12 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { User } from '../domain/user.entity';
 import { IUserRepository } from '../domain/user.repository.interface';
 import { CreateUserCommand } from './command/create-user.command';
-import { PasswordEncoder } from 'src/shared/passwordEncoder/password-encoder.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-import { AlreadyExistsException } from 'src/shared/error/exception/already-exist.exception';
-import { ErrorSpecification } from 'src/shared/error/specs/error-specification';
-import { NotSavedException } from 'src/shared/error/exception/not-saved.exception';
 
 @Injectable()
 export class CreateUserCommandHandler {
@@ -20,16 +21,25 @@ export class CreateUserCommandHandler {
     const existingUser = await this.userRepository.findByEmail(command.email);
 
     if (existingUser) {
-      throw AlreadyExistsException.alreadyExistsException(
-        command.email,
-        ErrorSpecification.USER_EMAIL_ALREADY_EXISTS
-      );
+      throw new ConflictException('User already exists');
     }
 
     // Create the user entity
     const user = await User.create(command);
 
-    // Save the user
-    return await this.userRepository.create(user);
+    const createdUser = await this.userRepository.create(user);
+
+    if (!createdUser) {
+      throw new InternalServerErrorException('User not saved');
+    }
+
+    // Return the created user with relations
+    const created = await this.userRepository.findById(createdUser.id);
+
+    if (!created) {
+      throw new InternalServerErrorException('User not saved');
+    }
+
+    return created;
   }
 }
