@@ -8,9 +8,8 @@ export class PubSubService {
   private sub: Redis;
 
   constructor(private readonly redisService: RedisService) {
-    // ✅ Get separate Redis clients from RedisService
-    this.pub = this.redisService.getClient(); // Publisher
-    this.sub = this.redisService.getClient().duplicate(); // Subscriber (must use .duplicate())
+    this.pub = this.redisService.getClient();
+    this.sub = this.redisService.getClient().duplicate();
 
     this.sub.subscribe('invalidate-cache', (err) => {
       if (err) console.error('❌ Failed to subscribe to cache invalidation:', err);

@@ -10,7 +10,6 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   serializeUser(user: any, done: Function) {
-    console.log('serializeUser', user);
     done(null, { id: user.id, email: user.email }); // ✅ Store minimal session data
   }
 

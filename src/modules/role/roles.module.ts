@@ -16,8 +16,6 @@ import { IRoleRepository } from './domain/role.repository.interface';
       provide: IRoleRepository,
       useClass: RoleRepositoryImpl,
     },
-    KnexService,
-    RedisService,
     PubSubService,
   ],
   controllers: [RoleController],

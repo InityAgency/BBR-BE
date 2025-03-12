@@ -27,8 +27,6 @@ export class User {
       user.password = await bcrypt.hash(user.password, 10);
     }
 
-    console.log('role', user.roleId);
-
     return {
       ...user,
       createdAt: new Date(),

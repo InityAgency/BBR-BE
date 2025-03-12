@@ -33,24 +33,18 @@ export async function seed(knex) {
           continue;
         }
 
-        console.log(`🔎 Checking: Role=${roleId} | Permission=${permissionId}`);
-
         const exists = await trx('role_permissions')
           .where({ role_id: roleId, permission_id: permissionId })
           .first();
 
         if (!exists) {
-          console.log(`✅ INSERTING: Role=${roleId} | Permission=${permissionId}`);
           await trx('role_permissions').insert({
             role_id: roleId,
             permission_id: permissionId,
           });
         } else {
-          console.log(`🔄 ALREADY EXISTS: Role=${roleId} | Permission=${permissionId}`);
         }
       }
     }
   });
-
-  console.log('✅ Transaction Committed Successfully');
 }
