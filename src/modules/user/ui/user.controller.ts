@@ -10,6 +10,7 @@ import {
   ValidationPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserCommandHandler } from '../application/create-user.command.handler';
 import { FetchUsersCommandHandler } from '../application/fetch-users-command-handler';
@@ -21,10 +22,15 @@ import { CreateUserRequest } from './request/create-user.request';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UpdateUserCommand } from '../application/command/update-user.command';
 import { UpdateUserRequest } from './request/updateu-ser.request';
+import { Permissions } from 'src/shared/decorators/permissions.decorator';
+import { ABACGuard } from 'src/shared/guards/abac.guard';
+import { RBACGuard } from 'src/shared/guards/rbac.guard';
 
 @ApiTags('users')
 @ApiBearerAuth()
 @Controller('users')
+// TODO HOW TO USE GUARDS
+@UseGuards(RBACGuard, ABACGuard)
 export class UserController {
   constructor(
     private readonly createUserHandler: CreateUserCommandHandler,
@@ -35,6 +41,8 @@ export class UserController {
   ) {}
 
   @Post()
+  // TODO HOW TO USE PERMISSION
+  @Permissions('create')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'User created successfully', type: UserResponse })

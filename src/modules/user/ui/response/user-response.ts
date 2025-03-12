@@ -1,5 +1,3 @@
-import { User } from 'src/usermanagement/domain/user.entity';
-
 export class UserResponse {
   id: string;
   firstName: string;

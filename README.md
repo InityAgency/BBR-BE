@@ -85,8 +85,10 @@ pnpm knex migrate:make create_my_entity
 ### 🌱 Generate new seed
 
 ```bash
-pnpm knex seed:make seed_my_entity
+pnpm knex seed:make xx_seed_my_entity
 ```
+
+xx - present order
 
 ## 📡 API Endpoints
 

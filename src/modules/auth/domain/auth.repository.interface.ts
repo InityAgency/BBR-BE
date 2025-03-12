@@ -1,0 +1,7 @@
+import { User } from 'src/modules/user/domain/user.entity';
+
+export abstract class IAuthRepository {
+  abstract findByEmail(email: string): Promise<any>;
+  abstract create(userData: Partial<User>): Promise<User>;
+  abstract saveResetToken(userId: string, resetToken: string): Promise<User>;
+}

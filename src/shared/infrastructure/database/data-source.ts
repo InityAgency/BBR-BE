@@ -1,6 +1,5 @@
 // TypeORM CLI Migrations
 import { DataSource } from 'typeorm';
-import * as path from 'path';
 
 const dbType = process.env.DB_TYPE;
 const host = process.env.DB_HOST;

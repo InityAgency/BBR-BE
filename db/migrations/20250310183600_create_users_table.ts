@@ -8,7 +8,6 @@ export async function up(knex: Knex): Promise<void> {
     table.string('email', 128).notNullable().unique();
     table.string('password', 256).notNullable();
     table.string('signup_method').notNullable().defaultTo('email');
-    table.uuid('role_id').nullable().references('id').inTable('roles').onDelete('SET NULL');
     table.enum('status', ['active', 'inactive']).notNullable().defaultTo('active');
     table.boolean('email_verified').notNullable().defaultTo(false);
     table.timestamps(true, true);

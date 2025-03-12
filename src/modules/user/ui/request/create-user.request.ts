@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
-import { SignupMethodEnum } from 'src/usermanagement/domain/enums/signup-method.enum';
+import { SignupMethodEnum } from '../../domain/enums/signup-method.enum';
 
 export class CreateUserRequest {
   @IsNotEmpty({ message: 'First name is required' })
