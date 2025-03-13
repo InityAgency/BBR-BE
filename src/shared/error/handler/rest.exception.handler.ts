@@ -45,6 +45,7 @@ export class RestExceptionFilter implements ExceptionFilter {
 
     // Formiranje standardizovanog JSON odgovora za grešku
     const errorResponse = {
+      data: null,
       statusCode: status,
       error: error,
       message: message,

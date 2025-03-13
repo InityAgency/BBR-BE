@@ -7,20 +7,21 @@ import { UpdateUserCommandHandler } from './application/update-user-command-hand
 import { UserRepositoryImpl } from './infrastructure/user.repository';
 import { DatabaseModule } from 'src/shared/infrastructure/database/database.module';
 import { UserController } from './ui/user.controller';
+import { IUserRepository } from './domain/user.repository.interface';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [UserController],
   providers: [
+    {
+      provide: IUserRepository,
+      useClass: UserRepositoryImpl,
+    },
     CreateUserCommandHandler,
     FetchUsersCommandHandler,
     FindByIdUserCommandHandler,
     DeleteUserCommandHandler,
     UpdateUserCommandHandler,
-    {
-      provide: 'IUserRepository',
-      useClass: UserRepositoryImpl,
-    },
   ],
 })
 export class UserModule {}

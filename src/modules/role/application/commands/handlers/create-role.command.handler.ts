@@ -7,7 +7,7 @@ import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class CreateRoleHandler {
+export class CreateRoleCommandHandler {
   constructor(
     private readonly roleRepository: IRoleRepository,
     private readonly redisService: RedisService,

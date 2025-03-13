@@ -1,19 +1,18 @@
 import { IRoleRepository } from 'src/modules/role/domain/role.repository.interface';
 import { RedisService } from 'src/shared/cache/redis.service';
-import { PubSubService } from 'src/shared/messaging/pubsub.service';
-import { GetPermissionsQuery } from '../get-permissions.query';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { Injectable } from '@nestjs/common';
+import { FetchPermissionsQuery } from '../fetch-permissions.query';
 
 @Injectable()
-export class getPermissionsQuery {
+export class FetchPermissionsCommandQuery {
   constructor(
     private readonly roleRepository: IRoleRepository,
     private readonly redisService: RedisService
   ) {}
 
   @LogMethod()
-  async handler(query: GetPermissionsQuery): Promise<string[]> {
+  async handler(query: FetchPermissionsQuery): Promise<string[]> {
     // Check cache first
     const cachedPermissions = await this.redisService.getCache(`role-permissions:${query.roleId}`);
     if (cachedPermissions) return cachedPermissions;

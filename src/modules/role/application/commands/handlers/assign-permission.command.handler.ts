@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 
 @Injectable()
-export class AssignPermissionHandler {
+export class AssignPermissionCommandHandler {
   constructor(
     private readonly roleRepository: IRoleRepository,
     private readonly redisService: RedisService,

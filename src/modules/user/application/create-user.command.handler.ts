@@ -1,20 +1,12 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { User } from '../domain/user.entity';
 import { IUserRepository } from '../domain/user.repository.interface';
 import { CreateUserCommand } from './command/create-user.command';
-import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 
 @Injectable()
 export class CreateUserCommandHandler {
-  constructor(
-    @Inject('IUserRepository')
-    private readonly userRepository: IUserRepository
-  ) {}
+  constructor(private readonly userRepository: IUserRepository) {}
 
   @LogMethod()
   async handle(command: CreateUserCommand): Promise<User> {

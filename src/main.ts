@@ -8,6 +8,7 @@ import * as passport from 'passport';
 import { RedisStore } from 'connect-redis';
 import { RedisService } from './shared/cache/redis.service';
 import { ValidationPipe } from '@nestjs/common';
+import { HttpResponseInterceptor } from './shared/interceptors/http-response-interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,8 @@ async function bootstrap() {
   const redisClient = redisService.getClient();
 
   app.setGlobalPrefix('api/v1');
+
+  app.useGlobalInterceptors(new HttpResponseInterceptor());
 
   app.useGlobalFilters(new RestExceptionFilter());
 

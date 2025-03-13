@@ -1,15 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { AlreadyExistsException } from 'src/shared/error/exception/already-exist.exception';
+import { NotFoundByIdException } from 'src/shared/error/exception/not-found-by-id.exception';
+import { ErrorSpecification } from 'src/shared/error/specs/error-specification';
+import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { User } from '../domain/user.entity';
 import { IUserRepository } from '../domain/user.repository.interface';
 import { UpdateUserCommand } from './command/update-user.command';
-import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-import { NotFoundByIdException } from 'src/shared/error/exception/not-found-by-id.exception';
-import { ErrorSpecification } from 'src/shared/error/specs/error-specification';
-import { AlreadyExistsException } from 'src/shared/error/exception/already-exist.exception';
 
 @Injectable()
 export class UpdateUserCommandHandler {
-  constructor(@Inject('IUserRepository') private readonly userRepository: IUserRepository) {}
+  constructor(private readonly userRepository: IUserRepository) {}
 
   @LogMethod()
   async handle(command: UpdateUserCommand): Promise<User> {

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { IRoleRepository } from '../domain/role.repository.interface';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { Role } from '../domain/role.entity';
+import { applyPagination } from 'src/shared/utils/pagination.util';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 
 @Injectable()
 export class RoleRepositoryImpl implements IRoleRepository {
@@ -29,7 +31,25 @@ export class RoleRepositoryImpl implements IRoleRepository {
     return permissions.map((p) => p.name);
   }
 
-  async getRoles() {
-    return this.knexService.connection('roles').select('*');
+  async findAll(
+    page: number,
+    limit: number
+  ): Promise<{ data: Role[]; pagination: PaginationResponse }> {
+    const query = this.knexService.connection('roles').select('*');
+    const paginatedQuery = applyPagination(query, page, limit);
+
+    const totalQuery = this.knexService.connection('roles').count('* as total').first();
+
+    const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
+
+    return {
+      data,
+      pagination: {
+        total: totalResult ? Number(totalResult.total) : 0,
+        totalPages: Math.ceil((totalResult ? Number(totalResult.total) : 0) / limit),
+        page,
+        limit,
+      },
+    };
   }
 }
