@@ -3,6 +3,9 @@ import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { User } from '../domain/user.entity';
 import { IUserRepository } from '../domain/user.repository.interface';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { applyPagination } from 'src/shared/utils/pagination.util';
+import { UserResponse } from '../ui/response/user-response';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -50,8 +53,11 @@ export class UserRepositoryImpl implements IUserRepository {
   }
 
   @LogMethod()
-  async findAll(): Promise<User[]> {
-    return this.knexService
+  async findAll(
+    page: number,
+    limit: number
+  ): Promise<{ data: User[]; pagination: PaginationResponse }> {
+    const query = this.knexService
       .connection(this.tableName)
       .whereNull('deleted_at')
       .leftJoin('roles', 'users.role_id', 'roles.id')
@@ -65,6 +71,22 @@ export class UserRepositoryImpl implements IUserRepository {
           END as role`
         )
       );
+
+    const paginatedQuery = await applyPagination(query, page, limit);
+
+    const totalQuery = this.knexService.connection('roles').count('* as total').first();
+
+    const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
+
+    return {
+      data: data.map((user) => new UserResponse(user)),
+      pagination: {
+        total: totalResult ? Number(totalResult.total) : 0,
+        totalPages: Math.ceil((totalResult ? Number(totalResult.total) : 0) / limit),
+        page,
+        limit,
+      },
+    };
   }
 
   @LogMethod()

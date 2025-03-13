@@ -4,7 +4,7 @@ import { CreateRoleCommand } from '../create-role.command';
 import { IRoleRepository } from 'src/modules/role/domain/role.repository.interface';
 import { Role } from 'src/modules/role/domain/role.entity';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CreateRoleCommandHandler {
@@ -16,6 +16,9 @@ export class CreateRoleCommandHandler {
 
   @LogMethod()
   async handler(command: CreateRoleCommand): Promise<Role> {
+    const existRole = await this.roleRepository.findByName(command.name);
+    if (existRole) throw new ConflictException('Role already exists');
+
     const role = await this.roleRepository.createRole(command.name);
 
     // Invalidate cache across all servers

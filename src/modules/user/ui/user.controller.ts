@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -23,6 +24,8 @@ import { UpdateUserCommandHandler } from '../application/update-user-command-han
 import { CreateUserRequest } from './request/create-user.request';
 import { UpdateUserRequest } from './request/update-user.request';
 import { UserResponse } from './response/user-response';
+import { PaginationRequest } from 'src/shared/ui/request/pagination.request';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -52,9 +55,11 @@ export class UserController {
   @Get()
   @ApiOperation({ summary: 'Fetch all users' })
   @ApiResponse({ status: 200, description: 'List of users', type: [UserResponse] })
-  async findAll(): Promise<UserResponse[]> {
-    const users = await this.fetchUsersHandler.handle();
-    return users.map((user) => new UserResponse(user));
+  async findAll(
+    @Query() query: PaginationRequest
+  ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
+    const users = await this.fetchUsersHandler.handle(query);
+    return users;
   }
 
   @Get(':id')

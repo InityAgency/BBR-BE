@@ -12,7 +12,7 @@ export class RoleRepositoryImpl implements IRoleRepository {
   async createRole(name: string): Promise<Role> {
     const [role] = await this.knexService.connection('roles').insert({ name }).returning('*');
 
-    return new Role(role);
+    return role;
   }
 
   async assignPermission(roleId: string, permissionId: string): Promise<void> {
@@ -51,5 +51,10 @@ export class RoleRepositoryImpl implements IRoleRepository {
         limit,
       },
     };
+  }
+
+  async findByName(name: string): Promise<Role | null> {
+    const role = await this.knexService.connection('roles').where('name', name).first();
+    return role;
   }
 }

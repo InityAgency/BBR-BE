@@ -1,5 +1,6 @@
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { Role } from './role.entity';
+import { RoleResponse } from '../ui/response/role-response';
 
 export abstract class IRoleRepository {
   abstract createRole(name: string): Promise<Role>;
@@ -9,4 +10,5 @@ export abstract class IRoleRepository {
     page: number,
     limit: number
   ): Promise<{ data: Role[]; pagination: PaginationResponse }>;
+  abstract findByName(name: string): Promise<Role | null>;
 }

@@ -3,13 +3,21 @@ import { Model } from 'objection';
 
 export class User extends Model {
   id!: string;
-  fullName!: string;
+  fullName: string;
+  companyName?: string;
   email!: string;
   password!: string;
   signupMethod!: string;
   emailVerified?: boolean;
   status?: 'active' | 'inactive';
   roleId?: string;
+  aggreedTerms?: boolean;
+  receieveLuxuryInsights?: boolean;
+  notifyLatestNews?: boolean;
+  notifyMarketTrends: boolean;
+  notifyBlogs: boolean;
+  pushNotifications: boolean;
+  emailNotifications: boolean;
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;

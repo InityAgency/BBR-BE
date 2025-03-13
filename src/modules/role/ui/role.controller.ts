@@ -16,6 +16,7 @@ import { FetchPermissionsCommandQuery } from '../application/commands/query/fetc
 import { FetchRolesCommandQuery } from '../application/commands/query/fetch-roles.command.query';
 import { FetchPermissionsQuery } from '../application/commands/fetch-permissions.query';
 import { PaginationRequest } from 'src/shared/ui/request/pagination.request';
+import { RoleResponse } from './response/role-response';
 
 @Controller('roles')
 export class RoleController {
@@ -34,7 +35,9 @@ export class RoleController {
 
   @Post('create')
   async createRole(@Body() command: CreateRoleRequest) {
-    return this.createRoleCommandHandler.handler(command);
+    const role = await this.createRoleCommandHandler.handler(command);
+
+    return new RoleResponse(role);
   }
 
   @Post(':roleId/assign-permission/:permissionId')

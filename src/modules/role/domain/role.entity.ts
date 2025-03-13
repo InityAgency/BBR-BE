@@ -1,13 +1,15 @@
-export class Role {
-  id: string;
-  name: string;
-  description: string;
+import { Model } from 'objection';
 
-  constructor(role: Partial<Role>) {
-    Object.assign(this, role);
-  }
+export class Role extends Model {
+  id!: string;
+  name!: string;
+  description!: string;
+  createdAt!: Date;
+  updatedAt!: Date;
+
+  static tableName = 'roles';
 
   static create(name: string, description: string): Role {
-    return new Role({ name, description });
+    return Role.fromJson({ name, description });
   }
 }
