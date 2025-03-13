@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
-import { AuthService } from '../auth.service';
+import { FindByEmailCommandHandler } from '../commands/handlers/find-by-email.command.handler';
+import { SignUpGoogleCommandHandler } from '../commands/handlers/sign-up-google.command.handler';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(private readonly authService: AuthService) {
+  constructor(
+    private readonly findByEmailCommandHandler: FindByEmailCommandHandler,
+    private readonly signUpGoogleCommandHandler: SignUpGoogleCommandHandler
+  ) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -15,16 +19,20 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: any, done: Function) {
-    const { email, given_name, family_name } = profile._json;
+    const { email, given_name, family_name, email_verified, picture } = profile._json;
+    let user = await this.findByEmailCommandHandler.handler(email);
 
-    // ✅ Check if user exists, if not, create one
-    const user = await this.authService.findOrCreateGoogleUser({
-      email,
-      firstName: given_name,
-      lastName: family_name,
-      signupMethod: 'google',
-    });
+    if (!user) {
+      user = await this.signUpGoogleCommandHandler.handler({
+        email,
+        fullName: `${given_name} ${family_name}`,
+        signupMethod: profile.provider,
+        emailVerified: email_verified,
+      });
+    } else {
+      user = await this.findByEmailCommandHandler.handler(email);
+    }
 
-    return done(null, user); // ✅ Stores user session
+    return done(null, user);
   }
 }

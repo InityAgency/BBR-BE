@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
-import { IUserRepository } from '../domain/user.repository.interface';
-import { User } from '../domain/user.entity';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
+import { User } from '../domain/user.entity';
+import { IUserRepository } from '../domain/user.repository.interface';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -85,5 +85,11 @@ export class UserRepositoryImpl implements IUserRepository {
       .connection(this.tableName)
       .where('users.id', id)
       .update({ deleted_at: this.knexService.connection.fn.now() });
+  }
+
+  @LogMethod()
+  async updateUserPreferences(userId: string, updateData: any): Promise<any> {
+    // TODO: Update user preferences
+    return 'in progress';
   }
 }

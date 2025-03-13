@@ -1,16 +1,22 @@
-import { Controller, Get, Post, UseGuards, Req, Res } from '@nestjs/common';
-import { AuthService } from '../application/auth.service';
-import { LocalAuthGuard } from '../application/guards/local-auth.guard';
-import { GoogleGuard } from '../application/guards/google.guard';
-import { SessionAuthGuard } from '../application/guards/session-auth.guard';
+import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { UserResponse } from 'src/modules/user/ui/response/user-response';
-import { Request } from 'express';
+import { SignUpBuyerCommandHandler } from '../application/commands/handlers/sign-up-buyer.command.handler';
+import { SignUpDeveloperCommandHandler } from '../application/commands/handlers/sign-up-developer.command.handler';
+import { SignUpBuyerCommand } from '../application/commands/sign-up-buyer.command';
+import { SignUpDeveloperCommand } from '../application/commands/sign-up-developer.command';
+import { GoogleGuard } from '../application/guards/google.guard';
+import { LocalAuthGuard } from '../application/guards/local-auth.guard';
+import { SessionAuthGuard } from '../application/guards/session-auth.guard';
+import { CreateUserRequest } from './request/create-user.request';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly signUpDeveloperHandler: SignUpDeveloperCommandHandler,
+    private readonly signUpBuyerHandler: SignUpBuyerCommandHandler
+  ) {}
 
-  @Post('signin')
+  @Post('login')
   @UseGuards(LocalAuthGuard)
   async login(@Req() req) {
     return new UserResponse(req.user);
@@ -22,8 +28,20 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(GoogleGuard)
-  async googleCallback(@Req() req, @Res() res) {
-    return res.redirect('/dashboard');
+  async googleCallback(@Req() req) {
+    return 'OK';
+  }
+
+  @Post('signup/developer')
+  async signUpDeveloper(@Body() command: CreateUserRequest): Promise<UserResponse> {
+    const user = await this.signUpDeveloperHandler.handler(command);
+    return new UserResponse(user);
+  }
+
+  @Post('signup/buyer')
+  async signUpBuyer(@Body() command: CreateUserRequest): Promise<UserResponse> {
+    const user = await this.signUpBuyerHandler.handler(command);
+    return new UserResponse(user);
   }
 
   @Get('profile')

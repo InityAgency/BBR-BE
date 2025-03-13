@@ -1,30 +1,40 @@
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { AuthService } from './application/auth.service';
+import { DatabaseModule } from 'src/shared/infrastructure/database/database.module';
+import { UserRepositoryImpl } from '../user/infrastructure/user.repository';
+import { FindByEmailCommandHandler } from './application/commands/handlers/find-by-email.command.handler';
+import { ForgotPasswordCommandHandler } from './application/commands/handlers/forgot-password.command.handler';
+import { SignInCommandHandler } from './application/commands/handlers/sign-in.command.handler';
+import { SignUpBuyerCommandHandler } from './application/commands/handlers/sign-up-buyer.command.handler';
+import { SignUpDeveloperCommandHandler } from './application/commands/handlers/sign-up-developer.command.handler';
+import { ValidateUserCommandHandler } from './application/commands/handlers/validate-user.command.handler';
 import { SessionSerializer } from './application/serializers/session.serializer';
 import { GoogleStrategy } from './application/strategies/google.strategy';
 import { LocalStrategy } from './application/strategies/local.strategy';
-import { AuthController } from './ui/auth.controller';
 import { AuthRepository } from './infrastructure/auth.repository';
+import { AuthController } from './ui/auth.controller';
+import { SignUpGoogleCommandHandler } from './application/commands/handlers/sign-up-google.command.handler';
 import { IAuthRepository } from './domain/auth.repository.interface';
-import { DatabaseModule } from 'src/shared/infrastructure/database/database.module';
-import { UserRepositoryImpl } from '../user/infrastructure/user.repository';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [AuthController],
   providers: [
-    // {
-    //   provide: IAuthRepository,
-    //   useClass: AuthRepository,
-    // },
-    AuthRepository,
-    AuthService,
+    {
+      provide: IAuthRepository,
+      useClass: AuthRepository,
+    },
     LocalStrategy,
     SessionSerializer,
     UserRepositoryImpl,
-    // GoogleStrategy,
+    GoogleStrategy,
+    FindByEmailCommandHandler,
+    ForgotPasswordCommandHandler,
+    SignInCommandHandler,
+    SignUpBuyerCommandHandler,
+    SignUpDeveloperCommandHandler,
+    SignUpGoogleCommandHandler,
+    ValidateUserCommandHandler,
   ],
-  exports: [AuthService],
+  exports: [],
 })
 export class AuthModule {}

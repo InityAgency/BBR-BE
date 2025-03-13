@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 import { UserRepositoryImpl } from 'src/modules/user/infrastructure/user.repository';
 import { UserResponse } from 'src/modules/user/ui/response/user-response';
+import { validate as isUUID } from 'uuid';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
@@ -10,11 +11,20 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   serializeUser(user: any, done: Function) {
-    done(null, { id: user.id, email: user.email }); // ✅ Store minimal session data
+    done(null, { id: user.id, email: user.email });
   }
 
   async deserializeUser(payload: any, done: Function) {
-    const user = await this.userRepository.findById(payload.id);
-    done(null, new UserResponse(user!)); // ✅ Retrieve session data
+    try {
+      const user = await this.userRepository.findById(payload.id);
+
+      if (!user) {
+        return done(null, false);
+      }
+
+      done(null, new UserResponse(user));
+    } catch (error) {
+      done(error, false);
+    }
   }
 }

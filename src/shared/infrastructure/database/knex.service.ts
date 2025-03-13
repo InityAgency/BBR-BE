@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import Knex, { Knex as KnexType } from 'knex';
+import { Model } from 'objection';
 import knexConfig from './../../../../knexfile';
 
 @Injectable()
@@ -9,6 +9,7 @@ export class KnexService implements OnModuleInit, OnModuleDestroy {
 
   constructor() {
     this.db = Knex(knexConfig.development);
+    Model.knex(this.db);
   }
 
   async onModuleInit() {

@@ -9,7 +9,6 @@ export class AuthRepository implements IAuthRepository {
 
   constructor(private readonly knexService: KnexService) {}
 
-  // ✅ Find a user by email
   async findByEmail(email: string) {
     return this.knexService
       .connection(this.tableName)
@@ -29,7 +28,10 @@ export class AuthRepository implements IAuthRepository {
       .first();
   }
 
-  // ✅ Create a new user
+  findRoleByName(name: string) {
+    return this.knexService.connection('roles').where({ name: name.toLowerCase() }).first();
+  }
+
   async create(userData: Partial<User>) {
     const [user] = await this.knexService
       .connection(this.tableName)
@@ -38,7 +40,6 @@ export class AuthRepository implements IAuthRepository {
     return user;
   }
 
-  // ✅ Save reset token (for forgot password)
   async saveResetToken(userId: string, resetToken: string) {
     const [user] = await this.knexService
       .connection(this.tableName)

@@ -1,3 +1,3 @@
 export class CreateRoleCommand {
-  name: string;
+  constructor(public readonly name: string) {}
 }

@@ -1,6 +1,5 @@
 export class CreateUserCommand {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   password: string;
   signupMethod: string;

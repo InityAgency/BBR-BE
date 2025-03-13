@@ -1,7 +1,6 @@
 export class UserResponse {
   id: string;
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   createdAt: Date;
   updatedAt: Date;
@@ -10,8 +9,7 @@ export class UserResponse {
 
   constructor(user: UserResponse) {
     this.id = user.id;
-    this.firstName = user.firstName;
-    this.lastName = user.lastName;
+    this.fullName = user.fullName;
     this.email = user.email;
     this.role = user.role;
     this.createdAt = user.createdAt;

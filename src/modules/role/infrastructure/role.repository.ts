@@ -3,9 +3,10 @@ import { IRoleRepository } from '../domain/role.repository.interface';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { Role } from '../domain/role.entity';
 
-Injectable();
+@Injectable()
 export class RoleRepositoryImpl implements IRoleRepository {
   constructor(private readonly knexService: KnexService) {}
+
   async createRole(name: string): Promise<Role> {
     const [role] = await this.knexService.connection('roles').insert({ name }).returning('*');
 
@@ -26,5 +27,9 @@ export class RoleRepositoryImpl implements IRoleRepository {
       .where('rp.role_id', roleId);
 
     return permissions.map((p) => p.name);
+  }
+
+  async getRoles() {
+    return this.knexService.connection('roles').select('*');
   }
 }

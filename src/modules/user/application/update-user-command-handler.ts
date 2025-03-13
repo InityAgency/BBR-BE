@@ -31,8 +31,7 @@ export class UpdateUserCommandHandler {
       }
     }
 
-    user.firstName = command.firstName;
-    user.lastName = command.lastName;
+    user.fullName = command.fullName;
     user.email = command.email;
     user.updatedAt = new Date();
 

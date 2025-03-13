@@ -18,8 +18,7 @@ export async function seed(knex: Knex): Promise<void> {
   await knex('users').insert([
     {
       id: uuidv4(),
-      first_name: 'Super',
-      last_name: 'Admin',
+      full_name: 'Super Admin',
       email: 'superadmin@example.com',
       password: hashedPassword,
       signup_method: 'email',
@@ -31,8 +30,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: uuidv4(),
-      first_name: 'Admin',
-      last_name: 'Residence',
+      full_name: 'Residence Admin',
       email: 'admin@example.com',
       password: hashedPassword,
       signup_method: 'email',
@@ -44,8 +42,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: uuidv4(),
-      first_name: 'Developer',
-      last_name: 'Peter',
+      full_name: 'Developer Peter',
       email: 'developer@example.com',
       password: hashedPassword,
       signup_method: 'email',
@@ -57,8 +54,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: uuidv4(),
-      first_name: 'Buyer',
-      last_name: 'Smith',
+      full_name: 'Buyer Smith',
       email: 'buyer@example.com',
       password: hashedPassword,
       signup_method: 'email',

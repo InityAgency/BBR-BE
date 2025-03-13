@@ -7,4 +7,5 @@ export interface IUserRepository {
   findAll(): Promise<User[]>;
   update(user: User): Promise<User>;
   delete(id: string): Promise<void>;
+  updateUserPreferences(userId: string, updateData: any): Promise<any>;
 }

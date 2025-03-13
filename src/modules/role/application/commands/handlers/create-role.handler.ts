@@ -3,7 +3,10 @@ import { PubSubService } from 'src/shared/messaging/pubsub.service';
 import { CreateRoleCommand } from '../create-role.command';
 import { IRoleRepository } from 'src/modules/role/domain/role.repository.interface';
 import { Role } from 'src/modules/role/domain/role.entity';
+import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class CreateRoleHandler {
   constructor(
     private readonly roleRepository: IRoleRepository,
@@ -11,7 +14,8 @@ export class CreateRoleHandler {
     private readonly pubSubService: PubSubService
   ) {}
 
-  async execute(command: CreateRoleCommand): Promise<Role> {
+  @LogMethod()
+  async handler(command: CreateRoleCommand): Promise<Role> {
     const role = await this.roleRepository.createRole(command.name);
 
     // Invalidate cache across all servers

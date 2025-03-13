@@ -1,46 +1,37 @@
 import * as bcrypt from 'bcrypt';
+import { Model } from 'objection';
 
-export class User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  signupMethod: string;
+export class User extends Model {
+  id!: string;
+  fullName!: string;
+  email!: string;
+  password!: string;
+  signupMethod!: string;
   emailVerified?: boolean;
   status?: 'active' | 'inactive';
   roleId?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
   deletedAt?: Date;
 
-  private constructor(user: Partial<User>) {
-    Object.assign(this, user);
+  static tableName = 'users';
+
+  async $beforeInsert() {
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
+  }
+
+  async $beforeUpdate() {
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+    this.updatedAt = new Date();
   }
 
   static async create(data: Partial<User>): Promise<User> {
-    return new User(await this.beforeInsert(data));
-  }
-
-  static async beforeInsert(user: Partial<User>): Promise<Partial<User>> {
-    if (user.password) {
-      user.password = await bcrypt.hash(user.password, 10);
-    }
-
-    return {
-      ...user,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-  }
-
-  static async beforeUpdate(user: Partial<User>): Promise<Partial<User>> {
-    if (user.password) {
-      user.password = await bcrypt.hash(user.password, 10);
-    }
-    return {
-      ...user,
-      updatedAt: new Date(),
-    };
+    return await User.query().insert(data).returning('*');
   }
 }
