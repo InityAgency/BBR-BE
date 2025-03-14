@@ -11,19 +11,20 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: 🏗️ Install Node.js & PNPM
-        uses: actions/setup-node@v3
+      - name: 🧹 Clear PNPM Cache
+        uses: actions/cache@v4
         with:
-          node-version: 22
-          cache: 'pnpm'
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
       - name: 📦 Install PNPM
-        run: |
-          corepack enable
-          npm install -g pnpm
-          pnpm --version
+        uses: pnpm/action-setup@v4
+        with:
+          version: 'latest'
 
       - name: 📦 Verify PNPM Installation
         run: pnpm --version
