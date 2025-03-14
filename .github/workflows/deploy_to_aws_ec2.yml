@@ -1,0 +1,45 @@
+name: Deploy NestJS with PNPM to EC2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🏗️ Install Node.js & PNPM
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - name: 📦 Install PNPM
+        run: npm install -g pnpm
+
+      - name: 📦 Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔨 Build NestJS App
+        run: pnpm build
+
+      - name: 📡 Deploy to EC2 via SCP
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          scp -r ./dist package.json pnpm-lock.yaml ecosystem.config.js .env ubuntu@${{ secrets.EC2_HOST }}:/var/www/nest-api/
+
+      - name: 🚀 Restart Application on EC2
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          cd /var/www/nest-api
+          pnpm install --prod
+          pm2 restart ecosystem.config.js --env production
+          EOF
