@@ -54,5 +54,6 @@ jobs:
           ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
           cd /var/www/nest-api
           pnpm install --prod
+          npm rebuild bcrypt
           pm2 restart ecosystem.config.js --env production
           EOF
