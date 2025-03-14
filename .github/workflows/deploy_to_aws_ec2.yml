@@ -20,7 +20,10 @@ jobs:
           cache: 'pnpm'
 
       - name: 📦 Install PNPM
-        run: npm install -g pnpm
+        run: |
+          corepack enable
+          npm install -g pnpm
+          pnpm --version
 
       - name: 📦 Verify PNPM Installation
         run: pnpm --version
