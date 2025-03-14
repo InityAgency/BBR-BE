@@ -35,13 +35,19 @@ jobs:
       - name: 🔨 Build NestJS App
         run: pnpm build
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./dist/
+
       - name: 📡 Deploy to EC2 via SCP
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-          scp -r ./dist package.json pnpm-lock.yaml ecosystem.config.js .env ubuntu@${{ secrets.EC2_HOST }}:/var/www/nest-api/
+          scp -r ./dist package.json pnpm-lock.yaml ecosystem.config.js ubuntu@${{ secrets.EC2_HOST }}:/var/www/nest-api/
 
       - name: 🚀 Restart Application on EC2
         run: |
