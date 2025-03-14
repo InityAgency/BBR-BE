@@ -16,11 +16,14 @@ jobs:
       - name: 🏗️ Install Node.js & PNPM
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
           cache: 'pnpm'
 
       - name: 📦 Install PNPM
         run: npm install -g pnpm
+
+      - name: 📦 Verify PNPM Installation
+        run: pnpm --version
 
       - name: 📦 Install Dependencies
         run: pnpm install --frozen-lockfile
