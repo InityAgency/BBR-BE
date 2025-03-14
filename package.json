@@ -11,7 +11,7 @@
     "start": "nest start",
     "start:dev": "dotenv -e .env.development.local -- nest start --watch",
     "start:debug": "dotenv -e .env.development.local -- nest start --debug --watch",
-    "start:prod": "dotenv -e .env.production -- node dist/main",
+    "start:prod": "dotenv -e .env.production -- node dist/src/main",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:typeorm:run": "dotenv -e .env.development.local -- npm run typeorm -- migration:run -d dist/shared/infrastructure/database/data-source.js",
     "migration:knex:run": "dotenv -e .env.development.local pnpm knex migrate:latest --knexfile knexfile.ts",
