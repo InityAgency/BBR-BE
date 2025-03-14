@@ -1,13 +1,13 @@
-import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserRequest {
   @IsNotEmpty({ message: 'First name is required' })
   @MaxLength(64, { message: 'First name must be at most 64 characters long' })
   fullName: string;
 
-  @IsNotEmpty({ message: 'Company name is required' })
+  @IsOptional()
   @MaxLength(64, { message: 'Company name must be at most 64 characters long' })
-  companyName: string;
+  companyName?: string;
 
   @IsEmail({}, { message: 'Invalid email format' })
   @MaxLength(128, { message: 'Email must be at most 128 characters long' })

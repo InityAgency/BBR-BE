@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
-import { FindByEmailCommandHandler } from '../commands/handlers/find-by-email.command.handler';
 import { SignUpGoogleCommandHandler } from '../commands/handlers/sign-up-google.command.handler';
+import { FindByEmailQueryHandler } from '../commands/query/find-by-email.command.query';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
-    private readonly findByEmailCommandHandler: FindByEmailCommandHandler,
+    private readonly findbyEmailQueryHandler: FindByEmailQueryHandler,
     private readonly signUpGoogleCommandHandler: SignUpGoogleCommandHandler
   ) {
     super({
@@ -20,7 +20,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
   async validate(accessToken: string, refreshToken: string, profile: any, done: Function) {
     const { email, given_name, family_name, email_verified, picture } = profile._json;
-    let user = await this.findByEmailCommandHandler.handler(email);
+    let user = await this.findbyEmailQueryHandler.handler(email);
 
     if (!user) {
       user = await this.signUpGoogleCommandHandler.handler({
@@ -30,7 +30,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         emailVerified: email_verified,
       });
     } else {
-      user = await this.findByEmailCommandHandler.handler(email);
+      user = await this.findbyEmailQueryHandler.handler(email);
     }
 
     return done(null, user);

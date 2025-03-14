@@ -4,7 +4,6 @@ import { Model } from 'objection';
 export class User extends Model {
   id!: string;
   fullName: string;
-  companyName?: string;
   email!: string;
   password!: string;
   signupMethod!: string;

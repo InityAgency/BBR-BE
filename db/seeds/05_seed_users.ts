@@ -43,7 +43,6 @@ export async function seed(knex: Knex): Promise<void> {
     {
       id: uuidv4(),
       full_name: 'Developer Peter',
-      company_name: "Developer's Company",
       email: 'developer@example.com',
       password: hashedPassword,
       signup_method: 'email',

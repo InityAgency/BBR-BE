@@ -35,6 +35,6 @@ export class UpdateUserCommandHandler {
     user.email = command.email;
     user.updatedAt = new Date();
 
-    return this.userRepository.update(user);
+    return this.userRepository.update(user.id, user);
   }
 }

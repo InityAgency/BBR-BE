@@ -15,6 +15,7 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:typeorm:run": "dotenv -e .env.development.local -- npm run typeorm -- migration:run -d dist/shared/infrastructure/database/data-source.js",
     "migration:knex:run": "dotenv -e .env.development.local pnpm knex migrate:latest --knexfile knexfile.ts",
+    "migration:knex:rollback": "dotenv -e .env.development.local pnpm knex migrate:rollback --knexfile knexfile.ts",
     "migration:revert": "dotenv -e .env.development.local -- npm run typeorm -- migration:revert -d dist/shared/infrastructure/database/data-source.js",
     "migration:create": "dotenv -e .env.development.local -- npm run typeorm -- migration:create db/migrations/${npm_config_name}",
     "seed:knex:run": "dotenv -e .env.development.local pnpm knex seed:run --knexfile knexfile.ts",

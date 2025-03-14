@@ -2,12 +2,10 @@ import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common
 import { UserResponse } from 'src/modules/user/ui/response/user-response';
 import { SignUpBuyerCommandHandler } from '../application/commands/handlers/sign-up-buyer.command.handler';
 import { SignUpDeveloperCommandHandler } from '../application/commands/handlers/sign-up-developer.command.handler';
-import { SignUpBuyerCommand } from '../application/commands/sign-up-buyer.command';
-import { SignUpDeveloperCommand } from '../application/commands/sign-up-developer.command';
 import { GoogleGuard } from '../application/guards/google.guard';
 import { LocalAuthGuard } from '../application/guards/local-auth.guard';
-import { SessionAuthGuard } from '../application/guards/session-auth.guard';
 import { CreateUserRequest } from './request/create-user.request';
+import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -51,6 +49,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(SessionAuthGuard)
   logout(@Req() req, @Res() res) {
     req.logout(() => {
       req.session.destroy(() => {

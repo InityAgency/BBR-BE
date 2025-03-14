@@ -9,5 +9,5 @@ export class UpdateUserRequest {
 
   @IsOptional()
   @IsObject({ message: 'Additional fields must be an object' })
-  additional_fields?: Record<string, any>;
+  buyerFields?: Record<string, any>;
 }

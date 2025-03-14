@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { IAuthRepository } from 'src/modules/auth/domain/auth.repository.interface';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-import { FindByEmailCommand } from '../find-by-email.command';
+import { FindByEmailQuery } from '../find-by-email.query';
 
 @Injectable()
-export class FindByEmailCommandHandler {
+export class FindByEmailQueryHandler {
   constructor(private readonly authRepository: IAuthRepository) {}
 
   @LogMethod()
-  async handler(command: FindByEmailCommand) {
+  async handler(command: FindByEmailQuery) {
     const user = this.authRepository.findByEmail(command.email);
     return user;
   }

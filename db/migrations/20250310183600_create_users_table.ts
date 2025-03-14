@@ -4,7 +4,6 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('users', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()')); // ✅ Auto-generate UUID
     table.string('full_name', 64).notNullable();
-    table.string('company_name', 64).nullable();
     table.string('email', 128).notNullable().unique();
     table.string('password', 256).nullable();
     table.string('signup_method').notNullable().defaultTo('email');

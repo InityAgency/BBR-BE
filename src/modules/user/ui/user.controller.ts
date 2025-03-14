@@ -26,6 +26,7 @@ import { UpdateUserRequest } from './request/update-user.request';
 import { UserResponse } from './response/user-response';
 import { PaginationRequest } from 'src/shared/ui/request/pagination.request';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -47,6 +48,7 @@ export class UserController {
   @ApiResponse({ status: 400, description: 'Bad request (validation error)' })
   @ApiResponse({ status: 409, description: 'Conflict - Email already exists.' })
   @ApiResponse({ status: 400, description: 'Not Saved - User could not be saved.' })
+  @UseGuards(SessionAuthGuard)
   async create(@Body() command: CreateUserRequest): Promise<UserResponse> {
     const user = await this.createUserHandler.handle(command);
     return new UserResponse(user);
@@ -55,6 +57,7 @@ export class UserController {
   @Get()
   @ApiOperation({ summary: 'Fetch all users' })
   @ApiResponse({ status: 200, description: 'List of users', type: [UserResponse] })
+  @UseGuards(SessionAuthGuard)
   async findAll(
     @Query() query: PaginationRequest
   ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
@@ -66,6 +69,7 @@ export class UserController {
   @ApiOperation({ summary: 'Fetch a user by ID' })
   @ApiResponse({ status: 200, description: 'User found', type: UserResponse })
   @ApiResponse({ status: 404, description: 'User not found' })
+  @UseGuards(SessionAuthGuard)
   async findOne(@Param('id') id: string): Promise<UserResponse> {
     const user = await this.findByIdUserHandler.handle(id);
     return new UserResponse(user);
@@ -78,11 +82,11 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'User not updatable.' })
   @ApiResponse({ status: 400, description: 'Not Updated - User could not be updated.' })
+  @UseGuards(SessionAuthGuard)
   async update(@Param('id') id: string, @Body() request: UpdateUserRequest): Promise<UserResponse> {
     const command: UpdateUserCommand = {
       id,
-      fullName: request.fullName,
-      email: request.email,
+      ...request,
     };
     const user = await this.updateUserHandler.handle(command);
     return new UserResponse(user);
@@ -94,6 +98,7 @@ export class UserController {
   @ApiResponse({ status: 204, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'Not Updated - User could not be deleted.' })
+  @UseGuards(SessionAuthGuard)
   async remove(@Param('id') id: string): Promise<void> {
     await this.deleteUserHandler.handle(id);
   }
