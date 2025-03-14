@@ -25,6 +25,7 @@ export class SignUpDeveloperCommandHandler {
       email: command.email,
       fullName: command.fullName,
       password: command.password,
+      companyName: command.companyName,
       roleId: role.id,
       signupMethod: 'email',
     };
