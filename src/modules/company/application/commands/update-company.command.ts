@@ -1,5 +1,3 @@
-import { UpdateCompanyRequest } from '../../ui/request/update-company.request';
-
 export class UpdateCompanyCommand {
   constructor(
     public readonly id: string,

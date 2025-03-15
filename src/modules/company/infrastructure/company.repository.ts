@@ -5,6 +5,9 @@ import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { CompanyResponse } from '../ui/response/company.response';
+import { FetchAllCompanyCommandQuery } from '../application/commands/query/fetch-all-company.command.query';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { FetchCompaniesQuery } from '../application/commands/fetch-all-company.query';
 
 @Injectable()
 export class CompanyRepository implements ICompanyRepository {
@@ -32,23 +35,53 @@ export class CompanyRepository implements ICompanyRepository {
   }
 
   @LogMethod()
-  async findAll(page: number, limit: number): Promise<{ data: Company[]; pagination: any }> {
-    const query = this.knexService.connection(this.tableName).select();
+  async findAll(
+    fetchQuery: FetchCompaniesQuery
+  ): Promise<{ data: Company[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder } = fetchQuery;
 
-    const paginatedQuery = await applyPagination(query, page, limit);
+    let query = Company.query();
 
-    const totalQuery = this.knexService.connection(this.tableName).count('* as total').first();
+    if (sortBy && sortOrder) {
+      if (this.allowedSortColumns.includes(sortBy)) {
+        query = query.orderBy(sortBy, sortOrder);
+      }
+    }
 
-    const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
+    const paginatedCompanies = await applyPagination(query, page, limit);
+
+    const totalResult = (await Company.query().count('* as total').first()) as
+      | { total: string }
+      | undefined;
+
+    const totalCount = totalResult ? Number(totalResult.total) : 0;
+    const totalPages = Math.ceil(totalCount / (limit || 1)); // Avoid division by zero
 
     return {
-      data: data.map((company) => new CompanyResponse(company)),
+      data: paginatedCompanies.map((company) => new CompanyResponse(company)),
       pagination: {
-        total: totalResult ? Number(totalResult.total) : 0,
-        totalPages: Math.ceil((totalResult ? Number(totalResult.total) : 0) / limit),
-        page,
-        limit,
+        total: totalCount,
+        totalPages,
+        page: page || 1, // Default to 1 if not provided
+        limit: limit || 10, // Default to 10 if not provided
       },
     };
   }
+
+  private readonly allowedSortColumns: string[] = [
+    'name',
+    'address',
+    'logo',
+    'phoneNumber',
+    'phoneNumberCountryCode',
+    'website',
+    'contactPersonAvatar',
+    'contactPersonFullName',
+    'contactPersonJobTitle',
+    'contactPersonEmail',
+    'contactPersonPhoneNumber',
+    'contactPersonPhoneNumberCountryCode',
+    'createdAt',
+    'updatedAt',
+  ];
 }

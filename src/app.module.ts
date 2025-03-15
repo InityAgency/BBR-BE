@@ -11,6 +11,7 @@ import { LoggerModule } from './shared/infrastructure/logger/logger.module';
 import { ABACMiddleware } from './shared/middleware/abac.middleware';
 import { RBACMiddleware } from './shared/middleware/rbac.middleware';
 import { MediaModule } from './modules/media/media.module';
+import { BrandModule } from './modules/brand/brand.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MediaModule } from './modules/media/media.module';
     LoggerModule,
     DatabaseModule,
     CacheModule,
+    BrandModule,
   ],
   providers: [],
 })

@@ -20,6 +20,8 @@ import { FetchAllCompanyCommandQuery } from '../application/commands/query/fetch
 import { FetchCompanyByIdCommandQuery } from '../application/commands/query/fetch-company-by-id.command.query';
 import { CompanyResponse } from './response/company.response';
 import { UpdateCompanyCommand } from '../application/commands/update-company.command';
+import { FetchCompaniesQuery } from '../application/commands/fetch-all-company.query';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 
 @ApiTags('Company')
 @ApiCookieAuth()
@@ -36,7 +38,9 @@ export class CompanyController {
   @Get()
   @ApiTags('Company Find All')
   @UseGuards(SessionAuthGuard)
-  async findAll(@Query() query: PaginationRequest): Promise<CompanyResponse[]> {
+  async findAll(
+    @Query() query: FetchCompaniesQuery
+  ): Promise<{ data: CompanyResponse[]; pagination: PaginationResponse }> {
     return await this.fetchAllCompanyCommandQuery.handler(query);
   }
 

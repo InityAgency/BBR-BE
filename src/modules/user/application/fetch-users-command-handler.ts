@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-import { User } from '../domain/user.entity';
 import { IUserRepository } from '../domain/user.repository.interface';
-import { FetchUserQuery } from './command/fetch-user.query';
+import { FetchUsersQuery } from './command/fetch-users.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { UserResponse } from '../ui/response/user-response';
 
@@ -12,7 +11,7 @@ export class FetchUsersCommandHandler {
 
   @LogMethod()
   async handle(
-    query: FetchUserQuery
+    query: FetchUsersQuery
   ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
     return this.userRepository.findAll(query.page, query.limit);
   }
