@@ -17,15 +17,16 @@ export class Company extends Model {
   contactPersonPhoneNumberCountryCode?: string;
   createdAt!: Date;
   updatedAt!: Date;
+  deletedAt?: Date;
 
-  static tableName = 'company';
+  static tableName = 'companies';
 
   static relationMappings: RelationMappings = {
     logo: {
       relation: Model.BelongsToOneRelation,
       modelClass: Media,
       join: {
-        from: 'company.logo',
+        from: 'companies.logo',
         to: 'media.id',
       },
     },
@@ -33,9 +34,13 @@ export class Company extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: Media,
       join: {
-        from: 'company.contact_person_avatar',
+        from: 'companies.contact_person_avatar',
         to: 'media.id',
       },
     },
   };
+
+  static async create(data: Partial<Company>): Promise<Company> {
+    return await Company.query().insert(data).returning('*');
+  }
 }

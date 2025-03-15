@@ -3,12 +3,12 @@ import { User } from 'src/modules/user/domain/user.entity';
 
 export class Media extends Model {
   id!: string;
-  file_name!: string;
-  file_url!: string;
-  mime_type!: string;
-  bucket_name!: string;
-  uploaded_by?: string;
-  created_at!: Date;
+  fileName!: string;
+  fileUrl!: string;
+  mimeType!: string;
+  bucketName!: string;
+  uploadedBy?: string;
+  createdAt!: Date;
 
   static tableName = 'media';
 

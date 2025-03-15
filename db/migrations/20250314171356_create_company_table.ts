@@ -24,6 +24,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('contact_person_phone_number_country_code', 5).nullable();
 
     table.timestamps(true, true);
+    table.timestamp('deleted_at').nullable();
   });
 }
 
