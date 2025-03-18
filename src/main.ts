@@ -9,6 +9,7 @@ import { RedisStore } from 'connect-redis';
 import { RedisService } from './shared/cache/redis.service';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpResponseInterceptor } from './shared/interceptors/http-response-interceptor';
+import * as cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +32,13 @@ async function bootstrap() {
   );
 
   app.use(
+    cors({
+      origin: process.env.CLIENT_URL || '*', // Adjust to your frontend domain
+      credentials: true, // Important: Allow cookies to be sent
+    })
+  );
+
+  app.use(
     session({
       store: new RedisStore({ client: redisClient }),
       name: process.env.SESSION_NAME || 'my-api-session',
@@ -40,7 +48,7 @@ async function bootstrap() {
       cookie: {
         secure: process.env.NODE_ENV === 'production', // Set `true` for HTTPS
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         maxAge: 24 * 60 * 60 * 1000, // 24h session expiration
       },
     })
