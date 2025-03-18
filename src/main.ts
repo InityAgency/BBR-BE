@@ -33,8 +33,8 @@ async function bootstrap() {
 
   app.use(
     cors({
-      origin: process.env.CLIENT_URL || '*', // Adjust to your frontend domain
-      credentials: true, // Important: Allow cookies to be sent
+      origin: ['http://127.0.0.1:5500', 'http://localhost:3000', 'https://bbrapi.inity.space'],
+      credentials: true,
     })
   );
 
