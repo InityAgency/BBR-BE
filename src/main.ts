@@ -30,13 +30,16 @@ async function bootstrap() {
       transform: true,
     })
   );
+  app.enableCors({
+    credentials: true,
+  });
 
-  app.use(
-    cors({
-      origin: ['http://127.0.0.1:5500', 'http://localhost:3000', 'https://bbrapi.inity.space'],
-      credentials: true,
-    })
-  );
+  // app.use(
+  //   cors({
+  //     origin: ['http://127.0.0.1:5500', 'http://localhost:3000', 'https://bbrapi.inity.space'],
+  //     credentials: true,
+  //   })
+  // );
 
   app.use(
     session({
@@ -46,7 +49,7 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: process.env.NODE_ENV === 'production', // Set `true` for HTTPS
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         maxAge: 24 * 60 * 60 * 1000, // 24h session expiration
