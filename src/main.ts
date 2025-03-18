@@ -31,7 +31,7 @@ async function bootstrap() {
     })
   );
   app.enableCors({
-    origin: '*',
+    origin: true,
     credentials: true,
   });
 
@@ -50,9 +50,9 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: false,
         httpOnly: true,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000, // 24h session expiration
       },
     })
