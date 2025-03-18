@@ -40,7 +40,7 @@ async function bootstrap() {
       cookie: {
         secure: process.env.NODE_ENV === 'production', // Set `true` for HTTPS
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000, // 24h session expiration
       },
     })
