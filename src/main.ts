@@ -30,7 +30,13 @@ async function bootstrap() {
     })
   );
   app.enableCors({
-    origin: ['http://localhost:3001', 'http://localhost:3000', 'https://bbr-admin.vercel.app'],
+    origin: [
+      'http://localhost:3001',
+      'http://localhost:3000',
+      'https://localhost:3001',
+      'https://localhost:3000',
+      'https://bbr-admin.vercel.app',
+    ],
     credentials: true,
   });
 
@@ -42,7 +48,7 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
         sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000, // 24h session expiration
