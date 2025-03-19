@@ -9,7 +9,6 @@ import { RedisStore } from 'connect-redis';
 import { RedisService } from './shared/cache/redis.service';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpResponseInterceptor } from './shared/interceptors/http-response-interceptor';
-import * as cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -34,13 +33,6 @@ async function bootstrap() {
     origin: true,
     credentials: true,
   });
-
-  // app.use(
-  //   cors({
-  //     origin: ['http://127.0.0.1:5500', 'http://localhost:3000', 'https://bbrapi.inity.space'],
-  //     credentials: true,
-  //   })
-  // );
 
   app.use(
     session({
