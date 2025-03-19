@@ -30,7 +30,7 @@ async function bootstrap() {
     })
   );
   app.enableCors({
-    origin: true,
+    origin: ['http://localhost:3001', 'http://localhost:3000', 'https://bbr-admin.vercel.app'],
     credentials: true,
   });
 
@@ -42,9 +42,9 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: true,
+        secure: false,
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000, // 24h session expiration
       },
     })
@@ -58,6 +58,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api-docs', app, document);
 
-  await app.listen(3000);
+  await app.listen(5000);
 }
 bootstrap();
