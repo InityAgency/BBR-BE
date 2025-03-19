@@ -1,14 +1,16 @@
 import * as bcrypt from 'bcrypt';
 import { Model } from 'objection';
+import { SignupMethodEnum } from 'src/shared/types/signup-method.enum';
+import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 
 export class User extends Model {
   id!: string;
   fullName: string;
   email!: string;
   password!: string;
-  signupMethod!: string;
+  signupMethod!: SignupMethodEnum;
   emailVerified?: boolean;
-  status?: 'active' | 'inactive';
+  status?: UserStatusEnum;
   roleId?: string;
   aggreedTerms?: boolean;
   receieveLuxuryInsights?: boolean;

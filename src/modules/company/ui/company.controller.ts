@@ -22,6 +22,7 @@ import { CompanyResponse } from './response/company.response';
 import { UpdateCompanyCommand } from '../application/commands/update-company.command';
 import { FetchCompaniesQuery } from '../application/commands/fetch-all-company.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { FetchAllCompanyRequest } from './request/fetch-all-companies.request';
 
 @ApiTags('Company')
 @ApiCookieAuth()
@@ -39,7 +40,7 @@ export class CompanyController {
   @ApiTags('Company Find All')
   @UseGuards(SessionAuthGuard)
   async findAll(
-    @Query() query: FetchCompaniesQuery
+    @Query() query: FetchAllCompanyRequest
   ): Promise<{ data: CompanyResponse[]; pagination: PaginationResponse }> {
     return await this.fetchAllCompanyCommandQuery.handler(query);
   }

@@ -2,6 +2,8 @@ import { BadRequestException, ConflictException, Injectable } from '@nestjs/comm
 import { IAuthRepository } from 'src/modules/auth/domain/auth.repository.interface';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { SignUpBuyerCommand } from '../sign-up-buyer.command';
+import { UserStatusEnum } from 'src/shared/types/user-status.enum';
+import { SignupMethodEnum } from 'src/shared/types/signup-method.enum';
 
 @Injectable()
 export class SignUpBuyerCommandHandler {
@@ -26,7 +28,8 @@ export class SignUpBuyerCommandHandler {
       fullName: command.fullName,
       password: command.password,
       roleId: role.id,
-      signupMethod: 'email',
+      signupMethod: SignupMethodEnum.EMAIL,
+      status: UserStatusEnum.INACTIVE,
     };
 
     return this.authRepository.create(user);

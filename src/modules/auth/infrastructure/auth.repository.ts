@@ -5,6 +5,7 @@ import { IAuthRepository } from '../domain/auth.repository.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserRequest } from '../ui/request/create-user.request';
 import { Knex } from 'knex';
+import { UserResponse } from 'src/modules/user/ui/response/user-response';
 @Injectable()
 export class AuthRepository implements IAuthRepository {
   private tableName = 'users';
@@ -26,9 +27,9 @@ export class AuthRepository implements IAuthRepository {
     return this.knexService.connection('roles').where({ name: name.toLowerCase() }).first();
   }
 
-  async create(userData: Partial<CreateUserRequest>) {
+  async create(userData: Partial<CreateUserRequest>): Promise<UserResponse> {
     return this.knexService.connection.transaction(async (trx) => {
-      const [user] = await trx(this.tableName).insert(userData).returning('*');
+      const user = await User.query(trx).insert(userData).returning('*');
 
       // ✅ If the user is a developer, create a company
       const role = await trx('roles')

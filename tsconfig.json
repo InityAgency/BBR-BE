@@ -17,7 +17,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "skipDefaultLibCheck": true, 
+    "skipDefaultLibCheck": true,
     "resolveJsonModule": true
   },
   "include": ["src/**/*", "db/migrations"],

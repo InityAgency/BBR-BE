@@ -12,8 +12,6 @@ export class UpdateCompanyCommandHandler {
   async handler(command: UpdateCompanyCommand): Promise<Company> {
     const company = await this.companyRepository.findById(command.id);
 
-    console.log(company);
-
     if (!company) {
       throw new NotFoundException('Company not found');
     }
