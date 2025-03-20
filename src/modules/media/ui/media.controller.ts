@@ -16,9 +16,12 @@ export class MediaController {
     private readonly updateMediaCommandHandler: UpdateMediaCommandHandler,
     private readonly generatePresignedUrlQuery: GeneratePrestigedUrlCommandQuery
   ) {}
-  @Get('presigned-url')
-  async getPresignedUrl(@Query('fileType') fileType: string) {
-    const query = new GetPresignedUrlQuery(fileType);
+  @Get('presigned-url/:entity')
+  async getPresignedUrl(
+    @Body('files') files: { fileType: string; count: number }[],
+    @Param('entity') entity: string
+  ) {
+    const query = new GetPresignedUrlQuery(entity, files);
     return await this.generatePresignedUrlQuery.handler(query);
   }
 

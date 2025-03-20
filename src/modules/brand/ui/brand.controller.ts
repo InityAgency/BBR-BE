@@ -11,6 +11,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateBrandRequest } from './request/create-brand.request';
 import { UpdateBrandRequest } from './request/update-brand.request';
@@ -25,10 +26,11 @@ import { UpdateBrandCommand } from '../application/command/update-brand.command'
 import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { CreateBrandCommand } from '../application/command/create-brand.command';
+import { MediaInterceptor } from 'src/shared/interceptors/media.interceptor';
 
 @ApiTags('brands')
 @ApiBearerAuth()
-@Controller('api/v1/brands')
+@Controller('brands')
 export class BrandController {
   constructor(
     private readonly createBrandHandler: CreateBrandCommandHandler,
@@ -40,6 +42,7 @@ export class BrandController {
 
   @Post()
   @UsePipes(new ValidationPipe())
+  @UseInterceptors(MediaInterceptor)
   @ApiOperation({ summary: 'Create a new brand' })
   @ApiResponse({ status: 201, description: 'Brand created successfully', type: BrandResponse })
   @ApiResponse({ status: 400, description: 'Bad request (validation error)' })
@@ -49,18 +52,25 @@ export class BrandController {
     const command = new CreateBrandCommand(
       request.name,
       request.description,
-      request.type,
+      request.brandTypeId,
+      request.logoId,
       request.status,
-      request.registeredAt
+      request.registeredAt,
+      request.uploads,
+      request.deleted
     );
     const brand = await this.createBrandHandler.handle(command);
+
     return new BrandResponse(
       brand.id,
       brand.name,
       brand.description,
-      brand.type,
       brand.status,
-      brand.registeredAt
+      brand.registeredAt,
+      brand.brandTypeId,
+      brand.logoId,
+      brand.brandType,
+      brand.logo
     );
   }
 
@@ -85,6 +95,8 @@ export class BrandController {
   ): Promise<{ data: BrandResponse[]; pagination: PaginationResponse }> {
     const query = new FetchBrandsQuery(page, limit);
     const { data, pagination } = await this.fetchAllBrandHandler.handle(query);
+
+    console.log(data);
     return {
       data: data.map(
         (brand) =>
@@ -92,9 +104,12 @@ export class BrandController {
             brand.id,
             brand.name,
             brand.description,
-            brand.type,
             brand.status,
-            brand.registeredAt
+            brand.registeredAt,
+            brand.brandTypeId,
+            brand.logoId,
+            brand.brandType,
+            brand.logo
           )
       ),
       pagination,
@@ -111,9 +126,10 @@ export class BrandController {
       brand.id,
       brand.name,
       brand.description,
-      brand.type,
       brand.status,
-      brand.registeredAt
+      brand.registeredAt,
+      brand.brandTypeId,
+      brand.logoId
     );
   }
 
@@ -131,7 +147,8 @@ export class BrandController {
       id,
       request.name,
       request.description,
-      request.type,
+      request.brandTypeId,
+      request.logoId,
       request.status,
       request.registeredAt
     );
@@ -140,9 +157,10 @@ export class BrandController {
       brand.id,
       brand.name,
       brand.description,
-      brand.type,
       brand.status,
-      brand.registeredAt
+      brand.registeredAt,
+      brand.brandTypeId,
+      brand.logoId
     );
   }
 

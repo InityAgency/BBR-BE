@@ -22,9 +22,12 @@ export class FetchAllBrandCommandHandler {
             brand.id,
             brand.name,
             brand.description,
-            brand.type,
             brand.status,
-            brand.registeredAt
+            brand.registeredAt,
+            brand.brandTypeId,
+            brand.logoId,
+            brand.brandType,
+            brand.logo
           )
       ),
       pagination: result.pagination,

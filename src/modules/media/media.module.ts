@@ -8,6 +8,8 @@ import { MediaController } from './ui/media.controller';
 import { GeneratePrestigedUrlCommandQuery } from './application/commands/query/generate-prestiged-url.command.handler';
 import { IMediaRepository } from './domain/media.repository.interface';
 import { MediaRepository } from './infrastructure/media.repository';
+import { IEntityMediaRepository } from './domain/entity-media.repository.interface';
+import { EntityMediaRepository } from './infrastructure/entity-media.repository';
 
 @Module({
   imports: [DatabaseModule],
@@ -16,6 +18,10 @@ import { MediaRepository } from './infrastructure/media.repository';
     {
       provide: IMediaRepository,
       useClass: MediaRepository,
+    },
+    {
+      provide: IEntityMediaRepository,
+      useClass: EntityMediaRepository,
     },
     S3Service,
     CreateMediaCommandHandler,

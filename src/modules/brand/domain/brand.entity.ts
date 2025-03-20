@@ -1,24 +1,43 @@
 import { Model } from 'objection';
-import { BrandType } from './brand-type.enum';
 import { BrandStatus } from './brand-status.enum';
+import { Media } from 'src/modules/media/domain/media.entity';
+import { BrandType } from 'src/modules/brand_types/domain/brand-type.entity';
 
 export class Brand extends Model {
   id!: string;
   name!: string;
   description!: string;
-  type!: BrandType;
+  brandTypeId!: string;
   status!: BrandStatus;
   registeredAt!: Date;
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;
+  logoId!: string;
+
+  brandType?: BrandType;
+  logo?: Media;
 
   static tableName = 'brands';
 
-  static get relationMappings() {
-    // Add relations if needed (e.g., to users or other entities)
-    return {};
-  }
+  static relationMappings = {
+    brandType: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => BrandType,
+      join: {
+        from: 'brands.brandTypeId',
+        to: 'brand_types.id',
+      },
+    },
+    logo: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => Media,
+      join: {
+        from: 'brands.logoId',
+        to: 'media.id',
+      },
+    },
+  };
 
   $beforeInsert() {
     this.createdAt = new Date();

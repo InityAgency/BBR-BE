@@ -1,7 +1,14 @@
-import { IsString, IsEnum, IsOptional, IsNotEmpty, MaxLength, IsDate } from 'class-validator';
-import { BrandType } from '../../domain/brand-type.enum';
-import { BrandStatus } from '../../domain/brand-status.enum';
 import { Type } from 'class-transformer';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
+import { BrandStatus } from '../../domain/brand-status.enum';
 
 export class UpdateBrandRequest {
   @IsNotEmpty()
@@ -13,8 +20,12 @@ export class UpdateBrandRequest {
   @MaxLength(1024)
   description: string;
 
-  @IsEnum(BrandType)
-  type: BrandType;
+  @IsUUID()
+  @IsNotEmpty()
+  brandTypeId: string;
+
+  @IsOptional()
+  logoId: string;
 
   @IsEnum(BrandStatus)
   status: BrandStatus;

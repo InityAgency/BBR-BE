@@ -1,5 +1,6 @@
 export abstract class IMediaRepository {
   abstract create(data: any): Promise<any>;
   abstract update(id: string, data: any): Promise<any>;
-  abstract delete(id: string): Promise<any>;
+  abstract delete(mediaIds: string[]): Promise<any>;
+  abstract moveFileToDestination(tempFileKey: string, destinationFolder: string);
 }

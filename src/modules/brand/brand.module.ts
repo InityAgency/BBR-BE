@@ -8,6 +8,8 @@ import { BrandController } from './ui/brand.controller';
 import { BrandRepositoryImpl } from './infrastructure/brand.repository';
 import { DatabaseModule } from 'src/shared/infrastructure/database/database.module';
 import { IBrandRepository } from './domain/brand.repository.interface';
+import { IMediaRepository } from '../media/domain/media.repository.interface';
+import { MediaRepository } from '../media/infrastructure/media.repository';
 
 @Module({
   imports: [DatabaseModule],
@@ -16,6 +18,10 @@ import { IBrandRepository } from './domain/brand.repository.interface';
     {
       provide: IBrandRepository,
       useClass: BrandRepositoryImpl,
+    },
+    {
+      provide: IMediaRepository,
+      useClass: MediaRepository,
     },
     CreateBrandCommandHandler,
     FindByIdBrandCommandHandler,

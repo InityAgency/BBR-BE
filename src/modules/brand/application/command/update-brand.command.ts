@@ -5,7 +5,8 @@ export class UpdateBrandCommand {
     public readonly id: string,
     public readonly name: string,
     public readonly description: string,
-    public readonly type: string,
+    public readonly brandTypeId: string,
+    public readonly logoId: string,
     public readonly status: BrandStatus,
     public readonly registeredAt: Date
   ) {}

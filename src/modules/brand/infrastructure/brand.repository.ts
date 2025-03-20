@@ -5,6 +5,7 @@ import { Brand } from '../domain/brand.entity';
 import { IBrandRepository } from '../domain/brand.repository.interface';
 import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { EntityMedia } from 'src/modules/media/domain/entity-media.entity';
 @Injectable()
 export class BrandRepositoryImpl implements IBrandRepository {
   @LogMethod()
@@ -28,17 +29,12 @@ export class BrandRepositoryImpl implements IBrandRepository {
   ): Promise<{ data: Brand[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder } = fetchQuery;
 
-    let query = Brand.query().whereNull('deleted_at');
+    console.log(Brand.relationMappings);
+
+    let query = Brand.query().whereNull('deleted_at').withGraphFetched('[brandType, logo]');
 
     if (sortBy && sortOrder) {
-      const allowedColumns = [
-        'name',
-        'type',
-        'status',
-        'registered_at',
-        'created_at',
-        'updated_at',
-      ];
+      const allowedColumns = ['name', 'status', 'registered_at', 'created_at', 'updated_at'];
       if (allowedColumns.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }
@@ -73,5 +69,31 @@ export class BrandRepositoryImpl implements IBrandRepository {
   @LogMethod()
   async delete(id: string): Promise<void> {
     await Brand.query().where('id', id).patch({ deletedAt: new Date() });
+  }
+
+  async getLogo(brandId: string) {
+    return await EntityMedia.query()
+      .select('mediaId')
+      .where({ entityId: brandId, entityType: 'brands', mediaType: 'logo' })
+      .first();
+  }
+
+  async updateLogo(brandId: string, mediaId: string) {
+    // Remove old logo (handled in controller before calling this method)
+    await EntityMedia.query()
+      .delete()
+      .where({ entityId: brandId, entityType: 'brands', mediaType: 'logo' });
+
+    const media = {
+      entityId: brandId,
+      entityType: 'brands',
+      mediaId,
+      mediaType: 'logo',
+      order: 0,
+      highlighted: true,
+    };
+
+    // Attach new logo
+    await EntityMedia.query().insert(media);
   }
 }

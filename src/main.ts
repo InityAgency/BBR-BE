@@ -1,14 +1,14 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { SwaggerModule } from '@nestjs/swagger';
-import { swaggerConfig } from './shared/swagger/swagger.config';
-import { RestExceptionFilter } from './shared/error/handler/rest.exception.handler';
+import { RedisStore } from 'connect-redis';
 import * as session from 'express-session';
 import * as passport from 'passport';
-import { RedisStore } from 'connect-redis';
+import { AppModule } from './app.module';
 import { RedisService } from './shared/cache/redis.service';
-import { ValidationPipe } from '@nestjs/common';
+import { RestExceptionFilter } from './shared/error/handler/rest.exception.handler';
 import { HttpResponseInterceptor } from './shared/interceptors/http-response-interceptor';
+import { swaggerConfig } from './shared/swagger/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -49,8 +49,8 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         secure: false,
-        httpOnly: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
+        httpOnly: true,
+        sameSite: false,
         maxAge: 24 * 60 * 60 * 1000, // 24h session expiration
       },
     })

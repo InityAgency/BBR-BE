@@ -30,7 +30,8 @@ export class UpdateBrandCommandHandler {
     const updateData: Partial<Brand> = {
       name: command.name,
       description: command.description,
-      type: command.type as BrandType,
+      brandTypeId: command.brandTypeId,
+      logoId: command.logoId,
       status: command.status as BrandStatus,
       registeredAt: command.registeredAt,
     };
