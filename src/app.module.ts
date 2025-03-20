@@ -13,6 +13,7 @@ import { DatabaseModule } from './shared/infrastructure/database/database.module
 import { LoggerModule } from './shared/infrastructure/logger/logger.module';
 import { ABACMiddleware } from './shared/middleware/abac.middleware';
 import { RBACMiddleware } from './shared/middleware/rbac.middleware';
+import EmailModule from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { RBACMiddleware } from './shared/middleware/rbac.middleware';
     CacheModule,
     BrandModule,
     BrandTypesModule,
+    EmailModule,
   ],
   providers: [],
 })
