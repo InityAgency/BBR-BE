@@ -48,9 +48,9 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: false,
+        secure: true,
         httpOnly: true,
-        sameSite: false,
+        sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000, // 24h session expiration
       },
     })
