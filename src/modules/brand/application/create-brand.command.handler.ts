@@ -33,24 +33,6 @@ export class CreateBrandCommandHandler {
 
     const created = await this.brandRepository.findById(brand.id);
 
-    // ✅ Delete old logo if needed
-    if (command.deleted?.length) {
-      await this.mediaRepository.delete(command.deleted);
-    }
-
-    // ✅ Move new logo to `/brands/logos/` and update DB
-    if (newLogo?.id) {
-      try {
-        const finalLogoPath = await this.mediaRepository.moveFileToDestination(
-          newLogo.fileName,
-          'brands'
-        );
-        await this.brandRepository.updateLogo(brand.id, finalLogoPath);
-      } catch (error) {
-        throw new InternalServerErrorException('Brand created, but logo move failed.');
-      }
-    }
-
     if (!created) {
       throw new InternalServerErrorException('Brand not saved');
     }

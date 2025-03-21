@@ -1,6 +1,5 @@
 import { MediaUploadStatus } from './media-upload-status.enum';
 import { Media } from './media.entity';
-import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 
 export abstract class IMediaRepository {
   abstract create(media: Media): Promise<Media>;

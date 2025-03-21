@@ -26,7 +26,6 @@ import { UpdateBrandCommand } from '../application/command/update-brand.command'
 import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { CreateBrandCommand } from '../application/command/create-brand.command';
-import { MediaInterceptor } from 'src/shared/interceptors/media.interceptor';
 
 @ApiTags('brands')
 @ApiBearerAuth()
@@ -42,7 +41,6 @@ export class BrandController {
 
   @Post()
   @UsePipes(new ValidationPipe())
-  @UseInterceptors(MediaInterceptor)
   @ApiOperation({ summary: 'Create a new brand' })
   @ApiResponse({ status: 201, description: 'Brand created successfully', type: BrandResponse })
   @ApiResponse({ status: 400, description: 'Bad request (validation error)' })

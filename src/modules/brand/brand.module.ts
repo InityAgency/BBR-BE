@@ -9,7 +9,7 @@ import { BrandRepositoryImpl } from './infrastructure/brand.repository';
 import { DatabaseModule } from 'src/shared/infrastructure/database/database.module';
 import { IBrandRepository } from './domain/brand.repository.interface';
 import { IMediaRepository } from '../media/domain/media.repository.interface';
-import { MediaRepository } from '../media/infrastructure/media.repository';
+import { MediaRepositoryImpl } from '../media/infrastructure/media.repository';
 
 @Module({
   imports: [DatabaseModule],
@@ -21,7 +21,7 @@ import { MediaRepository } from '../media/infrastructure/media.repository';
     },
     {
       provide: IMediaRepository,
-      useClass: MediaRepository,
+      useClass: MediaRepositoryImpl,
     },
     CreateBrandCommandHandler,
     FindByIdBrandCommandHandler,
