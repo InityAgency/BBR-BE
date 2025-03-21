@@ -14,10 +14,5 @@ export class DeleteBrandCommandHandler {
     }
 
     await this.brandRepository.delete(id);
-    // Verify deletion (soft delete)
-    const deletedBrand = await this.brandRepository.findById(id);
-    if (deletedBrand) {
-      throw new InternalServerErrorException('Brand not deleted');
-    }
   }
 }

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CreateUserCommandHandler } from './application/create-user.command.handler';
-import { FetchUsersCommandHandler } from './application/fetch-users-command-handler';
-import { FindByIdUserCommandHandler } from './application/find-by-id-user.command.handler';
-import { DeleteUserCommandHandler } from './application/delete-user.command.handler';
-import { UpdateUserCommandHandler } from './application/update-user-command-handler';
+import { CreateUserCommandHandler } from './application/handler/create-user.command.handler';
+import { FetchUsersCommandHandler } from './application/query/fetch-users-command.query';
+import { FindByIdUserCommandHandler } from './application/query/find-by-id-user.command.query';
+import { DeleteUserCommandHandler } from './application/handler/delete-user.command.handler';
+import { UpdateUserCommandHandler } from './application/handler/update-user-command.handler';
 import { UserRepositoryImpl } from './infrastructure/user.repository';
 import { DatabaseModule } from 'src/shared/infrastructure/database/database.module';
 import { UserController } from './ui/user.controller';
