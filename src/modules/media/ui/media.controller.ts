@@ -23,7 +23,7 @@ import { MediaResponse } from './response/media.response';
 import { Response } from 'express';
 
 @ApiTags('Media')
-@Controller('api/v1/media')
+@Controller('media')
 export class MediaController {
   constructor(
     private readonly uploadMediaCommandHandler: UploadMediaCommandHandler,

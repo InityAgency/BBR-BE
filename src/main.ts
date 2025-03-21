@@ -31,10 +31,10 @@ async function bootstrap() {
   );
   app.enableCors({
     origin: [
-      'http://localhost:3001',
-      'http://localhost:3000',
-      'https://localhost:3001',
-      'https://localhost:3000',
+      'http://bbr.test:3001',
+      'http://bbr.test:3000',
+      'https://bbr.test:3001',
+      'https://bbr.test:3000',
       'https://bbr-admin.vercel.app',
     ],
     credentials: true,
