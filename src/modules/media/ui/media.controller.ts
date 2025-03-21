@@ -1,48 +1,81 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req } from '@nestjs/common';
-import { CreateMediaCommand } from '../application/commands/create-media.command';
-import { DeleteMediaCommand } from '../application/commands/delete-media.command';
-import { GetPresignedUrlQuery } from '../application/commands/get-presigned-url.query';
-import { CreateMediaCommandHandler } from '../application/commands/handlers/create-media.command.handler';
-import { DeleteMediaCommandHandler } from '../application/commands/handlers/delete-media.command.handler';
-import { UpdateMediaCommandHandler } from '../application/commands/handlers/update-media.command.handler';
-import { GeneratePrestigedUrlCommandQuery } from '../application/commands/query/generate-prestiged-url.command.handler';
-import { UpdateMediaCommand } from '../application/commands/update-media.command';
+import {
+  Controller,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+  Query,
+  HttpCode,
+  Get,
+  Param,
+  Res,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UploadMediaCommandHandler } from '../application/handler/upload-media.command.handler';
+import { MediaCollectionType } from '../domain/media-collection-type.enum';
+import { UploadMediaResponse } from './response/upload-media.response';
+import { UploadMediaCommand } from '../application/command/upload-media.command';
+import { FetchContentCommandHandler } from '../application/handler/fetch-content.command.handler';
+import { MediaStatusResponse } from './response/media-status.response';
+import { FindMediaUploadStatusByIdCommandQuery } from '../application/query/find-media-status-by-id.command.query';
+import { FindMediaByIdCommandQuery } from '../application/query/find-media-by-id.command.query';
+import { MediaResponse } from './response/media.response';
+import { Response } from 'express';
 
-@Controller('media')
+@ApiTags('Media')
+@Controller('api/v1/media')
 export class MediaController {
   constructor(
-    private readonly createMediaCommandHandler: CreateMediaCommandHandler,
-    private readonly deleteMediaCommandHandler: DeleteMediaCommandHandler,
-    private readonly updateMediaCommandHandler: UpdateMediaCommandHandler,
-    private readonly generatePresignedUrlQuery: GeneratePrestigedUrlCommandQuery
+    private readonly uploadMediaCommandHandler: UploadMediaCommandHandler,
+    private readonly fetchContentCommandHandler: FetchContentCommandHandler,
+    private readonly findMediaUploadStatusByIdCommandQuery: FindMediaUploadStatusByIdCommandQuery,
+    private readonly findMediaByIdCommandQuery: FindMediaByIdCommandQuery
   ) {}
-  @Get('presigned-url')
-  async getPresignedUrl(@Query('fileType') fileType: string) {
-    const query = new GetPresignedUrlQuery(fileType);
-    return await this.generatePresignedUrlQuery.handler(query);
-  }
 
+  @ApiOperation({ summary: 'Upload media' })
   @Post()
-  async create(
-    @Body() body: { fileName: string; fileType: string; uploadedBy?: string },
-    @Req() req: any
-  ) {
-    const command = new CreateMediaCommand(body.fileName, body.fileType, req.user.id);
-    return await this.createMediaCommandHandler.handler(command);
+  @HttpCode(200)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadMedia(
+    @Query('type') collectionType: MediaCollectionType,
+    @UploadedFile() file: Express.Multer.File
+  ): Promise<UploadMediaResponse> {
+    const command = new UploadMediaCommand(file, collectionType);
+    const result = await this.uploadMediaCommandHandler.handle(command);
+
+    return new UploadMediaResponse(result.id);
   }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() body: { fileName: string; fileType: string; uploadedBy?: string }
-  ) {
-    const command = new UpdateMediaCommand(id, body.fileName, body.fileType, body.uploadedBy);
-    return await this.updateMediaCommandHandler.handler(command);
+  @ApiOperation({ summary: 'Get Media content by ID' })
+  @Get('/:id/content')
+  @HttpCode(200)
+  async getContentById(@Param('id') id: string, @Res() res: Response) {
+    const result = await this.fetchContentCommandHandler.handle(id);
+
+    res.setHeader('Content-Type', result.media.mimeType);
+    res.send(result.content);
   }
 
-  @Delete(':id')
-  async delete(@Param('id') id: string) {
-    const command = new DeleteMediaCommand(id);
-    return await this.deleteMediaCommandHandler.handler(command);
+  @ApiOperation({ summary: 'Get Media upload status by ID' })
+  @Get('/:id/status')
+  async getUploadStatusById(@Param('id') id: string): Promise<MediaStatusResponse> {
+    const result = await this.findMediaUploadStatusByIdCommandQuery.handle(id);
+
+    return new MediaStatusResponse(result.status);
+  }
+
+  @ApiOperation({ summary: 'Get Media information by ID' })
+  @Get('/:id')
+  async getMediaById(@Param('id') id: string): Promise<MediaResponse> {
+    const result = await this.findMediaByIdCommandQuery.handle(id);
+
+    return new MediaResponse(
+      result.id,
+      result.originalFileName,
+      result.mimeType,
+      result.uploadStatus,
+      result.size,
+      result.securedUrl
+    );
   }
 }

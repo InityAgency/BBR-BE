@@ -10,13 +10,13 @@ import {
 } from '@nestjs/common';
 import { AssignPermissionCommand } from '../application/commands/assign-permission.command';
 import { CreateRoleRequest } from './request/create-role.request';
-import { CreateRoleCommandHandler } from '../application/commands/handlers/create-role.command.handler';
-import { AssignPermissionCommandHandler } from '../application/commands/handlers/assign-permission.command.handler';
-import { FetchPermissionsCommandQuery } from '../application/commands/query/fetch-permissions.command.query';
-import { FetchRolesCommandQuery } from '../application/commands/query/fetch-roles.command.query';
 import { FetchPermissionsQuery } from '../application/commands/fetch-permissions.query';
 import { PaginationRequest } from 'src/shared/ui/request/pagination.request';
 import { RoleResponse } from './response/role-response';
+import { AssignPermissionCommandHandler } from '../application/handlers/assign-permission.command.handler';
+import { CreateRoleCommandHandler } from '../application/handlers/create-role.command.handler';
+import { FetchPermissionsCommandQuery } from '../application/query/fetch-permissions.command.query';
+import { FetchRolesCommandQuery } from '../application/query/fetch-roles.command.query';
 
 @Controller('roles')
 export class RoleController {

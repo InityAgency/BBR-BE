@@ -5,7 +5,6 @@ import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { CompanyResponse } from '../ui/response/company.response';
-import { FetchAllCompanyCommandQuery } from '../application/commands/query/fetch-all-company.command.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { FetchCompaniesQuery } from '../application/commands/fetch-all-company.query';
 
@@ -62,8 +61,8 @@ export class CompanyRepository implements ICompanyRepository {
       pagination: {
         total: totalCount,
         totalPages,
-        page: page || 1, // Default to 1 if not provided
-        limit: limit || 10, // Default to 10 if not provided
+        page: page,
+        limit: limit,
       },
     };
   }

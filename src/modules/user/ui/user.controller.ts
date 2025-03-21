@@ -16,11 +16,11 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RBACGuard } from 'src/shared/guards/rbac.guard';
 import { UpdateUserCommand } from '../application/command/update-user.command';
-import { CreateUserCommandHandler } from '../application/create-user.command.handler';
-import { DeleteUserCommandHandler } from '../application/delete-user.command.handler';
-import { FetchUsersCommandHandler } from '../application/fetch-users-command-handler';
-import { FindByIdUserCommandHandler } from '../application/find-by-id-user.command.handler';
-import { UpdateUserCommandHandler } from '../application/update-user-command-handler';
+import { CreateUserCommandHandler } from '../application/handler/create-user.command.handler';
+import { DeleteUserCommandHandler } from '../application/handler/delete-user.command.handler';
+import { FetchUsersCommandHandler } from '../application/query/fetch-users-command.query';
+import { FindByIdUserCommandHandler } from '../application/query/find-by-id-user.command.query';
+import { UpdateUserCommandHandler } from '../application/handler/update-user-command.handler';
 import { CreateUserRequest } from './request/create-user.request';
 import { UpdateUserRequest } from './request/update-user.request';
 import { UserResponse } from './response/user-response';

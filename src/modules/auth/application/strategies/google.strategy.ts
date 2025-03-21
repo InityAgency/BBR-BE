@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
-import { SignUpGoogleCommandHandler } from '../commands/handlers/sign-up-google.command.handler';
-import { FindByEmailQueryHandler } from '../commands/query/find-by-email.command.query';
+import { FindByEmailQueryHandler } from '../query/find-by-email.command.query';
+import { SignUpGoogleCommandHandler } from '../handlers/sign-up-google.command.handler';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {

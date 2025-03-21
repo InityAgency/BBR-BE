@@ -1,5 +1,11 @@
+import { MediaUploadStatus } from './media-upload-status.enum';
+import { Media } from './media.entity';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+
 export abstract class IMediaRepository {
-  abstract create(data: any): Promise<any>;
-  abstract update(id: string, data: any): Promise<any>;
-  abstract delete(id: string): Promise<any>;
+  abstract create(media: Media): Promise<Media>;
+  abstract findById(id: string): Promise<Media | undefined>;
+  abstract findActiveById(id: string): Promise<Media | null>;
+  abstract updateExternalId(id: string, externalId: string): Promise<void>;
+  abstract updateUploadStatus(id: string, uploadStatus: MediaUploadStatus): Promise<void>;
 }

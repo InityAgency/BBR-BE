@@ -1,8 +1,8 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ValidateUserCommandHandler } from '../commands/handlers/validate-user.command.handler';
 import { ValidateUserCommand } from '../commands/validate-user.command';
+import { ValidateUserCommandHandler } from '../handlers/validate-user.command.handler';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {

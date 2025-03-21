@@ -10,8 +10,9 @@ import { DatabaseModule } from './shared/infrastructure/database/database.module
 import { LoggerModule } from './shared/infrastructure/logger/logger.module';
 import { ABACMiddleware } from './shared/middleware/abac.middleware';
 import { RBACMiddleware } from './shared/middleware/rbac.middleware';
-import { MediaModule } from './modules/media/media.module';
 import { BrandModule } from './modules/brand/brand.module';
+import { AwsModule } from './shared/aws/aws.module';
+import { MediaModule } from './modules/media/media.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { BrandModule } from './modules/brand/brand.module';
       isGlobal: true,
       // envFilePath will be handled by dotenv-cli, so no need to specify here
     }),
+    AwsModule,
     UserModule,
     AuthModule,
     RoleModule,

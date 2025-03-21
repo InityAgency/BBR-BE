@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { UserResponse } from 'src/modules/user/ui/response/user-response';
-import { SignUpBuyerCommandHandler } from '../application/commands/handlers/sign-up-buyer.command.handler';
-import { SignUpDeveloperCommandHandler } from '../application/commands/handlers/sign-up-developer.command.handler';
 import { GoogleGuard } from '../application/guards/google.guard';
 import { LocalAuthGuard } from '../application/guards/local-auth.guard';
 import { CreateUserRequest } from './request/create-user.request';
 import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
+import { SignUpBuyerCommandHandler } from '../application/handlers/sign-up-buyer.command.handler';
+import { SignUpDeveloperCommandHandler } from '../application/handlers/sign-up-developer.command.handler';
 
 @Controller('auth')
 export class AuthController {

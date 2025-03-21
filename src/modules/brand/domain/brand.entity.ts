@@ -16,7 +16,6 @@ export class Brand extends Model {
   static tableName = 'brands';
 
   static get relationMappings() {
-    // Add relations if needed (e.g., to users or other entities)
     return {};
   }
 
