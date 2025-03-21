@@ -31,10 +31,10 @@ async function bootstrap() {
   );
   app.enableCors({
     origin: [
-      'http://bbrapi.inity.space:3000',
-      'http://bbrapi.inity.space:3001',
-      'https://bbrapi.inity.space:3000',
-      'https://bbrapi.inity.space:3001',
+      'http://bbradmin.inity.space:3000',
+      'http://bbradmin.inity.space:3001',
+      'https://bbradmin.inity.space:3000',
+      'https://bbradmin.inity.space:3001',
       'https://bbr.test:3001',
       'https://bbr.test:3000',
       'http://bbr.test:3001',
@@ -56,7 +56,7 @@ async function bootstrap() {
       cookie: {
         secure: false,
         httpOnly: true,
-        sameSite: false,
+        sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000, // 24h session expiration
       },
     })
