@@ -23,6 +23,8 @@ export abstract class IMediaService {
 
   abstract findContentById(media: Media): Promise<Buffer>;
 
+  abstract deleteUnusedMediaCreatedAfterDate(date: Date): Promise<void>;
+
   abstract addTemporalUrl(media: Media): Promise<void>;
 
   abstract addTemporalUrls(media: Media[]): Promise<void>;

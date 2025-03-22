@@ -112,4 +112,23 @@ export class MediaServiceImpl implements MediaServiceImpl {
     }
     return 'invalid_url';
   }
+  @LogMethod()
+  async deleteUnusedMediaCreatedAfterDate(date: Date): Promise<void> {
+    const unusedMediaList = await this.mediaRepository.fetchUnusedMediaCreatedAfter(date);
+    if (!unusedMediaList.length) {
+      return;
+    }
+
+    for (const media of unusedMediaList) {
+      if (media.getPath() != null) {
+        const mediaStorage = this.mediaStorages.get(media.storage);
+        if (mediaStorage) {
+          await mediaStorage.delete(media.getPath());
+        }
+      }
+    }
+
+    const mediaIds = unusedMediaList.map((media) => media.id);
+    await this.mediaRepository.deleteByIds(mediaIds);
+  }
 }

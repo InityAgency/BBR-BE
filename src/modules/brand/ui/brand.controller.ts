@@ -10,8 +10,7 @@ import {
   ValidationPipe,
   HttpCode,
   HttpStatus,
-  Query,
-  UseInterceptors,
+  Query, Patch,
 } from '@nestjs/common';
 import { CreateBrandRequest } from './request/create-brand.request';
 import { UpdateBrandRequest } from './request/update-brand.request';
@@ -26,6 +25,9 @@ import { UpdateBrandCommand } from '../application/command/update-brand.command'
 import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { CreateBrandCommand } from '../application/command/create-brand.command';
+import { UpdateBrandStatusCommand } from '../application/command/update-brand-status.command';
+import { UpdateBrandStatusCommandHandler } from '../application/update-brand-status.command.handler';
+import { UpdateBrandStatusRequest } from './request/update-brand-status.request';
 
 @ApiTags('brands')
 @ApiBearerAuth()
@@ -36,7 +38,8 @@ export class BrandController {
     private readonly findByIdBrandHandler: FindByIdBrandCommandHandler,
     private readonly fetchAllBrandHandler: FetchAllBrandCommandHandler,
     private readonly updateBrandHandler: UpdateBrandCommandHandler,
-    private readonly deleteBrandHandler: DeleteBrandCommandHandler
+    private readonly deleteBrandHandler: DeleteBrandCommandHandler,
+    private readonly updateBrandStatusCommandHandler: UpdateBrandStatusCommandHandler
   ) {}
 
   @Post()
@@ -167,5 +170,12 @@ export class BrandController {
   @ApiResponse({ status: 500, description: 'Internal Server Error - Brand could not be deleted.' })
   async remove(@Param('id') id: string): Promise<void> {
     await this.deleteBrandHandler.handle(id);
+  }
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({ summary: 'Update brand status' })
+  @Patch('/:id/status')
+  async updateStatus(@Param('id') id: string, @Body() request: UpdateBrandStatusRequest): Promise<void> {
+    const command = new UpdateBrandStatusCommand(id, request.status);
+    return this.updateBrandStatusCommandHandler.handle(command);
   }
 }

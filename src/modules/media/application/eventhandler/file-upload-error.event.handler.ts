@@ -10,7 +10,6 @@ import { FileUploadErrorEvent } from '../../domain/event/file-upload-error.event
 @Injectable()
 @LogMethod()
 export class FileUploadErrorEventHandler extends IEventHandler<FileUploadErrorEvent> {
-
   constructor(private readonly mediaRepository: IMediaRepository) {
     super();
   }
