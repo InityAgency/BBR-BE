@@ -5,8 +5,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { IEmailRepository } from './domain/email.repository.interface';
 import { EmailRepository } from './infrastructure/email.repository';
 import { EmailController } from './ui/email.controller';
-import { SendEmailCommandHandler } from './application/send-email.command.handler';
 import * as path from 'path';
+import { SendResetPasswordEmailCommandHandler } from './application/send-reset-password-email.command.handler';
+import { SendEmailCommandHandler } from './application/send-email.command.handler';
+import { SendWelcomeEmailCommandHandler } from './application/send-welcome-email.command.handler';
 
 @Module({
   controllers: [EmailController],
@@ -52,6 +54,8 @@ import * as path from 'path';
       useClass: EmailRepository,
     },
     SendEmailCommandHandler,
+    SendWelcomeEmailCommandHandler,
+    SendResetPasswordEmailCommandHandler,
   ],
   exports: [],
 })

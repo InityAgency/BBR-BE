@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Your Password</title>
+    <title>Welcome</title>
     <!--[if !mso]><!-->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <!--<![endif]-->
@@ -252,13 +252,19 @@
                     <!-- Main Content -->
                     <tr class="content-wrapper">
                         <td class="content">
-                            <h1 class="main-title">Reset Your Password</h1>
+                            <h1 class="main-title">Welcome</h1>
                             
-                            <p class="welcome-text">
-                                Your reset password OTP is:
+                            <p class="welcome-text"> Dear {{fullName}},
+                                Welcome to the Best Branded Residences platform! We are excited to have you on board and explore the world of branded residences with us.
                             </p>
-                            
-                            <h1>{{otp}}</h1>
+
+                            <p class="welcome-text">
+                                Your account has been created successfully. You can now log in to your account and start exploring the world of branded residences.
+                            </p>
+
+                            <p class="welcome-text">
+                                <a href="{{verificationLink}}" class="cta-link">Click here to verify your email address</a>
+                            </p>
                             
                             <div class="divider"></div>
                         

@@ -1,0 +1,5 @@
+export enum EmailAction {
+  RESET_PASSWORD = 'RESET_PASSWORD',
+  WELCOME = 'WELCOME',
+  VERIFY_EMAIL = 'VERIFY_EMAIL',
+}

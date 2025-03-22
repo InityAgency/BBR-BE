@@ -3,6 +3,6 @@ export abstract class IEmailRepository {
     to: string,
     subject: string,
     template: string,
-    variabels: Record<string, any>
+    variables?: Record<string, any>
   ): Promise<any>;
 }

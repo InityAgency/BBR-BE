@@ -6,6 +6,7 @@ import { CreateUserRequest } from './request/create-user.request';
 import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
 import { SignUpBuyerCommandHandler } from '../application/handlers/sign-up-buyer.command.handler';
 import { SignUpDeveloperCommandHandler } from '../application/handlers/sign-up-developer.command.handler';
+import { LocalAdminAuthGuard } from '../application/guards/local-admin-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -17,6 +18,12 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   async login(@Req() req) {
+    return new UserResponse(req.user);
+  }
+
+  @Post('login/admin')
+  @UseGuards(LocalAdminAuthGuard)
+  async loginAdmin(@Req() req) {
     return new UserResponse(req.user);
   }
 

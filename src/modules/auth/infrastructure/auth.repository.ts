@@ -5,11 +5,14 @@ import { IAuthRepository } from '../domain/auth.repository.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserRequest } from '../ui/request/create-user.request';
 import { UserResponse } from 'src/modules/user/ui/response/user-response';
-import { buildRoleJoin } from 'src/modules/user/infrastructure/user-query/joins/build-role.join';
-import { buildCompanyJoin } from 'src/modules/user/infrastructure/user-query/joins/build-company.join';
-import { buildBuyerJoin } from 'src/modules/user/infrastructure/user-query/joins/build-buyer.join';
-import { buildLifestylesJoin } from 'src/modules/user/infrastructure/user-query/joins/build-lifestyles.join';
-import { buildUnitTypesJoin } from 'src/modules/user/infrastructure/user-query/joins/build-unit-types.join';
+import {
+  buildRoleJoin,
+  buildCompanyJoin,
+  buildBuyerJoin,
+  buildLifestylesJoin,
+  buildUnitTypesJoin,
+  buildPermissionsJoin,
+} from 'src/shared/user-query';
 @Injectable()
 export class AuthRepository implements IAuthRepository {
   private tableName = 'users';
@@ -26,9 +29,12 @@ export class AuthRepository implements IAuthRepository {
       .leftJoin(buildCompanyJoin(knex))
       .leftJoin(buildBuyerJoin(knex))
       .leftJoin(buildLifestylesJoin(knex))
-      .leftJoin(buildUnitTypesJoin(knex));
+      .leftJoin(buildUnitTypesJoin(knex))
+      .leftJoin(buildPermissionsJoin(knex));
 
-    return query.select('users.*', 'role', 'company', 'buyer').first();
+    return query
+      .select('users.*', 'role', 'company', 'buyer', 'unitTypes', 'lifestyles', 'permissions')
+      .first();
   }
 
   findRoleByName(name: string) {

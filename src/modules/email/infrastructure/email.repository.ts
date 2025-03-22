@@ -18,7 +18,7 @@ export class EmailRepository implements IEmailRepository {
       to,
       subject,
       template: template,
-      context: variables,
+      context: { ...variables },
     });
   }
 }

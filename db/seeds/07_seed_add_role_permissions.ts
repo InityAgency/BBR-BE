@@ -15,8 +15,8 @@ export async function seed(knex) {
     });
 
     for (const [roleName, permissionNames] of Object.entries({
-      superadmin: ['create', 'read', 'edit', 'delete'],
-      admin: ['create', 'read', 'edit'],
+      superadmin: ['create', 'read', 'edit', 'delete', 'admin'],
+      admin: ['create', 'read', 'edit', 'admin'],
       developer: ['read', 'edit'],
       buyer: ['read'],
     })) {

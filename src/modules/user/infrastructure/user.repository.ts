@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-import { User } from '../domain/user.entity';
-import { IUserRepository } from '../domain/user.repository.interface';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { applyPagination } from 'src/shared/utils/pagination.util';
-import { UserResponse } from '../ui/response/user-response';
+import { User } from '../domain/user.entity';
+import { IUserRepository } from '../domain/user.repository.interface';
 import { UpdateUserRequest } from '../ui/request/update-user.request';
-import { Knex } from 'knex';
-import { buildRoleJoin } from './user-query/joins/build-role.join';
-import { buildCompanyJoin } from './user-query/joins/build-company.join';
-import { buildBuyerJoin } from './user-query/joins/build-buyer.join';
-import { buildLifestylesJoin } from './user-query/joins/build-lifestyles.join';
-import { buildUnitTypesJoin } from './user-query/joins/build-unit-types.join';
+import { UserResponse } from '../ui/response/user-response';
+import {
+  buildUnitTypesJoin,
+  buildLifestylesJoin,
+  buildRoleJoin,
+  buildCompanyJoin,
+  buildBuyerJoin,
+} from 'src/shared/user-query';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {

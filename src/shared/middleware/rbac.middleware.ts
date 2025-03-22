@@ -17,6 +17,7 @@ export class RBACMiddleware implements NestMiddleware {
     }
 
     const userId = req.user.id;
+    const knex = this.knexService.connection;
 
     try {
       // Check Redis cache for permissions
@@ -29,12 +30,17 @@ export class RBACMiddleware implements NestMiddleware {
       // Fetch permissions from DB (optimized query)
       const user = await this.knexService
         .connection('users as u')
-        .select([
-          'r.id as roleId',
-          this.knexService.connection.raw(
-            "COALESCE(json_agg(p.name) FILTER (WHERE p.name IS NOT NULL), '[]') as permissions"
-          ),
-        ])
+        .select(
+          knex.raw(`
+            json_build_object(
+              'id', r.id,
+              'permissions', COALESCE(
+                json_agg(DISTINCT p.name) 
+                FILTER (WHERE p.name IS NOT NULL), '[]'
+              )
+            ) AS role
+          `)
+        )
         .leftJoin('roles as r', 'u.role_id', 'r.id')
         .leftJoin('role_permissions as rp', 'r.id', 'rp.role_id')
         .leftJoin('permissions as p', 'rp.permission_id', 'p.id')

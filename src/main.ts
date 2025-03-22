@@ -35,6 +35,7 @@ async function bootstrap() {
       'http://localhost:3001',
       'http://bbr.local:3001',
       'http://bbr.local:3000',
+      'https://bbradmin.inity.space',
       'https://bbr-admin.vercel.app',
     ],
     credentials: true,
@@ -48,7 +49,7 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        // domain: process.env.COOKIE_DOMAIN,
+        domain: process.env.COOKIE_DOMAIN,
         secure: false,
         httpOnly: true,
         sameSite: 'lax',
