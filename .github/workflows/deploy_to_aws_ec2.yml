@@ -63,7 +63,7 @@ jobs:
         uses: ravsamhq/notify-slack-action@v1
         with:
           status: ${{ job.status }}
-          notification_title: 'Deploy Logify on AWS Lightsail'
+          notification_title: 'New Build BBR API to EC2'
           mention_users: 'channel'
           footer: '<{run_url}|View Run>'
           message_format: '{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}@{branch}> on <{commit_url}|{commit_sha}>'
