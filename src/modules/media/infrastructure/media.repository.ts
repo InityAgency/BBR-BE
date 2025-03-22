@@ -31,4 +31,19 @@ export class MediaRepositoryImpl implements IMediaRepository {
       updatedAt: new Date(),
     });
   }
+
+  async fetchUnusedMediaCreatedAfter(date: Date): Promise<Media[]> {
+    return await Media.query()
+      .leftJoinRelated('[brands]')
+      .whereNull('media.deletedAt')
+      .andWhere('media.createdAt', '<', date)
+      .whereNull('brands.mediaId') //TODO: syncat naziv sa nazivom kolone
+      .select('media.*');
+  }
+
+  async deleteByIds(ids: string[]): Promise<void> {
+    await Media.query().whereIn('id', ids).update({
+      deletedAt: new Date(),
+    });
+  }
 }

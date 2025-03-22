@@ -23,7 +23,7 @@ export class UploadMediaCommandHandler implements ICommandHandler<UploadMediaCom
   }
 
   async handle(command: UploadMediaCommand): Promise<Media> {
-    if (command.multipartFile == null || command.type==null) {
+    if (command.multipartFile == null || command.type == null) {
       throw new BadRequestException('File and type cannot be null.');
     }
 

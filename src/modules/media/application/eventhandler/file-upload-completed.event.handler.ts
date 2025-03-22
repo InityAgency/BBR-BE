@@ -8,7 +8,6 @@ import { IMediaRepository } from '../../domain/media.repository.interface';
 
 @Injectable()
 export class FileUploadCompletedEventHandler extends IEventHandler<FileUploadCompletedEvent> {
-
   constructor(private readonly mediaRepository: IMediaRepository) {
     super();
   }

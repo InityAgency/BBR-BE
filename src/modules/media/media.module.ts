@@ -22,11 +22,13 @@ import { IMediaRepository } from './domain/media.repository.interface';
 import { FileUploadService } from './infrastructure/file-upload.service';
 import { MediaRepositoryImpl } from './infrastructure/media.repository';
 import { MediaController } from './ui/media.controller';
+import { UnusedMediaJob } from 'src/shared/media/scheduler/unused-media.job';
 
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
   controllers: [MediaController],
   providers: [
+    UnusedMediaJob,
     AwsProperties,
     MediaLibraryS3Configuration,
     FileUploadService,

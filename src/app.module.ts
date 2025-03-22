@@ -15,6 +15,7 @@ import EmailModule from './modules/email/email.module';
 import { BrandModule } from './modules/brand/brand.module';
 import { AwsModule } from './shared/aws/aws.module';
 import { MediaModule } from './modules/media/media.module';
+import { SchedulerModule } from './shared/scheduler/scheduler.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { MediaModule } from './modules/media/media.module';
       // envFilePath will be handled by dotenv-cli, so no need to specify here
     }),
     AwsModule,
+    SchedulerModule,
     UserModule,
     AuthModule,
     RoleModule,
