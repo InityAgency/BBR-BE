@@ -57,3 +57,15 @@ jobs:
           npm rebuild bcrypt
           pm2 restart ecosystem.config.js --env production
           EOF
+
+      - name: Report Status
+        if: always()
+        uses: ravsamhq/notify-slack-action@v1
+        with:
+          status: ${{ job.status }}
+          notification_title: 'Deploy Logify on AWS Lightsail'
+          mention_users: 'channel'
+          footer: '<{run_url}|View Run>'
+          message_format: '{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}@{branch}> on <{commit_url}|{commit_sha}>'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.ACTION_MONITORING_SLACK }}
