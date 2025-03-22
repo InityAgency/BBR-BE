@@ -8,10 +8,7 @@ import { CreateBrandCommand } from './command/create-brand.command';
 
 @Injectable()
 export class CreateBrandCommandHandler {
-  constructor(
-    private readonly brandRepository: IBrandRepository,
-    private readonly mediaRepository: IMediaRepository
-  ) {}
+  constructor(private readonly brandRepository: IBrandRepository) {}
 
   @LogMethod()
   async handle(command: CreateBrandCommand): Promise<Brand> {
@@ -20,13 +17,11 @@ export class CreateBrandCommandHandler {
       throw new ConflictException('Brand already exists');
     }
 
-    const newLogo = command.uploads?.find((m) => m.mediaType === 'logo');
-
     const brand = await Brand.create({
       name: command.name,
       description: command.description,
       brandTypeId: command.brandTypeId,
-      logoId: newLogo?.id,
+      logoId: command.logoId,
       status: command.status as BrandStatus,
       registeredAt: command.registeredAt,
     });

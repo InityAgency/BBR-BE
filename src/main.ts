@@ -31,16 +31,10 @@ async function bootstrap() {
   );
   app.enableCors({
     origin: [
-      'http://bbradmin.inity.space:3000',
-      'http://bbradmin.inity.space:3001',
-      'https://bbradmin.inity.space:3000',
-      'https://bbradmin.inity.space:3001',
-      'https://bbr.test:3001',
-      'https://bbr.test:3000',
-      'http://bbr.test:3001',
-      'http://bbr.test:3000',
-      'https://bbr.test:3001',
-      'https://bbr.test:3000',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://bbr.local:3001',
+      'http://bbr.local:3000',
       'https://bbr-admin.vercel.app',
     ],
     credentials: true,
@@ -54,6 +48,7 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
+        // domain: process.env.COOKIE_DOMAIN,
         secure: false,
         httpOnly: true,
         sameSite: 'lax',

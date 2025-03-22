@@ -1,18 +1,8 @@
 import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  isUUID,
-  IsUUID,
-  MaxLength,
-} from 'class-validator';
-import { BaseMediaRequest } from 'src/shared/ui/request/base-media.request';
+import { IsDate, IsEnum, IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator';
 import { BrandStatus } from '../../domain/brand-status.enum';
 
-export class CreateBrandRequest extends BaseMediaRequest {
+export class CreateBrandRequest {
   @IsNotEmpty()
   @IsString()
   @MaxLength(126)
@@ -26,7 +16,8 @@ export class CreateBrandRequest extends BaseMediaRequest {
   @IsNotEmpty()
   brandTypeId: string;
 
-  @IsOptional()
+  @IsUUID()
+  @IsNotEmpty()
   logoId: string;
 
   @IsEnum(BrandStatus)

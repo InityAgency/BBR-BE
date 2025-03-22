@@ -4,8 +4,12 @@ import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { IAuthRepository } from '../domain/auth.repository.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserRequest } from '../ui/request/create-user.request';
-import { Knex } from 'knex';
 import { UserResponse } from 'src/modules/user/ui/response/user-response';
+import { buildRoleJoin } from 'src/modules/user/infrastructure/user-query/joins/build-role.join';
+import { buildCompanyJoin } from 'src/modules/user/infrastructure/user-query/joins/build-company.join';
+import { buildBuyerJoin } from 'src/modules/user/infrastructure/user-query/joins/build-buyer.join';
+import { buildLifestylesJoin } from 'src/modules/user/infrastructure/user-query/joins/build-lifestyles.join';
+import { buildUnitTypesJoin } from 'src/modules/user/infrastructure/user-query/joins/build-unit-types.join';
 @Injectable()
 export class AuthRepository implements IAuthRepository {
   private tableName = 'users';
@@ -13,12 +17,16 @@ export class AuthRepository implements IAuthRepository {
   constructor(private readonly knexService: KnexService) {}
 
   async findByEmail(email: string) {
+    const knex = this.knexService.connection;
     let query = this.knexService
       .connection(this.tableName)
       .where({ email })
-      .whereNull('users.deleted_at');
-
-    query = this.addUserRelations(query);
+      .whereNull('users.deleted_at')
+      .leftJoin(buildRoleJoin(knex))
+      .leftJoin(buildCompanyJoin(knex))
+      .leftJoin(buildBuyerJoin(knex))
+      .leftJoin(buildLifestylesJoin(knex))
+      .leftJoin(buildUnitTypesJoin(knex));
 
     return query.select('users.*', 'role', 'company', 'buyer').first();
   }
@@ -66,67 +74,5 @@ export class AuthRepository implements IAuthRepository {
       .returning('*');
 
     return user;
-  }
-
-  private addUserRelations(query: Knex.QueryBuilder) {
-    return query
-      .leftJoin(
-        this.knexService.connection.raw(
-          `LATERAL (
-            SELECT json_build_object('id', roles.id, 'name', roles.name)::json AS role
-            FROM roles 
-            WHERE roles.id = users.role_id
-          ) role ON TRUE`
-        )
-      )
-      .leftJoin(
-        this.knexService.connection.raw(
-          `LATERAL (
-            SELECT json_build_object(
-              'id', companies.id, 
-              'name', companies.name, 
-              'address', companies.address, 
-              'phone_number', companies.phone_number, 
-              'website', companies.website, 
-              'logo', companies.logo, 
-              'contact_person_avatar', companies.contact_person_avatar,
-              'contact_person_full_name', companies.contact_person_full_name, 
-              'contact_person_job_title', companies.contact_person_job_title, 
-              'contact_person_email', companies.contact_person_email, 
-              'contact_person_phone_number', companies.contact_person_phone_number, 
-              'contact_person_phone_number_country_code', companies.contact_person_phone_number_country_code 
-            )::json AS company
-            FROM companies 
-            WHERE companies.id = users.company_id
-          ) company ON TRUE`
-        )
-      )
-      .leftJoin(
-        this.knexService.connection.raw(
-          `LATERAL (
-            SELECT json_build_object(
-              'avatar', user_buyers.avatar,
-              'budgetRangeFrom', user_buyers.budget_range_from,
-              'budgetRangeTo', user_buyers.budget_range_to,
-              'phoneNumber', user_buyers.phone_number,
-              'preferredContactMethod', user_buyers.preferred_contact_method,
-              'currentLocation', json_build_object(
-                'id', location.id, 
-                'name', location.name,
-                'code', location.code
-              ),
-              'preferredResidenceLocation', json_build_object(
-                'id', residence.id, 
-                'name', residence.name,
-                'code', residence.code
-              )
-            )::json AS buyer
-            FROM user_buyers
-            LEFT JOIN countries AS location ON location.id = user_buyers.current_location
-            LEFT JOIN countries AS residence ON residence.id = user_buyers.preferred_residence_location
-            WHERE user_buyers.user_id = users.id
-          ) buyer ON TRUE`
-        )
-      );
   }
 }

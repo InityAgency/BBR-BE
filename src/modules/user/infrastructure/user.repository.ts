@@ -8,6 +8,11 @@ import { applyPagination } from 'src/shared/utils/pagination.util';
 import { UserResponse } from '../ui/response/user-response';
 import { UpdateUserRequest } from '../ui/request/update-user.request';
 import { Knex } from 'knex';
+import { buildRoleJoin } from './user-query/joins/build-role.join';
+import { buildCompanyJoin } from './user-query/joins/build-company.join';
+import { buildBuyerJoin } from './user-query/joins/build-buyer.join';
+import { buildLifestylesJoin } from './user-query/joins/build-lifestyles.join';
+import { buildUnitTypesJoin } from './user-query/joins/build-unit-types.join';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -27,11 +32,18 @@ export class UserRepositoryImpl implements IUserRepository {
 
   @LogMethod()
   async findById(id: string): Promise<User | null> {
-    let query = this.knexService.connection(this.tableName).where('users.id', id);
+    const knex = this.knexService.connection;
 
-    query = this.addUserRelations(query);
+    let query = this.knexService
+      .connection(this.tableName)
+      .where('users.id', id)
+      .leftJoin(buildUnitTypesJoin(knex))
+      .leftJoin(buildLifestylesJoin(knex))
+      .leftJoin(buildRoleJoin(knex))
+      .leftJoin(buildCompanyJoin(knex))
+      .leftJoin(buildBuyerJoin(knex));
 
-    return query.select('users.*', 'role', 'company', 'buyer').first();
+    return query.select('users.*', 'role', 'company', 'buyer', 'unitTypes', 'lifestyles').first();
   }
 
   @LogMethod()
@@ -48,11 +60,18 @@ export class UserRepositoryImpl implements IUserRepository {
     page: number,
     limit: number
   ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
-    let query = this.knexService.connection(this.tableName).whereNull('deleted_at');
+    const knex = this.knexService.connection;
 
-    query = this.addUserRelations(query);
+    let query = this.knexService
+      .connection(this.tableName)
+      .whereNull('deleted_at')
+      .leftJoin(buildUnitTypesJoin(knex))
+      // .leftJoin(buildLifestylesJoin(knex))
+      .leftJoin(buildRoleJoin(knex))
+      .leftJoin(buildCompanyJoin(knex))
+      .leftJoin(buildBuyerJoin(knex));
 
-    query.select('users.*', 'role', 'company', 'buyer');
+    query.select('users.*', 'role', 'company', 'buyer', 'unitTypes');
 
     const paginatedQuery = await applyPagination(query, page, limit);
 
@@ -120,67 +139,5 @@ export class UserRepositoryImpl implements IUserRepository {
   async updateUserPreferences(userId: string, updateData: any): Promise<any> {
     // TODO: Update user preferences
     return 'in progress';
-  }
-
-  private addUserRelations(query: Knex.QueryBuilder) {
-    return query
-      .leftJoin(
-        this.knexService.connection.raw(
-          `LATERAL (
-          SELECT json_build_object('id', roles.id, 'name', roles.name)::json AS role
-          FROM roles 
-          WHERE roles.id = users.role_id
-        ) role ON TRUE`
-        )
-      )
-      .leftJoin(
-        this.knexService.connection.raw(
-          `LATERAL (
-          SELECT json_build_object(
-            'id', companies.id, 
-            'name', companies.name, 
-            'address', companies.address, 
-            'phone_number', companies.phone_number, 
-            'website', companies.website, 
-            'logo', companies.logo, 
-            'contact_person_avatar', companies.contact_person_avatar,
-            'contact_person_full_name', companies.contact_person_full_name, 
-            'contact_person_job_title', companies.contact_person_job_title, 
-            'contact_person_email', companies.contact_person_email, 
-            'contact_person_phone_number', companies.contact_person_phone_number, 
-            'contact_person_phone_number_country_code', companies.contact_person_phone_number_country_code 
-          )::json AS company
-          FROM companies 
-          WHERE companies.id = users.company_id
-        ) company ON TRUE`
-        )
-      )
-      .leftJoin(
-        this.knexService.connection.raw(
-          `LATERAL (
-          SELECT json_build_object(
-            'avatar', user_buyers.avatar,
-            'budgetRangeFrom', user_buyers.budget_range_from,
-            'budgetRangeTo', user_buyers.budget_range_to,
-            'phoneNumber', user_buyers.phone_number,
-            'preferredContactMethod', user_buyers.preferred_contact_method,
-            'currentLocation', json_build_object(
-              'id', location.id, 
-              'name', location.name,
-              'code', location.code
-            ),
-            'preferredResidenceLocation', json_build_object(
-              'id', residence.id, 
-              'name', residence.name,
-              'code', residence.code
-            )
-          )::json AS buyer
-          FROM user_buyers
-          LEFT JOIN countries AS location ON location.id = user_buyers.current_location
-          LEFT JOIN countries AS residence ON residence.id = user_buyers.preferred_residence_location
-          WHERE user_buyers.user_id = users.id
-        ) buyer ON TRUE`
-        )
-      );
   }
 }

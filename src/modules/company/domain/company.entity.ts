@@ -5,7 +5,7 @@ export class Company extends Model {
   id!: string;
   name!: string;
   address?: string;
-  logo?: string;
+  imageId?: string;
   phoneNumber?: string;
   phoneNumberCountryCode?: string;
   website?: string;
@@ -22,11 +22,11 @@ export class Company extends Model {
   static tableName = 'companies';
 
   static relationMappings: RelationMappings = {
-    logo: {
+    image: {
       relation: Model.BelongsToOneRelation,
       modelClass: Media,
       join: {
-        from: 'companies.logo',
+        from: 'companies.imageId',
         to: 'media.id',
       },
     },
@@ -34,7 +34,7 @@ export class Company extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: Media,
       join: {
-        from: 'companies.contact_person_avatar',
+        from: 'companies.contactPersonAvatar',
         to: 'media.id',
       },
     },

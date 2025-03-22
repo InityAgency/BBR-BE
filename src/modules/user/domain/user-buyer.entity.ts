@@ -20,7 +20,7 @@ export class UserBuyer extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: Country,
       join: {
-        from: 'user_buyers.current_location',
+        from: 'user_buyers.currentLocation',
         to: 'countries.id',
       },
     },
@@ -28,10 +28,10 @@ export class UserBuyer extends Model {
       relation: Model.ManyToManyRelation,
       modelClass: UnitType,
       join: {
-        from: 'user_buyers.user_id',
+        from: 'user_buyers.userId',
         through: {
-          from: 'user_buyer_unit_types.user_id',
-          to: 'user_buyer_unit_types.unit_type_id',
+          from: 'user_buyer_unit_types.userId',
+          to: 'user_buyer_unit_types.unitTypeId',
         },
         to: 'unit_types.id',
       },
@@ -40,10 +40,10 @@ export class UserBuyer extends Model {
       relation: Model.ManyToManyRelation,
       modelClass: Lifestyle,
       join: {
-        from: 'user_buyers.user_id',
+        from: 'user_buyers.userId',
         through: {
-          from: 'user_buyer_lifestyles.user_id',
-          to: 'user_buyer_lifestyles.lifestyle_id',
+          from: 'user_buyer_lifestyles.userId',
+          to: 'user_buyer_lifestyles.lifestylesId',
         },
         to: 'lifestyles.id',
       },
@@ -52,7 +52,7 @@ export class UserBuyer extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: Country,
       join: {
-        from: 'user_buyers.preferred_residence_location',
+        from: 'user_buyers.preferredResidenceLocation',
         to: 'countries.id',
       },
     },

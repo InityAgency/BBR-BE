@@ -13,8 +13,6 @@ export class RBACGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
     if (!user || !user.permissions) return false;
 
-    console.log(requiredPermissions);
-
     const hasPermission = requiredPermissions.every((perm) => user.permissions.includes(perm));
     if (!hasPermission) throw new ForbiddenException('You do not have permission for this action.');
 

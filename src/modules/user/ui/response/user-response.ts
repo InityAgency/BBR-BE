@@ -17,6 +17,8 @@ export class UserResponse {
   buyer?: UserBuyer;
   company?: Company;
   role?: any;
+  lifestyles?: any;
+  unitTypes?: any;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -37,6 +39,8 @@ export class UserResponse {
     this.agreedTerms = user.agreedTerms;
     this.buyer = user.buyer;
     this.company = user.company;
+    this.unitTypes = user.unitTypes;
+    this.lifestyles = user.lifestyles;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
     this.deletedAt = user.deletedAt;

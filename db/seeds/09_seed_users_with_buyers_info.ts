@@ -36,7 +36,7 @@ export async function seed(knex: Knex): Promise<void> {
       // Insert into `user_buyers`
       await knex('user_buyers').insert({
         user_id: buyer.id,
-        avatar: null,
+        image_id: null,
         current_location: usCountry.id, // Replace with actual country ID
         budget_range_from: '50000',
         budget_range_to: '100000',

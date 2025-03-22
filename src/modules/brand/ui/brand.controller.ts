@@ -53,9 +53,7 @@ export class BrandController {
       request.brandTypeId,
       request.logoId,
       request.status,
-      request.registeredAt,
-      request.uploads,
-      request.deleted
+      request.registeredAt
     );
     const brand = await this.createBrandHandler.handle(command);
 
@@ -94,7 +92,6 @@ export class BrandController {
     const query = new FetchBrandsQuery(page, limit);
     const { data, pagination } = await this.fetchAllBrandHandler.handle(query);
 
-    console.log(data);
     return {
       data: data.map(
         (brand) =>

@@ -3,7 +3,7 @@ import type { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('user_buyers', (table) => {
     table.uuid('user_id').primary().references('id').inTable('users').onDelete('CASCADE');
-    table.uuid('avatar').nullable().references('id').inTable('media').onDelete('SET NULL');
+    table.uuid('image_id').nullable().references('id').inTable('media').onDelete('SET NULL');
     table.string('phone_number').nullable();
     table.string('phone_number_country_code').nullable();
     table.string('preferred_contact_method').nullable();
