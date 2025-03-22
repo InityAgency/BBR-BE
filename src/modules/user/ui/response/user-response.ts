@@ -1,5 +1,6 @@
 import { Company } from 'src/modules/company/domain/company.entity';
 import { UserBuyer } from '../../domain/user-buyer.entity';
+import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 
 export class UserResponse {
   id: string;
@@ -14,6 +15,7 @@ export class UserResponse {
   signupMethod?: string;
   emailVerified?: boolean;
   agreedTerms?: boolean;
+  status?: UserStatusEnum;
   buyer?: UserBuyer;
   company?: Company;
   role?: any;
@@ -38,6 +40,7 @@ export class UserResponse {
     this.emailVerified = user.emailVerified;
     this.agreedTerms = user.agreedTerms;
     this.buyer = user.buyer;
+    this.status = user.status;
     this.company = user.company;
     this.unitTypes = user.unitTypes;
     this.lifestyles = user.lifestyles;

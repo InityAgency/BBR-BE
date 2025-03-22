@@ -76,7 +76,11 @@ export class UserRepositoryImpl implements IUserRepository {
 
     const paginatedQuery = await applyPagination(query, page, limit);
 
-    const totalQuery = this.knexService.connection('roles').count('* as total').first();
+    const totalQuery = this.knexService
+      .connection(this.tableName)
+      .whereNull('deleted_at')
+      .count('* as total')
+      .first();
 
     const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
 

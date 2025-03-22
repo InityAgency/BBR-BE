@@ -7,12 +7,24 @@ import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
 import { SignUpBuyerCommandHandler } from '../application/handlers/sign-up-buyer.command.handler';
 import { SignUpDeveloperCommandHandler } from '../application/handlers/sign-up-developer.command.handler';
 import { LocalAdminAuthGuard } from '../application/guards/local-admin-auth.guard';
+import { RequestResetPasswordCommand } from '../application/commands/request-reset-password.command';
+import { RequestPasswordCommandHandler } from '../application/handlers/request-password.command.handler';
+import { VerifyResetOtpCommand } from '../application/commands/verify-reset-otp.command';
+import { VerifyOtpRequest } from './request/verify-otp.request';
+import { VerifyResetOtpCommandHandler } from '../application/handlers/verify-reset-otp.command.handler';
+import { ResetPasswordCommand } from '../application/commands/reset-password.command';
+import { ResetPasswordCOmmandHandler } from '../application/handlers/reset-password.command.handler';
+import { RequestResetPasswordRequest } from './request/request-reset-password.request';
+import { ResetPasswordRequest } from './request/reset-password.request';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly signUpDeveloperHandler: SignUpDeveloperCommandHandler,
-    private readonly signUpBuyerHandler: SignUpBuyerCommandHandler
+    private readonly signUpBuyerHandler: SignUpBuyerCommandHandler,
+    private readonly requestResetPasswordHandler: RequestPasswordCommandHandler,
+    private readonly verifyResetOtpHandler: VerifyResetOtpCommandHandler,
+    private readonly resetPasswordHandler: ResetPasswordCOmmandHandler
   ) {}
 
   @Post('login')
@@ -53,6 +65,26 @@ export class AuthController {
   @UseGuards(SessionAuthGuard)
   async getProfile(@Req() req) {
     return req.user;
+  }
+
+  @Post('request-reset-password')
+  async requestResetPassword(@Body() request: RequestResetPasswordRequest) {
+    const command = new RequestResetPasswordCommand(request.email);
+    const result = await this.requestResetPasswordHandler.handle(command);
+    return result;
+  }
+
+  @Post('verify-otp')
+  async verifyOtp(@Body() request: VerifyOtpRequest) {
+    const command = new VerifyResetOtpCommand(request.resetToken, request.otp);
+    return await this.verifyResetOtpHandler.handle(command);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() request: ResetPasswordRequest) {
+    const command = new ResetPasswordCommand(request.resetToken, request.newPassword);
+
+    return await this.resetPasswordHandler.handle(command);
   }
 
   @Post('logout')

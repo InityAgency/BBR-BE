@@ -12,8 +12,6 @@ export class UnusedMediaJob {
   @Cron(CronExpression.EVERY_30_MINUTES)
   @LogMethod()
   async deleteUnusedMedia() {
-
-    console.log("TEST");
     if (this.isRunning) {
       return;
     }
