@@ -64,7 +64,7 @@ jobs:
         with:
           status: ${{ job.status }}
           notification_title: 'New Build BBR API to EC2'
-          mention_users: 'channel'
+          mention_groups: 'C08K0LU8T2Q,!channel'
           footer: '<{run_url}|View Run>'
           message_format: '{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}@{branch}> on <{commit_url}|{commit_sha}>'
         env:
