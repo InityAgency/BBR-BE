@@ -66,7 +66,7 @@ export class UserRepositoryImpl implements IUserRepository {
       .connection(this.tableName)
       .whereNull('deleted_at')
       .leftJoin(buildUnitTypesJoin(knex))
-      // .leftJoin(buildLifestylesJoin(knex))
+      .leftJoin(buildLifestylesJoin(knex))
       .leftJoin(buildRoleJoin(knex))
       .leftJoin(buildCompanyJoin(knex))
       .leftJoin(buildBuyerJoin(knex));
