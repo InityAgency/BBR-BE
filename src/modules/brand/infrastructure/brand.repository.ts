@@ -14,7 +14,10 @@ export class BrandRepositoryImpl implements IBrandRepository {
 
   @LogMethod()
   async findById(id: string): Promise<Brand | undefined> {
-    return await Brand.query().findById(id).whereNull('deleted_at');
+    return await Brand.query()
+      .findById(id)
+      .whereNull('deleted_at')
+      .withGraphFetched('[brandType, logo]');
   }
 
   @LogMethod()

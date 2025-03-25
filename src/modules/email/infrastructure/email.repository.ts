@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { IEmailRepository } from '../domain/email.repository.interface';
 
@@ -14,11 +14,15 @@ export class EmailRepository implements IEmailRepository {
     template: string,
     variables: Record<string, any>
   ): Promise<any> {
-    await this.mailerService.sendMail({
-      to,
-      subject,
-      template: template,
-      context: { ...variables },
-    });
+    try {
+      await this.mailerService.sendMail({
+        to,
+        subject,
+        template: template,
+        context: { ...variables },
+      });
+    } catch (e: any) {
+      Logger.error(e);
+    }
   }
 }

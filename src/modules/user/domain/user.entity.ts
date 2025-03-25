@@ -12,8 +12,8 @@ export class User extends Model {
   emailVerified?: boolean;
   status?: UserStatusEnum;
   roleId?: string;
-  aggreedTerms?: boolean;
-  receieveLuxuryInsights?: boolean;
+  agreedTerms?: boolean;
+  receiveLuxuryInsights?: boolean;
   notifyLatestNews?: boolean;
   notifyMarketTrends: boolean;
   notifyBlogs: boolean;

@@ -1,4 +1,12 @@
-import { IsEmail, IsEnum, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { SignupMethodEnum } from 'src/shared/types/signup-method.enum';
 
 export class CreateUserRequest {
@@ -20,4 +28,8 @@ export class CreateUserRequest {
 
   @IsNotEmpty({ message: 'Role is required' })
   roleId: string;
+
+  @IsOptional()
+  @IsBoolean()
+  emailNotifications: boolean;
 }

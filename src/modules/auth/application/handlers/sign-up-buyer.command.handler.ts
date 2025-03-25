@@ -4,10 +4,15 @@ import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 import { SignupMethodEnum } from 'src/shared/types/signup-method.enum';
 import { SignUpBuyerCommand } from '../commands/sign-up-buyer.command';
+import { SendVerifyEmailCommandHandler } from 'src/modules/user/application/handler/send-verify-email.command.handler';
+import { SendVerificationCommand } from 'src/modules/user/application/command/send-verification.command';
 
 @Injectable()
 export class SignUpBuyerCommandHandler {
-  constructor(private readonly authRepository: IAuthRepository) {}
+  constructor(
+    private readonly authRepository: IAuthRepository,
+    private readonly sendVerifyEmailCommandHandler: SendVerifyEmailCommandHandler
+  ) {}
 
   @LogMethod()
   async handler(command: SignUpBuyerCommand) {
@@ -32,6 +37,10 @@ export class SignUpBuyerCommandHandler {
       status: UserStatusEnum.INACTIVE,
     };
 
-    return this.authRepository.create(user);
+    const createdUser = await this.authRepository.create(user);
+
+    await this.sendVerifyEmailCommandHandler.handle(new SendVerificationCommand(createdUser.id));
+
+    return createdUser;
   }
 }

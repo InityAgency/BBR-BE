@@ -9,7 +9,7 @@ export class SendResetPasswordEmailCommandHandler {
 
   async handle(command: SendResetPasswordEmailCommand): Promise<any> {
     return await this.emailRepository.sendEmail(
-      command.to,
+      command.email,
       'Reset Password',
       EmailTemplatesEnum.RESET_PASSWORD,
       {

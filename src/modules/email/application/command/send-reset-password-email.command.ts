@@ -1,6 +1,6 @@
 export class SendResetPasswordEmailCommand {
   constructor(
-    public readonly to: string,
+    public readonly email: string,
     public readonly otp: string
   ) {}
 }

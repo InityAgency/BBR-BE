@@ -9,6 +9,10 @@ import * as path from 'path';
 import { SendResetPasswordEmailCommandHandler } from './application/send-reset-password-email.command.handler';
 import { SendEmailCommandHandler } from './application/send-email.command.handler';
 import { SendWelcomeEmailCommandHandler } from './application/send-welcome-email.command.handler';
+import { EmailQueue } from './infrastructure/queues/email.queue';
+import { EmailJobProcessor } from './infrastructure/jobs/email.job';
+import { SendVerifyEmailCommandHandler } from './application/send-verify-email.command.handler';
+import { SendInviteEmailCommandHandler } from './application/send-invite-email.command.handler';
 
 @Module({
   controllers: [EmailController],
@@ -56,7 +60,11 @@ import { SendWelcomeEmailCommandHandler } from './application/send-welcome-email
     SendEmailCommandHandler,
     SendWelcomeEmailCommandHandler,
     SendResetPasswordEmailCommandHandler,
+    SendVerifyEmailCommandHandler,
+    SendInviteEmailCommandHandler,
+    EmailJobProcessor,
+    EmailQueue,
   ],
-  exports: [],
+  exports: [EmailQueue],
 })
 export default class EmailModule {}

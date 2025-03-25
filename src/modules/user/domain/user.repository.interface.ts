@@ -11,7 +11,7 @@ export abstract class IUserRepository {
     page: number,
     limit: number
   ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }>;
-  abstract update(id: string, user: UpdateUserRequest): Promise<User>;
+  abstract update(id: string, user: Partial<User>): Promise<User>;
   abstract delete(id: string): Promise<void>;
   abstract updateUserPreferences(userId: string, updateData: any): Promise<any>;
 }

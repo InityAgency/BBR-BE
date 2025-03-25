@@ -10,7 +10,8 @@ import {
   ValidationPipe,
   HttpCode,
   HttpStatus,
-  Query, Patch,
+  Query,
+  Patch,
 } from '@nestjs/common';
 import { CreateBrandRequest } from './request/create-brand.request';
 import { UpdateBrandRequest } from './request/update-brand.request';
@@ -127,7 +128,9 @@ export class BrandController {
       brand.status,
       brand.registeredAt,
       brand.brandTypeId,
-      brand.logoId
+      brand.logoId,
+      brand.brandType,
+      brand.logo
     );
   }
 
@@ -171,10 +174,14 @@ export class BrandController {
   async remove(@Param('id') id: string): Promise<void> {
     await this.deleteBrandHandler.handle(id);
   }
+
+  @Patch('/:id/status')
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Update brand status' })
-  @Patch('/:id/status')
-  async updateStatus(@Param('id') id: string, @Body() request: UpdateBrandStatusRequest): Promise<void> {
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() request: UpdateBrandStatusRequest
+  ): Promise<void> {
     const command = new UpdateBrandStatusCommand(id, request.status);
     return this.updateBrandStatusCommandHandler.handle(command);
   }

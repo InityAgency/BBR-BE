@@ -27,6 +27,13 @@ import { UserResponse } from './response/user-response';
 import { PaginationRequest } from 'src/shared/ui/request/pagination.request';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
+import { SendVerificationCommand } from '../application/command/send-verification.command';
+import { SendVerifyEmailCommandHandler } from '../application/handler/send-verify-email.command.handler';
+import { VerificationCommand } from '../application/command/verification.command';
+import { VerifyEmailCommandHandler } from '../application/handler/verify-email.command.handler';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
+import { User } from '../domain/user.entity';
+import { CreateUserCommand } from '../application/command/create-user.command';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -38,7 +45,9 @@ export class UserController {
     private readonly fetchUsersHandler: FetchUsersCommandHandler,
     private readonly findByIdUserHandler: FindByIdUserCommandHandler,
     private readonly deleteUserHandler: DeleteUserCommandHandler,
-    private readonly updateUserHandler: UpdateUserCommandHandler
+    private readonly updateUserHandler: UpdateUserCommandHandler,
+    private readonly sendVerifyEmailHandler: SendVerifyEmailCommandHandler,
+    private readonly verifyEmailCommandHandler: VerifyEmailCommandHandler
   ) {}
 
   @Post()
@@ -49,7 +58,20 @@ export class UserController {
   @ApiResponse({ status: 409, description: 'Conflict - Email already exists.' })
   @ApiResponse({ status: 400, description: 'Not Saved - User could not be saved.' })
   @UseGuards(SessionAuthGuard)
-  async create(@Body() command: CreateUserRequest): Promise<UserResponse> {
+  async create(
+    @Body() request: CreateUserRequest,
+    @CurrentUser() currentUser: User
+  ): Promise<UserResponse> {
+    const command = new CreateUserCommand(
+      request.fullName,
+      request.email,
+      request.password,
+      request.roleId,
+      request.signupMethod,
+      request.emailNotifications,
+      currentUser.id
+    );
+
     const user = await this.createUserHandler.handle(command);
     return new UserResponse(user);
   }
@@ -63,6 +85,26 @@ export class UserController {
   ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
     const users = await this.fetchUsersHandler.handle(query);
     return users;
+  }
+
+  // * Resend verification email
+  @HttpCode(HttpStatus.OK)
+  @Post(':id/resend-verification-email')
+  @UseGuards(SessionAuthGuard)
+  async resendVerificationEmail(@Param('id') id: string) {
+    const command = new SendVerificationCommand(id);
+
+    await this.sendVerifyEmailHandler.handle(command);
+  }
+
+  // * Verify email
+  @HttpCode(HttpStatus.OK)
+  @Post(':token/verify-email')
+  @UseGuards(SessionAuthGuard)
+  async verifyEmail(@Param('token') token: string) {
+    const command = new VerificationCommand(token);
+
+    await this.verifyEmailCommandHandler.handle(command);
   }
 
   @Get(':id')
@@ -84,10 +126,15 @@ export class UserController {
   @ApiResponse({ status: 400, description: 'Not Updated - User could not be updated.' })
   @UseGuards(SessionAuthGuard)
   async update(@Param('id') id: string, @Body() request: UpdateUserRequest): Promise<UserResponse> {
-    const command: UpdateUserCommand = {
+    const command = new UpdateUserCommand(
       id,
-      ...request,
-    };
+      request.fullName,
+      request.email,
+      request.roleId,
+      request.password,
+      request.signupMethod,
+      request.emailNotifications
+    );
     const user = await this.updateUserHandler.handle(command);
     return new UserResponse(user);
   }

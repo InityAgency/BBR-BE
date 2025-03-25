@@ -1,15 +1,14 @@
 import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
   ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
+import { BrandStatus } from '../domain/brand-status.enum';
 import { Brand } from '../domain/brand.entity';
 import { IBrandRepository } from '../domain/brand.repository.interface';
 import { UpdateBrandCommand } from './command/update-brand.command';
-import { BrandType } from '../domain/brand-type.enum';
-import { BrandStatus } from '../domain/brand-status.enum';
 
 @Injectable()
 export class UpdateBrandCommandHandler {

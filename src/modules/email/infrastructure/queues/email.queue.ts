@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { EmailJobProcessor } from '../jobs/email.job';
 import { ConfigService } from '@nestjs/config';
 import { QueuesEnum } from 'src/shared/types/queues.enum';
+import { EmailAction } from '../../domain/email-action.enum';
 
 @Injectable()
 export class EmailQueue {
@@ -15,27 +16,45 @@ export class EmailQueue {
   ) {
     const redisHost = this.configService.get<string>('REDIS_HOST');
     const redisPort = this.configService.get<number>('REDIS_PORT');
+    const redisPassword = this.configService.get<string>('REDIS_PASSWORD');
 
-    this.queue = new Queue(QueuesEnum.EMAIL, { connection: { host: redisHost, port: redisPort } });
+    const redisConfig = {
+      host: redisHost,
+      port: redisPort,
+      password: redisPassword,
+    };
+
+    this.queue = new Queue(QueuesEnum.EMAIL, {
+      connection: redisConfig,
+    });
 
     this.worker = new Worker(
       QueuesEnum.EMAIL,
       async (job) => {
         await this.emailJobProcessor.process(job);
       },
-      { connection: { host: redisHost, port: redisPort }, concurrency: 5 }
+      { connection: redisConfig, concurrency: 5 }
     );
   }
 
-  async addEmailJob(data: {
-    recipient: string;
-    subject: string;
-    template: string;
-    variables: Record<string, any>;
-  }) {
-    await this.queue.add('send-email', data, {
-      attempts: 3,
-      backoff: { type: 'exponential', delay: 3000 },
-    });
+  async addEmailJob(
+    action: EmailAction,
+    data: {
+      to: string;
+      subject?: string;
+      template?: string;
+      variables?: Record<string, any>;
+    }
+  ) {
+    await this.queue.add(
+      QueuesEnum.EMAIL,
+      { action, ...data },
+      {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 3000 },
+        removeOnComplete: true,
+        removeOnFail: false,
+      }
+    );
   }
 }

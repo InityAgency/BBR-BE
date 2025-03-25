@@ -31,10 +31,6 @@ export class UpdateUserCommandHandler {
       }
     }
 
-    user.fullName = command.fullName;
-    user.email = command.email;
-    user.updatedAt = new Date();
-
-    return this.userRepository.update(user.id, user);
+    return this.userRepository.update(user.id, command);
   }
 }

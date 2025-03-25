@@ -4,7 +4,10 @@ import { FetchAllBrandTypesQueryHandler } from './application/fetch-all-brands.c
 import { IBrandTypesRepository } from './domain/brand-type.repository.interface';
 import { BrandTypesRepository } from './infrastructure/brand-types.repository';
 import { BrandTypesController } from './ui/brand-types.controller';
-import { CreateBrandTypesCommandHandler } from './application/create-brand-type.command.handle';
+import { CreateBrandTypesCommandHandler } from './application/create-brand-type.command.handler';
+import { UpdateBrandTypeCommandHandler } from './application/update-brand-type.command.handler';
+import { DeleteBrandTypeCommandHandler } from './application/delete-brand-type.command.handler';
+import { FetchBrandTypeByIdCommandHandler } from './application/fetch-brand-type-by-id.comamnd.handler';
 
 @Module({
   imports: [DatabaseModule],
@@ -15,7 +18,10 @@ import { CreateBrandTypesCommandHandler } from './application/create-brand-type.
       useClass: BrandTypesRepository,
     },
     FetchAllBrandTypesQueryHandler,
+    FetchBrandTypeByIdCommandHandler,
     CreateBrandTypesCommandHandler,
+    UpdateBrandTypeCommandHandler,
+    DeleteBrandTypeCommandHandler,
   ],
 })
 export class BrandTypesModule {}

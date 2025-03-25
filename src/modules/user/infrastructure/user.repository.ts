@@ -97,36 +97,7 @@ export class UserRepositoryImpl implements IUserRepository {
 
   @LogMethod()
   async update(userId: string, updateData: UpdateUserRequest): Promise<User> {
-    // return this.knexService.connection.transaction(async (trx) => {
-
-    //   await User.query(trx).findById(userId).patch(updateData.userFields);
-
-    //   // ✅ If the user is a developer, update `user_developers`
-    //   if (updateData.developerFields) {
-    //     await UserDeveloper.query(trx)
-    //       .insert(updateData.developerFields)
-    //       .onConflict('user_id') // ✅ Prevents duplicate insert
-    //       .merge();
-    //   }
-
-    //   // ✅ If the user is a buyer, update `user_buyers`
-    //   if (updateData.buyerFields) {
-    //     await UserBuyer.query(trx)
-    //       .insert(updateData.buyerFields)
-    //       .onConflict('user_id')
-    //       .merge();
-    //   }
-
-    //   return await User.query(trx)
-    //     .findById(userId)
-    //     .withGraphFetched('[developer, buyer]'); // ✅ Fetch updated relations
-    // });
-
-    const [updatedUser] = await this.knexService
-      .connection(this.tableName)
-      .where({ id: userId })
-      .update(updateData)
-      .returning('*');
+    const updatedUser = await User.query().updateAndFetchById(userId, updateData);
 
     return updatedUser;
   }

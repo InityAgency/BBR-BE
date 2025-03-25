@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { UserResponse } from 'src/modules/user/ui/response/user-response';
 import { GoogleGuard } from '../application/guards/google.guard';
 import { LocalAuthGuard } from '../application/guards/local-auth.guard';
@@ -16,6 +26,9 @@ import { ResetPasswordCommand } from '../application/commands/reset-password.com
 import { ResetPasswordCOmmandHandler } from '../application/handlers/reset-password.command.handler';
 import { RequestResetPasswordRequest } from './request/request-reset-password.request';
 import { ResetPasswordRequest } from './request/reset-password.request';
+import { AcceptInviteRequest } from './request/accept-invite.request';
+import { AcceptInviteCommand } from '../application/commands/accept-invite.command';
+import { AcceptInviteCommandHandler } from '../application/handlers/accept-invite.command.handler';
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +37,8 @@ export class AuthController {
     private readonly signUpBuyerHandler: SignUpBuyerCommandHandler,
     private readonly requestResetPasswordHandler: RequestPasswordCommandHandler,
     private readonly verifyResetOtpHandler: VerifyResetOtpCommandHandler,
-    private readonly resetPasswordHandler: ResetPasswordCOmmandHandler
+    private readonly resetPasswordHandler: ResetPasswordCOmmandHandler,
+    private readonly acceptInviteCommandHandler: AcceptInviteCommandHandler
   ) {}
 
   @Post('login')
@@ -85,6 +99,16 @@ export class AuthController {
     const command = new ResetPasswordCommand(request.resetToken, request.newPassword);
 
     return await this.resetPasswordHandler.handle(command);
+  }
+
+  @Post('invite/accept')
+  @HttpCode(HttpStatus.OK)
+  async acceptInvite(@Body() body: AcceptInviteRequest) {
+    const command = new AcceptInviteCommand(body.token, body.password);
+
+    await this.acceptInviteCommandHandler.handle(command);
+
+    return HttpStatus.NO_CONTENT;
   }
 
   @Post('logout')

@@ -14,7 +14,7 @@ export class RequestPasswordCommandHandler {
   constructor(
     private readonly authRepository: IAuthRepository,
     private readonly passwordResetRequestRepository: IPasswordResetRequestRepository,
-    private readonly sendREsetPasswordEmailHandler: SendResetPasswordEmailCommandHandler
+    private readonly sendResetPasswordEmailHandler: SendResetPasswordEmailCommandHandler
   ) {}
 
   @LogMethod()
@@ -30,7 +30,7 @@ export class RequestPasswordCommandHandler {
 
     await this.passwordResetRequestRepository.create(command.email, otp, resetToken, expiresAt);
 
-    await this.sendREsetPasswordEmailHandler.handle(
+    await this.sendResetPasswordEmailHandler.handle(
       new SendResetPasswordEmailCommand(command.email, otp)
     );
 
