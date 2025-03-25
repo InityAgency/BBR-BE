@@ -21,8 +21,6 @@ export class SendVerifyEmailCommandHandler {
     const token = uuid();
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24h
 
-    console.log('command', command);
-
     const userExist = await this.findByIdUserHandler.handle(command.userId);
 
     const alreadyInvited = await this.repo.findByUserId(command.userId);
