@@ -1,5 +1,6 @@
 import { BrandType } from 'src/modules/brand_types/domain/brand-type.entity';
 import { Media } from 'src/modules/media/domain/media.entity';
+import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 
 export class BrandResponse {
   constructor(
@@ -9,8 +10,7 @@ export class BrandResponse {
     public readonly status: string,
     public readonly registeredAt: Date,
     public readonly brandTypeId: string,
-    public readonly logoId: string,
     public readonly brandType?: BrandType,
-    public readonly logo?: Media
+    public readonly logo?: MediaResponse | null
   ) {}
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AwsProperties } from 'src/shared/aws/aws-properties';
 import { DatabaseModule } from 'src/shared/infrastructure/database/database.module';
@@ -23,7 +23,7 @@ import { FileUploadService } from './infrastructure/file-upload.service';
 import { MediaRepositoryImpl } from './infrastructure/media.repository';
 import { MediaController } from './ui/media.controller';
 import { UnusedMediaJob } from 'src/shared/media/scheduler/unused-media.job';
-
+@Global()
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
   controllers: [MediaController],
@@ -62,6 +62,16 @@ import { UnusedMediaJob } from 'src/shared/media/scheduler/unused-media.job';
       inject: [BrandMediaStorageService],
     },
 
+    BrandStorageConfig,
+    BrandMediaStorageService,
+  ],
+
+  exports: [  // Make sure to export the services
+    IMediaService,
+    IMediaRepository,
+    'S3_MEDIA_STORAGE_SERVICE',
+    'LOCAL_MEDIA_STORAGE_SERVICE',
+    'MEDIA_DOMAIN_STORAGE_SERVICES',
     BrandStorageConfig,
     BrandMediaStorageService,
   ],

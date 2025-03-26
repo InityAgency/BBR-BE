@@ -9,7 +9,6 @@ import { RedisService } from './shared/cache/redis.service';
 import { RestExceptionFilter } from './shared/error/handler/rest.exception.handler';
 import { HttpResponseInterceptor } from './shared/interceptors/http-response-interceptor';
 import { swaggerConfig } from './shared/swagger/swagger.config';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -66,6 +65,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api-docs', app, document);
 
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();

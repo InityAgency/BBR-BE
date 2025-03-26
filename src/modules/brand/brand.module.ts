@@ -8,28 +8,25 @@ import { BrandController } from './ui/brand.controller';
 import { BrandRepositoryImpl } from './infrastructure/brand.repository';
 import { DatabaseModule } from 'src/shared/infrastructure/database/database.module';
 import { IBrandRepository } from './domain/brand.repository.interface';
-import { IMediaRepository } from '../media/domain/media.repository.interface';
-import { MediaRepositoryImpl } from '../media/infrastructure/media.repository';
 import { UpdateBrandStatusCommandHandler } from './application/update-brand-status.command.handler';
+import { MediaModule } from '../media/media.module';
+
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, MediaModule
+  ],
   controllers: [BrandController],
   providers: [
     {
       provide: IBrandRepository,
       useClass: BrandRepositoryImpl,
     },
-    {
-      provide: IMediaRepository,
-      useClass: MediaRepositoryImpl,
-    },
     CreateBrandCommandHandler,
     FindByIdBrandCommandHandler,
     FetchAllBrandCommandHandler,
     UpdateBrandCommandHandler,
     DeleteBrandCommandHandler,
-    UpdateBrandStatusCommandHandler
+    UpdateBrandStatusCommandHandler,
   ],
 })
 export class BrandModule {}

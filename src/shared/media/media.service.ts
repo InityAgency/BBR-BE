@@ -9,9 +9,10 @@ import { MediaUploadStatus } from 'src/modules/media/domain/media-upload-status.
 import { LogMethod } from '../infrastructure/logger/log.decorator';
 import { IMediaRepository } from 'src/modules/media/domain/media.repository.interface';
 import { randomUUID } from 'crypto';
+import { IMediaService } from './media.service.interface';
 
 @Injectable()
-export class MediaServiceImpl implements MediaServiceImpl {
+export class MediaServiceImpl implements IMediaService {
   private readonly mediaStorages: Map<MediaStorageType, MediaStorage>;
 
   constructor(
@@ -112,6 +113,7 @@ export class MediaServiceImpl implements MediaServiceImpl {
     }
     return 'invalid_url';
   }
+
   @LogMethod()
   async deleteUnusedMediaCreatedAfterDate(date: Date): Promise<void> {
     const unusedMediaList = await this.mediaRepository.fetchUnusedMediaCreatedAfter(date);

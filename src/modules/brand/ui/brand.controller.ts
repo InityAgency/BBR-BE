@@ -29,6 +29,8 @@ import { CreateBrandCommand } from '../application/command/create-brand.command'
 import { UpdateBrandStatusCommand } from '../application/command/update-brand-status.command';
 import { UpdateBrandStatusCommandHandler } from '../application/update-brand-status.command.handler';
 import { UpdateBrandStatusRequest } from './request/update-brand-status.request';
+import { Brand } from '../domain/brand.entity';
+import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 
 @ApiTags('brands')
 @ApiBearerAuth()
@@ -46,11 +48,11 @@ export class BrandController {
   @Post()
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Create a new brand' })
-  @ApiResponse({ status: 201, description: 'Brand created successfully', type: BrandResponse })
+  @ApiResponse({ status: 201, description: 'Brand created successfully', type: Brand })
   @ApiResponse({ status: 400, description: 'Bad request (validation error)' })
   @ApiResponse({ status: 409, description: 'Conflict - Brand name already exists.' })
   @ApiResponse({ status: 500, description: 'Internal Server Error - Brand could not be saved.' })
-  async create(@Body() request: CreateBrandRequest): Promise<BrandResponse> {
+  async create(@Body() request: CreateBrandRequest): Promise<Brand> {
     const command = new CreateBrandCommand(
       request.name,
       request.description,
@@ -61,17 +63,7 @@ export class BrandController {
     );
     const brand = await this.createBrandHandler.handle(command);
 
-    return new BrandResponse(
-      brand.id,
-      brand.name,
-      brand.description,
-      brand.status,
-      brand.registeredAt,
-      brand.brandTypeId,
-      brand.logoId,
-      brand.brandType,
-      brand.logo
-    );
+    return brand
   }
 
   @Get()
@@ -90,26 +82,17 @@ export class BrandController {
   })
   @ApiResponse({ status: 200, description: 'List of brands', type: [BrandResponse] })
   async findAll(
+    @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number
   ): Promise<{ data: BrandResponse[]; pagination: PaginationResponse }> {
-    const query = new FetchBrandsQuery(page, limit);
-    const { data, pagination } = await this.fetchAllBrandHandler.handle(query);
+    const fetchQuery = new FetchBrandsQuery(query,page, limit);
+    const { data, pagination } = await this.fetchAllBrandHandler.handle(fetchQuery);
 
     return {
       data: data.map(
         (brand) =>
-          new BrandResponse(
-            brand.id,
-            brand.name,
-            brand.description,
-            brand.status,
-            brand.registeredAt,
-            brand.brandTypeId,
-            brand.logoId,
-            brand.brandType,
-            brand.logo
-          )
+          this.mapToBrandResponse(brand)
       ),
       pagination,
     };
@@ -121,17 +104,7 @@ export class BrandController {
   @ApiResponse({ status: 404, description: 'Brand not found' })
   async findOne(@Param('id') id: string): Promise<BrandResponse> {
     const brand = await this.findByIdBrandHandler.handle(id);
-    return new BrandResponse(
-      brand.id,
-      brand.name,
-      brand.description,
-      brand.status,
-      brand.registeredAt,
-      brand.brandTypeId,
-      brand.logoId,
-      brand.brandType,
-      brand.logo
-    );
+    return this.mapToBrandResponse(brand);
   }
 
   @Put(':id')
@@ -153,16 +126,10 @@ export class BrandController {
       request.status,
       request.registeredAt
     );
+
     const brand = await this.updateBrandHandler.handle(command);
-    return new BrandResponse(
-      brand.id,
-      brand.name,
-      brand.description,
-      brand.status,
-      brand.registeredAt,
-      brand.brandTypeId,
-      brand.logoId
-    );
+
+    return this.mapToBrandResponse(brand);
   }
 
   @Delete(':id')
@@ -178,11 +145,32 @@ export class BrandController {
   @Patch('/:id/status')
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Update brand status' })
+  @Patch('/:id/status')
   async updateStatus(
     @Param('id') id: string,
     @Body() request: UpdateBrandStatusRequest
   ): Promise<void> {
     const command = new UpdateBrandStatusCommand(id, request.status);
     return this.updateBrandStatusCommandHandler.handle(command);
+  }
+
+  private mapToBrandResponse(brand: Brand): BrandResponse {
+    return new BrandResponse(
+      brand.id,
+      brand.name,
+      brand.description,
+      brand.status,
+      brand.registeredAt,
+      brand.brandTypeId,
+      brand.brandType,
+      brand.logo ? new MediaResponse(
+        brand.logo.id, 
+        brand.logo.originalFileName, 
+        brand.logo.mimeType, 
+        brand.logo.uploadStatus, 
+        brand.logo.size, 
+        brand.logo.securedUrl
+      ) : null 
+    );
   }
 }
