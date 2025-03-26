@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -37,6 +38,11 @@ import { CreateUserCommand } from '../application/command/create-user.command';
 import { UpdateUserProfileCommand } from '../application/command/update-user-profile.command';
 import { UpdateUserProfileRequest } from './request/update-user-profile.request';
 import { UpdateUserProfileCommandHandler } from '../application/handler/update-user-profile.command.handler';
+import { UpdateUserStatusRequest } from './request/update-user-status.request';
+import { UpdateUserStatusCommand } from '../application/command/update-user-status.command';
+import { UpdateUserStatusCommandHandler } from '../application/handler/update-user-status.command.handler';
+import { Permissions } from 'src/shared/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -51,7 +57,8 @@ export class UserController {
     private readonly updateUserHandler: UpdateUserCommandHandler,
     private readonly sendVerifyEmailHandler: SendVerifyEmailCommandHandler,
     private readonly verifyEmailCommandHandler: VerifyEmailCommandHandler,
-    private readonly updateUserProfileCommandHandler: UpdateUserProfileCommandHandler
+    private readonly updateUserProfileCommandHandler: UpdateUserProfileCommandHandler,
+    private readonly updateUserStatusCommandHandler: UpdateUserStatusCommandHandler
   ) {}
 
   @Post()
@@ -61,7 +68,8 @@ export class UserController {
   @ApiResponse({ status: 400, description: 'Bad request (validation error)' })
   @ApiResponse({ status: 409, description: 'Conflict - Email already exists.' })
   @ApiResponse({ status: 400, description: 'Not Saved - User could not be saved.' })
-  @UseGuards(SessionAuthGuard)
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.ADMIN)
   async create(
     @Body() request: CreateUserRequest,
     @CurrentUser() currentUser: User
@@ -83,7 +91,8 @@ export class UserController {
   @Get()
   @ApiOperation({ summary: 'Fetch all users' })
   @ApiResponse({ status: 200, description: 'List of users', type: [UserResponse] })
-  @UseGuards(SessionAuthGuard)
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.ADMIN)
   async findAll(
     @Query() query: PaginationRequest
   ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
@@ -144,7 +153,8 @@ export class UserController {
   @ApiOperation({ summary: 'Fetch a user by ID' })
   @ApiResponse({ status: 200, description: 'User found', type: UserResponse })
   @ApiResponse({ status: 404, description: 'User not found' })
-  @UseGuards(SessionAuthGuard)
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.ADMIN)
   async findOne(@Param('id') id: string): Promise<UserResponse> {
     const user = await this.findByIdUserHandler.handle(id);
     return new UserResponse(user);
@@ -157,7 +167,8 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'User not updatable.' })
   @ApiResponse({ status: 400, description: 'Not Updated - User could not be updated.' })
-  @UseGuards(SessionAuthGuard)
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.ADMIN)
   async update(@Param('id') id: string, @Body() request: UpdateUserRequest): Promise<UserResponse> {
     const command = new UpdateUserCommand(
       id,
@@ -178,8 +189,22 @@ export class UserController {
   @ApiResponse({ status: 204, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'Not Updated - User could not be deleted.' })
-  @UseGuards(SessionAuthGuard)
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.ADMIN)
   async remove(@Param('id') id: string): Promise<void> {
     await this.deleteUserHandler.handle(id);
+  }
+
+  @ApiOperation({ summary: 'Update user status' })
+  @UsePipes(new ValidationPipe())
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.ADMIN)
+  @Patch(':id/status')
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() request: UpdateUserStatusRequest
+  ): Promise<void> {
+    const command = new UpdateUserStatusCommand(id, request.status);
+    return this.updateUserStatusCommandHandler.handle(command);
   }
 }

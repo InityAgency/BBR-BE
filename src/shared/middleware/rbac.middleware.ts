@@ -53,8 +53,8 @@ export class RBACMiddleware implements NestMiddleware {
       }
 
       // Attach role and permissions to `req.user`
-      req.user.role = user.roleId;
-      req.user.permissions = user.permissions || [];
+      req.user.role = user.role.id;
+      req.user.permissions = user.role.permissions || [];
 
       // Cache user permissions in Redis (1-hour expiration)
       await this.redisService.setCache(`user-permissions:${userId}`, user.permissions, 3600);

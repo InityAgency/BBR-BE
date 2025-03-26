@@ -10,11 +10,10 @@ import { DatabaseModule } from 'src/shared/infrastructure/database/database.modu
 import { IBrandRepository } from './domain/brand.repository.interface';
 import { UpdateBrandStatusCommandHandler } from './application/update-brand-status.command.handler';
 import { MediaModule } from '../media/media.module';
-
+import { BrandMapper } from './ui/mappers/brand.mapper';
 
 @Module({
-  imports: [DatabaseModule, MediaModule
-  ],
+  imports: [DatabaseModule, MediaModule],
   controllers: [BrandController],
   providers: [
     {
@@ -27,6 +26,7 @@ import { MediaModule } from '../media/media.module';
     UpdateBrandCommandHandler,
     DeleteBrandCommandHandler,
     UpdateBrandStatusCommandHandler,
+    BrandMapper,
   ],
 })
 export class BrandModule {}

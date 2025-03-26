@@ -26,7 +26,7 @@ export async function seed(knex: Knex): Promise<void> {
       password: hashedPassword,
       signup_method: 'email',
       role_id: superAdminRole,
-      status: 'active',
+      status: 'ACTIVE',
       email_verified: true, // ✅ Verified user
       created_at: new Date(),
       updated_at: new Date(),
@@ -38,7 +38,7 @@ export async function seed(knex: Knex): Promise<void> {
       password: hashedPassword,
       signup_method: 'email',
       role_id: adminRole,
-      status: 'active',
+      status: 'ACTIVE',
       email_verified: true, // ✅ Verified user
       created_at: new Date(),
       updated_at: new Date(),
@@ -50,7 +50,7 @@ export async function seed(knex: Knex): Promise<void> {
       password: hashedPassword,
       signup_method: 'email',
       role_id: developerRole,
-      status: 'active',
+      status: 'ACTIVE',
       email_verified: true, // ✅ Verified user
       created_at: new Date(),
       updated_at: new Date(),
@@ -62,7 +62,7 @@ export async function seed(knex: Knex): Promise<void> {
       password: hashedPassword,
       signup_method: 'email',
       role_id: buyerRole,
-      status: 'active',
+      status: 'ACTIVE',
       email_verified: true, // ✅ Verified user
       created_at: new Date(),
       updated_at: new Date(),

@@ -26,6 +26,7 @@ import { UpdateCompanyProfileCommandHandler } from '../application/handlers/upda
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { User } from 'src/modules/user/domain/user.entity';
 import { UserResponse } from 'src/modules/user/ui/response/user-response';
+import { CompanyMapper } from './mappers/company.mapper';
 
 @ApiTags('Companies')
 @ApiCookieAuth()
@@ -46,7 +47,11 @@ export class CompanyController {
   async findAll(
     @Query() query: FetchAllCompanyRequest
   ): Promise<{ data: CompanyResponse[]; pagination: PaginationResponse }> {
-    return await this.fetchAllCompanyCommandQuery.handler(query);
+    const { data, pagination } = await this.fetchAllCompanyCommandQuery.handler(query);
+    return {
+      data: data.map((company) => CompanyMapper.toResponse(company)),
+      pagination,
+    };
   }
 
   // * Update self company
@@ -86,7 +91,7 @@ export class CompanyController {
   async findById(@Param('id') id: string): Promise<CompanyResponse> {
     const company = await this.fetchCompanyByIdCommandQuery.handler(id);
 
-    return new CompanyResponse(company);
+    return CompanyMapper.toResponse(company);
   }
 
   @Put(':id')
@@ -100,7 +105,7 @@ export class CompanyController {
 
     const company = await this.updateCompanyCommandHandler.handler(command);
 
-    return new CompanyResponse(company);
+    return CompanyMapper.toResponse(company);
   }
 
   @Delete(':id')

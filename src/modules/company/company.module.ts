@@ -8,9 +8,10 @@ import { FetchCompanyByIdCommandQuery } from './application/query/fetch-company-
 import { DeleteCompanyCommandHandler } from './application/handlers/delete-company.command.handler';
 import { UpdateCompanyCommandHandler } from './application/handlers/update-company.command.handler';
 import { UpdateCompanyProfileCommandHandler } from './application/handlers/update-company-profile.command.handler';
+import { MediaModule } from '../media/media.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, MediaModule],
   controllers: [CompanyController],
   providers: [
     {

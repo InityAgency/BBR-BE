@@ -9,7 +9,7 @@ export class Company extends Model {
   phoneNumber?: string;
   phoneNumberCountryCode?: string;
   website?: string;
-  contactPersonAvatar?: string;
+  contactPersonAvatarId?: string;
   contactPersonFullName?: string;
   contactPersonJobTitle?: string;
   contactPersonEmail?: string;
@@ -18,6 +18,9 @@ export class Company extends Model {
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;
+
+  image!: Media;
+  contactPersonAvatar!: Media;
 
   static tableName = 'companies';
 
@@ -34,7 +37,7 @@ export class Company extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: Media,
       join: {
-        from: 'companies.contactPersonAvatar',
+        from: 'companies.contactPersonAvatarId',
         to: 'media.id',
       },
     },

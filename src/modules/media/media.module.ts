@@ -8,10 +8,13 @@ import { SizeConfigurationFactory } from 'src/shared/media/config/size-configura
 import { SizeConfigurationModule } from 'src/shared/media/config/size.configuration.module';
 import { MediaServiceImpl } from 'src/shared/media/media.service';
 import { IMediaService } from 'src/shared/media/media.service.interface';
+import { UnusedMediaJob } from 'src/shared/media/scheduler/unused-media.job';
 import { LocalMediaStorageService } from 'src/shared/media/storage/local-media.storage.service';
 import { S3MediaStorage } from 'src/shared/media/storage/s3-media-storage.service';
 import { BrandMediaStorageService } from '../brand/infrastructure/media/brand-media-storage.service';
 import { BrandStorageConfig } from '../brand/infrastructure/media/brand-storage.config';
+import { CompanyMediaStorageService } from '../company/infrastructure/media/company-media-storage.service';
+import { UserMediaStorageService } from '../user/infrastructure/media/user-media-storage.service';
 import { FileUploadCompletedEventHandler } from './application/eventhandler/file-upload-completed.event.handler';
 import { FetchContentCommandHandler } from './application/handler/fetch-content.command.handler';
 import { UploadMediaCommandHandler } from './application/handler/upload-media.command.handler';
@@ -22,7 +25,8 @@ import { IMediaRepository } from './domain/media.repository.interface';
 import { FileUploadService } from './infrastructure/file-upload.service';
 import { MediaRepositoryImpl } from './infrastructure/media.repository';
 import { MediaController } from './ui/media.controller';
-import { UnusedMediaJob } from 'src/shared/media/scheduler/unused-media.job';
+import { CompanyStorageConfig } from '../company/infrastructure/media/company-storage.config';
+import { UserStorageConfig } from '../user/infrastructure/media/user-storage.config';
 @Global()
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
@@ -58,22 +62,34 @@ import { UnusedMediaJob } from 'src/shared/media/scheduler/unused-media.job';
     },
     {
       provide: 'MEDIA_DOMAIN_STORAGE_SERVICES',
-      useFactory: (brandStorage: BrandMediaStorageService) => [brandStorage],
-      inject: [BrandMediaStorageService],
+      useFactory: (
+        brandStorage: BrandMediaStorageService,
+        companyStorage: CompanyMediaStorageService,
+        userStorage: UserMediaStorageService
+      ) => [brandStorage, companyStorage, userStorage],
+      inject: [BrandMediaStorageService, CompanyMediaStorageService, UserMediaStorageService],
     },
-
     BrandStorageConfig,
+    CompanyStorageConfig,
+    UserStorageConfig,
     BrandMediaStorageService,
+    CompanyMediaStorageService,
+    UserMediaStorageService,
   ],
 
-  exports: [  // Make sure to export the services
+  exports: [
+    // Make sure to export the services
     IMediaService,
     IMediaRepository,
     'S3_MEDIA_STORAGE_SERVICE',
     'LOCAL_MEDIA_STORAGE_SERVICE',
     'MEDIA_DOMAIN_STORAGE_SERVICES',
     BrandStorageConfig,
+    CompanyStorageConfig,
+    UserStorageConfig,
     BrandMediaStorageService,
+    CompanyMediaStorageService,
+    UserMediaStorageService,
   ],
 })
 export class MediaModule {}

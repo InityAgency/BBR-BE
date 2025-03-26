@@ -1,37 +1,19 @@
-export class CompanyResponse {
-  id!: string;
-  name!: string;
-  address?: string;
-  imageId?: string;
-  phoneNumber?: string;
-  phoneNumberCountryCode?: string;
-  website?: string;
-  contactPersonAvatar?: string;
-  contactPersonFullName?: string;
-  contactPersonJobTitle?: string;
-  contactPersonEmail?: string;
-  contactPersonPhoneNumber?: string;
-  contactPersonPhoneNumberCountryCode?: string;
-  createdAt!: Date;
-  updatedAt!: Date;
-  deletedAt?: Date;
+import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 
-  constructor(company: any) {
-    this.id = company.id;
-    this.name = company.name;
-    this.address = company.address;
-    this.imageId = company.imageId;
-    this.phoneNumber = company.phoneNumber;
-    this.phoneNumberCountryCode = company.phoneNumberCountryCode;
-    this.website = company.website;
-    this.contactPersonAvatar = company.contactPersonAvatar;
-    this.contactPersonFullName = company.contactPersonFullName;
-    this.contactPersonJobTitle = company.contactPersonJobTitle;
-    this.contactPersonEmail = company.contactPersonEmail;
-    this.contactPersonPhoneNumber = company.contactPersonPhoneNumber;
-    this.contactPersonPhoneNumberCountryCode = company.contactPersonPhoneNumberCountryCode;
-    this.createdAt = company.createdAt;
-    this.updatedAt = company.updatedAt;
-    this.deletedAt = company.deletedAt;
-  }
+export class CompanyResponse {
+  constructor(
+    public readonly id: string,
+    public readonly name: string,
+    public readonly address?: string,
+    public readonly image?: MediaResponse | null,
+    public readonly phoneNumber?: string,
+    public readonly phoneNumberCountryCode?: string,
+    public readonly website?: string,
+    public readonly contactPersonAvatar?: MediaResponse | null,
+    public readonly contactPersonFullName?: string,
+    public readonly contactPersonJobTitle?: string,
+    public readonly contactPersonEmail?: string,
+    public readonly contactPersonPhoneNumber?: string,
+    public readonly contactPersonPhoneNumberCountryCode?: string
+  ) {}
 }

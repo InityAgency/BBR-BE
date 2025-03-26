@@ -31,6 +31,7 @@ import { UpdateBrandStatusCommandHandler } from '../application/update-brand-sta
 import { UpdateBrandStatusRequest } from './request/update-brand-status.request';
 import { Brand } from '../domain/brand.entity';
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
+import { BrandMapper } from './mappers/brand.mapper';
 
 @ApiTags('brands')
 @ApiBearerAuth()
@@ -63,7 +64,7 @@ export class BrandController {
     );
     const brand = await this.createBrandHandler.handle(command);
 
-    return brand
+    return brand;
   }
 
   @Get()
@@ -86,14 +87,11 @@ export class BrandController {
     @Query('page') page?: number,
     @Query('limit') limit?: number
   ): Promise<{ data: BrandResponse[]; pagination: PaginationResponse }> {
-    const fetchQuery = new FetchBrandsQuery(query,page, limit);
+    const fetchQuery = new FetchBrandsQuery(query, page, limit);
     const { data, pagination } = await this.fetchAllBrandHandler.handle(fetchQuery);
 
     return {
-      data: data.map(
-        (brand) =>
-          this.mapToBrandResponse(brand)
-      ),
+      data: data.map((brand) => BrandMapper.toResponse(brand)),
       pagination,
     };
   }
@@ -104,7 +102,7 @@ export class BrandController {
   @ApiResponse({ status: 404, description: 'Brand not found' })
   async findOne(@Param('id') id: string): Promise<BrandResponse> {
     const brand = await this.findByIdBrandHandler.handle(id);
-    return this.mapToBrandResponse(brand);
+    return BrandMapper.toResponse(brand);
   }
 
   @Put(':id')
@@ -129,7 +127,7 @@ export class BrandController {
 
     const brand = await this.updateBrandHandler.handle(command);
 
-    return this.mapToBrandResponse(brand);
+    return BrandMapper.toResponse(brand);
   }
 
   @Delete(':id')
@@ -142,7 +140,6 @@ export class BrandController {
     await this.deleteBrandHandler.handle(id);
   }
 
-  @Patch('/:id/status')
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Update brand status' })
   @Patch('/:id/status')
@@ -152,25 +149,5 @@ export class BrandController {
   ): Promise<void> {
     const command = new UpdateBrandStatusCommand(id, request.status);
     return this.updateBrandStatusCommandHandler.handle(command);
-  }
-
-  private mapToBrandResponse(brand: Brand): BrandResponse {
-    return new BrandResponse(
-      brand.id,
-      brand.name,
-      brand.description,
-      brand.status,
-      brand.registeredAt,
-      brand.brandTypeId,
-      brand.brandType,
-      brand.logo ? new MediaResponse(
-        brand.logo.id, 
-        brand.logo.originalFileName, 
-        brand.logo.mimeType, 
-        brand.logo.uploadStatus, 
-        brand.logo.size, 
-        brand.logo.securedUrl
-      ) : null 
-    );
   }
 }

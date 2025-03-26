@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('email', 128).notNullable().unique();
     table.string('password', 256).nullable();
     table.string('signup_method').notNullable().defaultTo('email');
-    table.enum('status', ['active', 'inactive', 'invited']).notNullable().defaultTo('inactive');
+    table.enum('status', ['ACTIVE', 'INACTIVE', 'INVITED']).notNullable().defaultTo('INACTIVE');
     table.boolean('email_verified').notNullable().defaultTo(false);
     table.boolean('agreed_terms').notNullable().defaultTo(false);
     table.boolean('receive_luxury_insights').notNullable().defaultTo(false);

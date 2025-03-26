@@ -13,10 +13,10 @@ export class FetchAllCompanyCommandQuery {
   @LogMethod()
   async handler(
     query: FetchCompaniesQuery
-  ): Promise<{ data: CompanyResponse[]; pagination: PaginationResponse }> {
+  ): Promise<{ data: Company[]; pagination: PaginationResponse }> {
     const result = await this.companyRepository.findAll(query);
     return {
-      data: result.data.map((company) => new CompanyResponse(company)),
+      data: result.data,
       pagination: result.pagination,
     };
   }

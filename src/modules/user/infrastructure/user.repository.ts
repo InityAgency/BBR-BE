@@ -16,6 +16,7 @@ import {
 } from 'src/shared/user-query';
 import { UpdateUserProfileRequest } from '../ui/request/update-user-profile.request';
 import { buildUpdatePayload } from 'src/shared/utils/build-update-payload';
+import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -111,12 +112,6 @@ export class UserRepositoryImpl implements IUserRepository {
       .connection(this.tableName)
       .where('users.id', id)
       .update({ deleted_at: this.knexService.connection.fn.now() });
-  }
-
-  @LogMethod()
-  async updateUserPreferences(userId: string, updateData: any): Promise<any> {
-    // TODO: Update user preferences
-    return 'in progress';
   }
 
   @LogMethod()

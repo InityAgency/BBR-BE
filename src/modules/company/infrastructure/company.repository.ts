@@ -39,7 +39,7 @@ export class CompanyRepository implements ICompanyRepository {
   ): Promise<{ data: Company[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder } = fetchQuery;
 
-    let query = Company.query();
+    let query = Company.query().withGraphFetched('[image, contactPersonAvatar]');
 
     if (sortBy && sortOrder) {
       if (this.allowedSortColumns.includes(sortBy)) {
@@ -57,7 +57,7 @@ export class CompanyRepository implements ICompanyRepository {
     const totalPages = Math.ceil(totalCount / (limit || 1)); // Avoid division by zero
 
     return {
-      data: paginatedCompanies.map((company) => new CompanyResponse(company)),
+      data: paginatedCompanies,
       pagination: {
         total: totalCount,
         totalPages,

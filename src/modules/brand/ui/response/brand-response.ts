@@ -1,5 +1,4 @@
 import { BrandType } from 'src/modules/brand_types/domain/brand-type.entity';
-import { Media } from 'src/modules/media/domain/media.entity';
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 
 export class BrandResponse {

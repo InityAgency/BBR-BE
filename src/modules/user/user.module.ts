@@ -22,9 +22,11 @@ import { UserRepositoryImpl } from './infrastructure/user.repository';
 import { UserController } from './ui/user.controller';
 import EmailModule from '../email/email.module';
 import { UpdateUserProfileCommandHandler } from './application/handler/update-user-profile.command.handler';
+import { MediaModule } from '../media/media.module';
+import { UpdateUserStatusCommandHandler } from './application/handler/update-user-status.command.handler';
 
 @Module({
-  imports: [DatabaseModule, EmailModule],
+  imports: [DatabaseModule, EmailModule, MediaModule],
   controllers: [UserController],
   providers: [
     {
@@ -54,6 +56,7 @@ import { UpdateUserProfileCommandHandler } from './application/handler/update-us
     VerifyEmailCommandHandler,
     InviteUserCommandHandler,
     UpdateUserProfileCommandHandler,
+    UpdateUserStatusCommandHandler,
     ConfigService,
   ],
   exports: [SendVerifyEmailCommandHandler],
