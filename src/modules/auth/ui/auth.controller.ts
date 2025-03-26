@@ -75,7 +75,7 @@ export class AuthController {
     return new UserResponse(user);
   }
 
-  @Get('profile')
+  @Get('me')
   @UseGuards(SessionAuthGuard)
   async getProfile(@Req() req) {
     return req.user;

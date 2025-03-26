@@ -34,6 +34,9 @@ import { VerifyEmailCommandHandler } from '../application/handler/verify-email.c
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { User } from '../domain/user.entity';
 import { CreateUserCommand } from '../application/command/create-user.command';
+import { UpdateUserProfileCommand } from '../application/command/update-user-profile.command';
+import { UpdateUserProfileRequest } from './request/update-user-profile.request';
+import { UpdateUserProfileCommandHandler } from '../application/handler/update-user-profile.command.handler';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -47,7 +50,8 @@ export class UserController {
     private readonly deleteUserHandler: DeleteUserCommandHandler,
     private readonly updateUserHandler: UpdateUserCommandHandler,
     private readonly sendVerifyEmailHandler: SendVerifyEmailCommandHandler,
-    private readonly verifyEmailCommandHandler: VerifyEmailCommandHandler
+    private readonly verifyEmailCommandHandler: VerifyEmailCommandHandler,
+    private readonly updateUserProfileCommandHandler: UpdateUserProfileCommandHandler
   ) {}
 
   @Post()
@@ -105,6 +109,35 @@ export class UserController {
     const command = new VerificationCommand(token);
 
     await this.verifyEmailCommandHandler.handle(command);
+  }
+
+  // * Profile update
+  @Put('me')
+  @UseGuards(SessionAuthGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async updateProfile(@Body() body: UpdateUserProfileRequest, @CurrentUser() user: User) {
+    const command = new UpdateUserProfileCommand(
+      user.id,
+      body.fullName,
+      body.phoneNumber,
+      body.phoneNumberCountryCode,
+      body.imageId,
+      body.currentLocation,
+      body.preferredContactMethod,
+      body.preferredResidenceLocation,
+      body.budgetRangeFrom,
+      body.budgetRangeTo,
+      body.unitTypes,
+      body.lifestyles,
+      body.receiveLuxuryInsights,
+      body.notifyLatestNews,
+      body.notifyBlogs,
+      body.notifyMarketTrends,
+      body.pushNotifications,
+      body.emailNotifications
+    );
+
+    return await this.updateUserProfileCommandHandler.handle(command);
   }
 
   @Get(':id')

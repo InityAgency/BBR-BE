@@ -19,7 +19,6 @@ export class SignInCommandHandler {
     if (!user || !(await bcrypt.compare(command.password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return user;
 
     return user;
   }

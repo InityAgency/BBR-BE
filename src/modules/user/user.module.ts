@@ -21,6 +21,7 @@ import { InviteRepositoryImpl } from './infrastructure/invite.repository';
 import { UserRepositoryImpl } from './infrastructure/user.repository';
 import { UserController } from './ui/user.controller';
 import EmailModule from '../email/email.module';
+import { UpdateUserProfileCommandHandler } from './application/handler/update-user-profile.command.handler';
 
 @Module({
   imports: [DatabaseModule, EmailModule],
@@ -52,6 +53,7 @@ import EmailModule from '../email/email.module';
     SendInviteEmailCommandHandler,
     VerifyEmailCommandHandler,
     InviteUserCommandHandler,
+    UpdateUserProfileCommandHandler,
     ConfigService,
   ],
   exports: [SendVerifyEmailCommandHandler],

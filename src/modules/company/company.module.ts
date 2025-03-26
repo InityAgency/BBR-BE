@@ -7,6 +7,7 @@ import { FetchAllCompanyCommandQuery } from './application/query/fetch-all-compa
 import { FetchCompanyByIdCommandQuery } from './application/query/fetch-company-by-id.command.query';
 import { DeleteCompanyCommandHandler } from './application/handlers/delete-company.command.handler';
 import { UpdateCompanyCommandHandler } from './application/handlers/update-company.command.handler';
+import { UpdateCompanyProfileCommandHandler } from './application/handlers/update-company-profile.command.handler';
 
 @Module({
   imports: [DatabaseModule],
@@ -20,6 +21,7 @@ import { UpdateCompanyCommandHandler } from './application/handlers/update-compa
     FetchCompanyByIdCommandQuery,
     DeleteCompanyCommandHandler,
     UpdateCompanyCommandHandler,
+    UpdateCompanyProfileCommandHandler,
   ],
 })
 export class CompanyModule {}

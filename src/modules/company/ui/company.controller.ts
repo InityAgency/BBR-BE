@@ -13,27 +13,31 @@ import {
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RBACGuard } from 'src/shared/guards/rbac.guard';
 import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
-import { FetchAllCompanyRequest } from './request/fetch-all-companies.request';
-import { PaginationRequest } from 'src/shared/ui/request/pagination.request';
-import { CompanyResponse } from './response/company.response';
-import { UpdateCompanyCommand } from '../application/commands/update-company.command';
-import { FetchCompaniesQuery } from '../application/commands/fetch-all-company.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
-import { FetchAllCompanyCommandQuery } from '../application/query/fetch-all-company.command.query';
-import { FetchCompanyByIdCommandQuery } from '../application/query/fetch-company-by-id.command.query';
+import { UpdateCompanyCommand } from '../application/commands/update-company.command';
 import { DeleteCompanyCommandHandler } from '../application/handlers/delete-company.command.handler';
 import { UpdateCompanyCommandHandler } from '../application/handlers/update-company.command.handler';
+import { FetchAllCompanyCommandQuery } from '../application/query/fetch-all-company.command.query';
+import { FetchCompanyByIdCommandQuery } from '../application/query/fetch-company-by-id.command.query';
+import { FetchAllCompanyRequest } from './request/fetch-all-companies.request';
+import { CompanyResponse } from './response/company.response';
+import { UpdateCompanyProfileRequest } from './request/update-company-profile.request';
+import { UpdateCompanyProfileCommandHandler } from '../application/handlers/update-company-profile.command.handler';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
+import { User } from 'src/modules/user/domain/user.entity';
+import { UserResponse } from 'src/modules/user/ui/response/user-response';
 
-@ApiTags('Company')
+@ApiTags('Companies')
 @ApiCookieAuth()
-@Controller('company')
+@Controller('companies')
 @UseGuards(RBACGuard)
 export class CompanyController {
   constructor(
     private readonly fetchAllCompanyCommandQuery: FetchAllCompanyCommandQuery,
     private readonly fetchCompanyByIdCommandQuery: FetchCompanyByIdCommandQuery,
     private readonly deleteCompanyCommandHandler: DeleteCompanyCommandHandler,
-    private readonly updateCompanyCommandHandler: UpdateCompanyCommandHandler
+    private readonly updateCompanyCommandHandler: UpdateCompanyCommandHandler,
+    private readonly updateCompanyProfileCommandHandler: UpdateCompanyProfileCommandHandler
   ) {}
 
   @Get()
@@ -43,6 +47,37 @@ export class CompanyController {
     @Query() query: FetchAllCompanyRequest
   ): Promise<{ data: CompanyResponse[]; pagination: PaginationResponse }> {
     return await this.fetchAllCompanyCommandQuery.handler(query);
+  }
+
+  // * Update self company
+  @Put('me')
+  @ApiOperation({ summary: 'Update self company' })
+  @UseGuards(SessionAuthGuard)
+  async updateSelf(
+    @Body() request: UpdateCompanyProfileRequest,
+    @CurrentUser() user: Partial<UserResponse>
+  ) {
+    if (!user || !user.company?.id) {
+      throw new Error('Company not found');
+    }
+
+    const command = new UpdateCompanyCommand(
+      user.company.id,
+      request.name,
+      request.address,
+      request.imageId,
+      request.phoneNumber,
+      request.phoneNumberCountryCode,
+      request.website,
+      request.contactPersonAvatarId,
+      request.contactPersonFullName,
+      request.contactPersonJobTitle,
+      request.contactPersonEmail,
+      request.contactPersonPhoneNumber,
+      request.contactPersonPhoneNumberCountryCode
+    );
+
+    return await this.updateCompanyProfileCommandHandler.handle(command);
   }
 
   @Get(':id')

@@ -5,12 +5,15 @@ import * as bcrypt from 'bcrypt';
 export async function seed(knex: Knex): Promise<void> {
   // Clear existing data before seeding
   await knex('users').del();
+  await knex('companies').del();
 
   const roles = await knex('roles').select('id', 'name');
   const superAdminRole = roles.find((role) => role.name === 'superadmin')?.id;
   const adminRole = roles.find((role) => role.name === 'admin')?.id;
   const developerRole = roles.find((role) => role.name === 'developer')?.id;
   const buyerRole = roles.find((role) => role.name === 'buyer')?.id;
+
+  const developerUserId = uuidv4();
 
   const hashedPassword = await bcrypt.hash('Password123!', 10);
 
@@ -41,7 +44,7 @@ export async function seed(knex: Knex): Promise<void> {
       updated_at: new Date(),
     },
     {
-      id: uuidv4(),
+      id: developerUserId,
       full_name: 'Developer Peter',
       email: 'developer@example.com',
       password: hashedPassword,
@@ -65,4 +68,26 @@ export async function seed(knex: Knex): Promise<void> {
       updated_at: new Date(),
     },
   ]);
+
+  const companyId = uuidv4();
+
+  await knex('companies').insert({
+    id: companyId,
+    name: 'Awesome Dev Company',
+    image_id: null,
+    address: 'Silicon Valley',
+    phone_number: '+381112223344',
+    phone_number_country_code: '+381',
+    website: 'https://inity.agency',
+    contact_person_avatar_id: null,
+    contact_person_full_name: 'Nikola Marković',
+    contact_person_job_title: 'CTO',
+    contact_person_email: 'nikola@inity.agency',
+    contact_person_phone_number: '+381641234567',
+    contact_person_phone_number_country_code: '+381',
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
+
+  await knex('users').where({ id: developerUserId }).update({ company_id: companyId });
 }

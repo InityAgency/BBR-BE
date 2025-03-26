@@ -10,6 +10,7 @@ export class UserBuyer extends Model {
   budgetRangeFrom?: string;
   budgetRangeTo?: string;
   phoneNumber?: string;
+  phoneNumberCountryCode?: string;
   preferredContactMethod?: string;
   preferredResidenceLocation?: string;
 

@@ -2,7 +2,7 @@ export class CompanyResponse {
   id!: string;
   name!: string;
   address?: string;
-  logo?: string;
+  imageId?: string;
   phoneNumber?: string;
   phoneNumberCountryCode?: string;
   website?: string;
@@ -20,7 +20,7 @@ export class CompanyResponse {
     this.id = company.id;
     this.name = company.name;
     this.address = company.address;
-    this.logo = company.logo;
+    this.imageId = company.imageId;
     this.phoneNumber = company.phoneNumber;
     this.phoneNumberCountryCode = company.phoneNumberCountryCode;
     this.website = company.website;
