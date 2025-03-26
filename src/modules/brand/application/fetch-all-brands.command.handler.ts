@@ -13,23 +13,10 @@ export class FetchAllBrandCommandHandler {
   @LogMethod()
   async handle(
     query: FetchBrandsQuery
-  ): Promise<{ data: BrandResponse[]; pagination: PaginationResponse }> {
+  ): Promise<{ data: Brand[]; pagination: PaginationResponse }> {
     const result = await this.brandRepository.findAll(query);
     return {
-      data: result.data.map(
-        (brand) =>
-          new BrandResponse(
-            brand.id,
-            brand.name,
-            brand.description,
-            brand.status,
-            brand.registeredAt,
-            brand.brandTypeId,
-            brand.logoId,
-            brand.brandType,
-            brand.logo
-          )
-      ),
+      data: result.data,
       pagination: result.pagination,
     };
   }

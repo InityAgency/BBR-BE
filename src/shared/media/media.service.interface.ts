@@ -10,7 +10,7 @@ export abstract class IMediaService {
     basePath: string
   ): Promise<Media | null>;
 
-  abstract uploadMedia(
+  abstract uploadMediaWithStream(
     originalFilename: string,
     size: number,
     contentType: MimeType,
@@ -29,5 +29,5 @@ export abstract class IMediaService {
 
   abstract addTemporalUrls(media: Media[]): Promise<void>;
 
-  abstract generateTemporalURL(media: Media): string;
+  abstract generateTemporalURL(media: Media): Promise<string>;
 }

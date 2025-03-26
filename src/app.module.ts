@@ -16,6 +16,8 @@ import { BrandModule } from './modules/brand/brand.module';
 import { AwsModule } from './shared/aws/aws.module';
 import { MediaModule } from './modules/media/media.module';
 import { SchedulerModule } from './shared/scheduler/scheduler.module';
+import { ContinentModule } from './modules/shared/continent/continent.module';
+import { CountryModule } from './modules/shared/country/country.module';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { SchedulerModule } from './shared/scheduler/scheduler.module';
     BrandModule,
     BrandTypesModule,
     EmailModule,
+    CountryModule,
+    ContinentModule
   ],
   providers: [],
 })

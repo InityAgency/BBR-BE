@@ -15,7 +15,9 @@ export class UpdateBrandStatusCommandHandler {
       throw new NotFoundException('Brand not found');
     }
 
-    const updated = await this.brandRepository.update(command.id, { status: command.status as BrandStatus });
+    const updated = await this.brandRepository.update(command.id, {
+      status: command.status as BrandStatus,
+    });
 
     if (!updated) {
       throw new InternalServerErrorException('Failed to update brand status');

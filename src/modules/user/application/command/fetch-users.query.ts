@@ -1,7 +1,7 @@
 import { BaseFetchQuery } from 'src/shared/query/base-fetch.query';
 
 export class FetchUsersQuery extends BaseFetchQuery {
-  constructor(page?: number, limit?: number) {
-    super(page, limit);
+  constructor( query?: string, page?: number, limit?: number, sortBy?: string, sortOrder?) {
+    super( query,page, limit, sortBy, sortOrder);
   }
 }

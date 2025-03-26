@@ -9,10 +9,12 @@ import { BrandStatus } from '../domain/brand-status.enum';
 import { Brand } from '../domain/brand.entity';
 import { IBrandRepository } from '../domain/brand.repository.interface';
 import { UpdateBrandCommand } from './command/update-brand.command';
+import { IMediaRepository } from '../../media/domain/media.repository.interface';
 
 @Injectable()
 export class UpdateBrandCommandHandler {
-  constructor(private readonly brandRepository: IBrandRepository) {}
+  constructor(private readonly brandRepository: IBrandRepository,
+              private readonly mediaRepository: IMediaRepository) {}
 
   @LogMethod()
   async handle(command: UpdateBrandCommand): Promise<Brand> {
@@ -26,11 +28,16 @@ export class UpdateBrandCommandHandler {
       throw new ConflictException('Brand with this name already exists');
     }
 
-    const updateData: Partial<Brand> = {
+    const logo = await this.mediaRepository.findById(command.logoId);
+    if (!logo) {
+      throw new NotFoundException('Logo not found');
+    }
+
+    const updateData = {
       name: command.name,
       description: command.description,
       brandTypeId: command.brandTypeId,
-      logoId: command.logoId,
+      logoId:logo.id,
       status: command.status as BrandStatus,
       registeredAt: command.registeredAt,
     };
