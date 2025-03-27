@@ -7,10 +7,10 @@ export class LifestyleStorageConfig {
   constructor(private configService: ConfigService) {}
 
   get storage(): MediaStorageType {
-    return fromString(this.configService.get<string>('media.user.storage'));
+    return fromString(this.configService.get<string>('media.lifestyle.storage'));
   }
 
   get basePath(): string {
-    return this.configService.get<string>('media.user.basePath') || 'undefined';
+    return this.configService.get<string>('media.lifestyle.basePath') || 'undefined';
   }
 }

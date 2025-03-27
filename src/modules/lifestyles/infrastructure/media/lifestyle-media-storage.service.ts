@@ -13,7 +13,7 @@ export class LifestyleMediaStorageService implements DomainMediaStorage {
   ) {}
 
   getCollectionType(): MediaCollectionType {
-    return MediaCollectionType.USER;
+    return MediaCollectionType.LIFESTYLE;
   }
 
   async uploadMedia(multipartFile: Express.Multer.File): Promise<Media | null> {

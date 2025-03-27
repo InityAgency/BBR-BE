@@ -7,7 +7,6 @@ import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { applySearchFilter } from 'src/shared/filter/query.filter';
 
 export class ContinentRepositoryImpl implements IContinentRepository {
-
   @LogMethod()
   async findById(id: string): Promise<Continent | undefined> {
     return Continent.query().findById(id).whereNull('deleted_at');
@@ -19,18 +18,18 @@ export class ContinentRepositoryImpl implements IContinentRepository {
   }
 
   @LogMethod()
-  async findAll(fetchQuery: FetchContinentsQuery): Promise<{ data: Continent[]; pagination: PaginationResponse }> {
+  async findAll(
+    fetchQuery: FetchContinentsQuery
+  ): Promise<{ data: Continent[]; pagination: PaginationResponse }> {
     const { page, limit, searchQuery: searchQuery } = fetchQuery;
     let query = Continent.query().whereNull('deleted_at');
 
     const columnsToSearch = ['name', 'code'];
-    query = applySearchFilter(query, searchQuery, columnsToSearch);
+    query = applySearchFilter(query, searchQuery, columnsToSearch, 'continents');
 
     const paginatedContinents = await applyPagination(query, page, limit);
 
-    const totalResult = (await query
-      .count('* as total')
-      .first()) as { total: string } | undefined;
+    const totalResult = (await query.count('* as total').first()) as { total: string } | undefined;
 
     const totalCount = totalResult ? Number(totalResult.total) : 0;
     const totalPages = Math.ceil(totalCount / limit);
@@ -58,8 +57,6 @@ export class ContinentRepositoryImpl implements IContinentRepository {
 
   @LogMethod()
   async delete(id: string): Promise<void> {
-    await Continent.query()
-      .patch({ deletedAt: new Date() })
-      .where('id', id);
+    await Continent.query().patch({ deletedAt: new Date() }).where('id', id);
   }
 }

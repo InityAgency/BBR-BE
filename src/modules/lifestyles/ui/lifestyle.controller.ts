@@ -24,6 +24,8 @@ import { FetchAllLifestylesQueryHandler } from '../application/fetch-all-lifesty
 import { FetchLifestyleQuery } from '../application/command/fetch-lifestyle.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { FindByIdLifestyleQueryHandler } from '../application/find-by-id-lifestyle.query.handler';
+import { LifestyleMapper } from './mappers/lifestyle.mapper';
+import { LifestyleResponse } from './response/lifestyle.response';
 
 @ApiTags('Lifestyles')
 @Controller('lifestyles')
@@ -42,9 +44,14 @@ export class LifestyleController {
     @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number
-  ): Promise<{ data: Lifestyle[]; pagination: PaginationResponse }> {
+  ): Promise<{ data: LifestyleResponse[]; pagination: PaginationResponse }> {
     const fetchQuery = new FetchLifestyleQuery(query, page, limit);
-    return await this.fetchAllLifestylesQueryHandler.handle(fetchQuery);
+    const { data, pagination } = await this.fetchAllLifestylesQueryHandler.handle(fetchQuery);
+
+    return {
+      data: data.map((lifestyle) => LifestyleMapper.toResponse(lifestyle)),
+      pagination,
+    };
   }
 
   @Post()
@@ -60,8 +67,9 @@ export class LifestyleController {
 
   @Get(':id')
   @ApiResponse({ status: 200, description: 'Lifestyle fetched successfully', type: Lifestyle })
-  async findById(@Param('id') id: string): Promise<Lifestyle> {
-    return await this.findByIdLifestyleQueryHandler.handle(id);
+  async findById(@Param('id') id: string): Promise<LifestyleResponse> {
+    const lifestyle = await this.findByIdLifestyleQueryHandler.handle(id);
+    return LifestyleMapper.toResponse(lifestyle);
   }
 
   @Put(':id')

@@ -27,6 +27,8 @@ import { MediaRepositoryImpl } from './infrastructure/media.repository';
 import { MediaController } from './ui/media.controller';
 import { CompanyStorageConfig } from '../company/infrastructure/media/company-storage.config';
 import { UserStorageConfig } from '../user/infrastructure/media/user-storage.config';
+import { LifestyleMediaStorageService } from '../lifestyles/infrastructure/media/lifestyle-media-storage.service';
+import { LifestyleStorageConfig } from '../lifestyles/infrastructure/media/lifestyle-storage.config';
 @Global()
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
@@ -65,16 +67,19 @@ import { UserStorageConfig } from '../user/infrastructure/media/user-storage.con
       useFactory: (
         brandStorage: BrandMediaStorageService,
         companyStorage: CompanyMediaStorageService,
-        userStorage: UserMediaStorageService
-      ) => [brandStorage, companyStorage, userStorage],
+        userStorage: UserMediaStorageService,
+        lifestyleStorage: LifestyleMediaStorageService
+      ) => [brandStorage, companyStorage, userStorage, lifestyleStorage],
       inject: [BrandMediaStorageService, CompanyMediaStorageService, UserMediaStorageService],
     },
     BrandStorageConfig,
     CompanyStorageConfig,
     UserStorageConfig,
+    LifestyleStorageConfig,
     BrandMediaStorageService,
     CompanyMediaStorageService,
     UserMediaStorageService,
+    LifestyleMediaStorageService,
   ],
 
   exports: [
@@ -87,9 +92,11 @@ import { UserStorageConfig } from '../user/infrastructure/media/user-storage.con
     BrandStorageConfig,
     CompanyStorageConfig,
     UserStorageConfig,
+    LifestyleStorageConfig,
     BrandMediaStorageService,
     CompanyMediaStorageService,
     UserMediaStorageService,
+    LifestyleMediaStorageService,
   ],
 })
 export class MediaModule {}

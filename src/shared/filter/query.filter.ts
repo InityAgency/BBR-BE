@@ -1,15 +1,21 @@
-export function applySearchFilter(query, searchQuery: string | undefined, columns: string[]) {
-  if (!searchQuery) {
-    return query;
-  }
-  const searchTerm = `%${searchQuery}%`;
+import { QueryBuilder, Model } from 'objection';
 
-  const filteredQuery = query.where((builder) => {
+export function applySearchFilter<T extends Model, R>(
+  query: QueryBuilder<T, R>,
+  searchQuery: string | undefined,
+  columns: string[],
+  tableAlias: string
+): QueryBuilder<T, R> {
+  if (!searchQuery || columns.length === 0) return query;
+  const searchTerm = `%${searchQuery}%`;
+  return query.where(function (this: QueryBuilder<T, R>) {
     columns.forEach((column, index) => {
-      const method = index === 0 ? 'where' : 'orWhere';
-      builder[method](`countries.${column}`, 'ILIKE', searchTerm);
+      const qualifiedColumn = `${tableAlias}.${column}`;
+      if (index === 0) {
+        this.where(qualifiedColumn, 'ILIKE', searchTerm);
+      } else {
+        this.orWhere(qualifiedColumn, 'ILIKE', searchTerm);
+      }
     });
   });
-
-    return filteredQuery;
-  }
+}

@@ -10,8 +10,7 @@ import { applySearchFilter } from 'src/shared/filter/query.filter';
 
 @Injectable()
 export class CountryRepositoryImpl implements ICountryRepository {
-
-    constructor(private readonly knexService: KnexService) {}
+  constructor(private readonly knexService: KnexService) {}
 
   @LogMethod()
   async create(country: Partial<Country>): Promise<Country | undefined> {
@@ -25,66 +24,69 @@ export class CountryRepositoryImpl implements ICountryRepository {
       flag: country.flag,
       subregion: country.subregion,
       tld: country.tld,
-      continentId: country.continent?.id,  
+      continentId: country.continent?.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     const knex = this.knexService.connection;
 
-    const insertedCountry = await knex('countries')
-    .insert(countryData)  
-    .returning('*'); 
+    const insertedCountry = await knex('countries').insert(countryData).returning('*');
 
-  return this.findById( insertedCountry[0].id);
+    return this.findById(insertedCountry[0].id);
   }
 
   @LogMethod()
   async findById(id: string): Promise<Country | undefined> {
     return Country.query()
-    .findById(id)
-    .whereNull('deleted_at')  
-    .withGraphFetched('[continent, phoneCodes]');
+      .findById(id)
+      .whereNull('deleted_at')
+      .withGraphFetched('[continent, phoneCodes]');
   }
 
   @LogMethod()
-async findAll(
-  fetchQuery: FetchCountriesQuery
-): Promise<{ data: Country[]; pagination: PaginationResponse }> {
-  const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
+  async findAll(
+    fetchQuery: FetchCountriesQuery
+  ): Promise<{ data: Country[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
 
-  let query = Country.query()
-    .whereNull('deleted_at')
-    .withGraphFetched('[continent, phoneCodes]');  
+    let query = Country.query().whereNull('deleted_at').withGraphFetched('[continent, phoneCodes]');
 
-    const columnsToSearchAndSort = ['name', 'code', 'capital', 'currency_code', 'currency_name', 'currency_symbol', 'subregion', 'tld']; 
-    query = applySearchFilter(query, searchQuery, columnsToSearchAndSort);
+    const columnsToSearchAndSort = [
+      'name',
+      'code',
+      'capital',
+      'currency_code',
+      'currency_name',
+      'currency_symbol',
+      'subregion',
+      'tld',
+    ];
+    query = applySearchFilter(query, searchQuery, columnsToSearchAndSort, 'countries');
 
-  if (sortBy && sortOrder) {
-    if (columnsToSearchAndSort.includes(sortBy)) {
-      query = query.orderBy(sortBy, sortOrder);
+    if (sortBy && sortOrder) {
+      if (columnsToSearchAndSort.includes(sortBy)) {
+        query = query.orderBy(sortBy, sortOrder);
+      }
     }
+
+    const paginatedCountries = await applyPagination(query, page, limit);
+
+    const totalResult = (await query.count('* as total').first()) as { total: string } | undefined;
+
+    const totalCount = totalResult ? Number(totalResult.total) : 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return {
+      data: paginatedCountries,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page: page,
+        limit: limit,
+      },
+    };
   }
-
-  const paginatedCountries = await applyPagination(query, page, limit);
-
-  const totalResult = (await query
-    .count('* as total')
-    .first()) as { total: string } | undefined;
-
-  const totalCount = totalResult ? Number(totalResult.total) : 0;
-  const totalPages = Math.ceil(totalCount / limit);
-
-  return {
-    data: paginatedCountries, 
-    pagination: {
-      total: totalCount,
-      totalPages,
-      page: page,
-      limit: limit,
-    },
-  };
-}
 
   @LogMethod()
   async findByName(name: string): Promise<Country | undefined> {

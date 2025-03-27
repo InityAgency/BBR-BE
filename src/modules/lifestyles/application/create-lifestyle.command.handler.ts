@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { IMediaService } from 'src/shared/media/media.service.interface';
 import { Lifestyle } from '../domain/lifestyle.entity';
@@ -19,7 +24,12 @@ export class CreateLifestyleCommandHandler {
       throw new ConflictException('Lifestyle already exists');
     }
 
-    const created = await this.lifestyleRepository.create(command.name);
+    const logo = await this.mediaService.findById(command.imageId);
+    if (!logo) {
+      throw new NotFoundException('Logo not found');
+    }
+
+    const created = await this.lifestyleRepository.create(command);
 
     if (!created) {
       throw new InternalServerErrorException('Lifestyle can not be created');

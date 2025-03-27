@@ -9,9 +9,10 @@ import { MediaRepositoryImpl } from '../media/infrastructure/media.repository';
 import { DeleteLifestyleCommandHandler } from './application/delete-lifestyle.command.handler';
 import { FetchAllLifestylesQueryHandler } from './application/fetch-all-lifestyles.query.handler';
 import { FindByIdLifestyleQueryHandler } from './application/find-by-id-lifestyle.query.handler';
+import { MediaModule } from '../media/media.module';
 
 @Module({
-  imports: [],
+  imports: [MediaModule],
   controllers: [LifestyleController],
   providers: [
     {

@@ -52,7 +52,7 @@ export class BrandRepositoryImpl implements IBrandRepository {
     }
 
     const columnsToSearch = ['name', 'description', 'status'];
-    query = applySearchFilter(query, searchQuery, columnsToSearch);
+    query = applySearchFilter(query, searchQuery, columnsToSearch, 'brands');
 
     const paginatedBrands = await applyPagination(query, page, limit);
 

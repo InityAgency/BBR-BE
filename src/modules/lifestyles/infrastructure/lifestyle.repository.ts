@@ -11,8 +11,8 @@ import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 export class LifestyleRepositoryIml implements ILifestyleRepository {
   constructor(private readonly knexService: KnexService) {}
 
-  async create(name: string): Promise<Lifestyle> {
-    return await Lifestyle.create({ name });
+  async create(lifestyle: Partial<Lifestyle>): Promise<Lifestyle> {
+    return await Lifestyle.create(lifestyle);
   }
 
   async update(id: string, data: Partial<Lifestyle>): Promise<Lifestyle | undefined> {
@@ -31,14 +31,14 @@ export class LifestyleRepositoryIml implements ILifestyleRepository {
     let query = Lifestyle.query().whereNull('deleted_at').withGraphFetched('[image]');
 
     if (sortBy && sortOrder) {
-      const allowedColumns = ['name', 'status', 'registered_at', 'created_at', 'updated_at'];
+      const allowedColumns = ['name', 'created_at', 'updated_at'];
       if (allowedColumns.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }
     }
 
-    const columnsToSearch = ['name', 'description', 'status'];
-    query = applySearchFilter(query, searchQuery, columnsToSearch);
+    const columnsToSearch = ['name'];
+    query = applySearchFilter(query, searchQuery, columnsToSearch, 'lifestyles');
 
     const paginatedBrands = await applyPagination(query, page, limit);
 
@@ -59,10 +59,10 @@ export class LifestyleRepositoryIml implements ILifestyleRepository {
   }
 
   async findById(id: string): Promise<Lifestyle | undefined> {
-    return await Lifestyle.query().findById(id);
+    return await Lifestyle.query().whereNull('deleted_at').findById(id).withGraphFetched('[image]');
   }
 
   async findByName(name: string): Promise<Lifestyle | undefined> {
-    return await Lifestyle.query().findOne({ name });
+    return await Lifestyle.query().whereNull('deleted_at').findOne({ name });
   }
 }

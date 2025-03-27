@@ -10,9 +10,7 @@ import { FetchCitiesQuery } from '../application/commands/fetch-cities.query';
 
 @Injectable()
 export class CityRepositoryImpl implements ICityRepository {
-  constructor(
-    private readonly knexService: KnexService
-  ) {}
+  constructor(private readonly knexService: KnexService) {}
 
   @LogMethod()
   async create(city: Partial<City>): Promise<City | undefined> {
@@ -30,19 +28,14 @@ export class CityRepositoryImpl implements ICityRepository {
 
     const knex = this.knexService.connection;
 
-    const insertedCity = await knex('cities')
-      .insert(cityData)
-      .returning('*');
+    const insertedCity = await knex('cities').insert(cityData).returning('*');
 
     return this.findById(insertedCity[0].id);
   }
 
   @LogMethod()
   async findById(id: string): Promise<City | undefined> {
-    return City.query()
-      .findById(id)
-      .whereNull('deleted_at')
-      .withGraphFetched('[country]'); // Assuming "country" is a relation to be fetched
+    return City.query().findById(id).whereNull('deleted_at').withGraphFetched('[country]'); // Assuming "country" is a relation to be fetched
   }
 
   @LogMethod()
@@ -51,12 +44,17 @@ export class CityRepositoryImpl implements ICityRepository {
   ): Promise<{ data: City[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
 
-    let query = City.query()
-      .whereNull('deleted_at')
-      .withGraphFetched('[country]'); // Assuming "country" is a relation to be fetched
+    let query = City.query().whereNull('deleted_at').withGraphFetched('[country]'); // Assuming "country" is a relation to be fetched
 
-    const columnsToSearchAndSort = ['name', 'asciiName', 'population', 'timezone', 'xCoordinate', 'yCoordinate'];
-    query = applySearchFilter(query, searchQuery, columnsToSearchAndSort);
+    const columnsToSearchAndSort = [
+      'name',
+      'asciiName',
+      'population',
+      'timezone',
+      'xCoordinate',
+      'yCoordinate',
+    ];
+    query = applySearchFilter(query, searchQuery, columnsToSearchAndSort, 'cities');
 
     if (sortBy && sortOrder) {
       if (columnsToSearchAndSort.includes(sortBy)) {
@@ -66,9 +64,7 @@ export class CityRepositoryImpl implements ICityRepository {
 
     const paginatedCities = await applyPagination(query, page, limit);
 
-    const totalResult = (await query
-      .count('* as total')
-      .first()) as { total: string } | undefined;
+    const totalResult = (await query.count('* as total').first()) as { total: string } | undefined;
 
     const totalCount = totalResult ? Number(totalResult.total) : 0;
     const totalPages = Math.ceil(totalCount / limit);
