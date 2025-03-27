@@ -10,17 +10,13 @@ import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 @Injectable()
 export class BrandRepositoryImpl implements IBrandRepository {
-
   constructor(private readonly knexService: KnexService) {}
-
 
   @LogMethod()
   async create(brand: Partial<Brand>): Promise<Brand | undefined> {
-    const insertedBrand = await this.knexService.connection('brands')
-    .insert(brand)
-    .returning('*'); 
+    const insertedBrand = await this.knexService.connection('brands').insert(brand).returning('*');
 
-    return this.findById( insertedBrand[0].id);
+    return this.findById(insertedBrand[0].id);
   }
 
   @LogMethod()
@@ -34,17 +30,17 @@ export class BrandRepositoryImpl implements IBrandRepository {
   @LogMethod()
   async findByName(name: string): Promise<Brand | undefined> {
     return await Brand.query()
-    .where({ name })
-    .whereNull('deleted_at')
-    .withGraphFetched('logo')
-    .first();
+      .where({ name })
+      .whereNull('deleted_at')
+      .withGraphFetched('logo')
+      .first();
   }
 
   @LogMethod()
   async findAll(
     fetchQuery: FetchBrandsQuery
   ): Promise<{ data: Brand[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder,  searchQuery: searchQuery } = fetchQuery;
+    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
 
     let query = Brand.query().whereNull('deleted_at').withGraphFetched('[brandType, logo]');
 
@@ -56,13 +52,11 @@ export class BrandRepositoryImpl implements IBrandRepository {
     }
 
     const columnsToSearch = ['name', 'description', 'status'];
-       query = applySearchFilter(query, searchQuery, columnsToSearch);
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
 
     const paginatedBrands = await applyPagination(query, page, limit);
 
-    const totalResult = (await query
-      .count('* as total')
-      .first()) as { total: string } | undefined;
+    const totalResult = (await query.count('* as total').first()) as { total: string } | undefined;
 
     const totalCount = totalResult ? Number(totalResult.total) : 0;
     const totalPages = Math.ceil(totalCount / limit);
@@ -80,13 +74,15 @@ export class BrandRepositoryImpl implements IBrandRepository {
 
   @LogMethod()
   async update(id: string, updateData: Partial<Brand>): Promise<Brand | undefined> {
-    const result =  await Brand.query().patchAndFetchById(id, updateData).whereNull('deleted_at');
+    const result = await Brand.query().patchAndFetchById(id, updateData).whereNull('deleted_at');
 
     return this.findById(result.id);
   }
 
   @LogMethod()
   async delete(id: string): Promise<void> {
-    await Brand.query().where('id', id).patch({ deletedAt: new Date(), status: BrandStatus.DELETED });
+    await Brand.query()
+      .where('id', id)
+      .patch({ deletedAt: new Date(), status: BrandStatus.DELETED });
   }
 }

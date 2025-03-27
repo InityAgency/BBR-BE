@@ -11,22 +11,21 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserResponse } from 'src/modules/user/ui/response/user-response';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { RBACGuard } from 'src/shared/guards/rbac.guard';
 import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { UpdateCompanyCommand } from '../application/commands/update-company.command';
 import { DeleteCompanyCommandHandler } from '../application/handlers/delete-company.command.handler';
+import { UpdateCompanyProfileCommandHandler } from '../application/handlers/update-company-profile.command.handler';
 import { UpdateCompanyCommandHandler } from '../application/handlers/update-company.command.handler';
 import { FetchAllCompanyCommandQuery } from '../application/query/fetch-all-company.command.query';
 import { FetchCompanyByIdCommandQuery } from '../application/query/fetch-company-by-id.command.query';
-import { FetchAllCompanyRequest } from './request/fetch-all-companies.request';
-import { CompanyResponse } from './response/company.response';
-import { UpdateCompanyProfileRequest } from './request/update-company-profile.request';
-import { UpdateCompanyProfileCommandHandler } from '../application/handlers/update-company-profile.command.handler';
-import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
-import { User } from 'src/modules/user/domain/user.entity';
-import { UserResponse } from 'src/modules/user/ui/response/user-response';
 import { CompanyMapper } from './mappers/company.mapper';
+import { FetchAllCompanyRequest } from './request/fetch-all-companies.request';
+import { UpdateCompanyProfileRequest } from './request/update-company-profile.request';
+import { CompanyResponse } from './response/company.response';
 
 @ApiTags('Companies')
 @ApiCookieAuth()

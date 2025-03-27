@@ -18,13 +18,13 @@ import { FetchBrandTypeByIdCommand } from '../application/command/fetch-brand-ty
 import { UpdateBrandTypeCommand } from '../application/command/update-brand-type.command';
 import { CreateBrandTypesCommandHandler } from '../application/create-brand-type.command.handler';
 import { DeleteBrandTypeCommandHandler } from '../application/delete-brand-type.command.handler';
-import { FetchAllBrandTypesQueryHandler } from '../application/fetch-all-brands.command.query';
 import { FetchBrandTypeByIdCommandHandler } from '../application/fetch-brand-type-by-id.comamnd.handler';
 import { UpdateBrandTypeCommandHandler } from '../application/update-brand-type.command.handler';
 import { CreateBrandTypeRequest } from './request/create-brand-type.request';
 import { UpdateBrandTypeRequest } from './request/update-brand-type.request';
 import { BrandTypeResponseWithBrands } from './response/brand-type-with-brands.response';
 import { BrandTypeResponse } from './response/brand-type.response';
+import { FetchAllBrandTypesQueryHandler } from '../application/fetch-all-brands.command.query.handler';
 
 @ApiTags('Brand Types')
 @Controller('brand-types')

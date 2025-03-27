@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { IMediaRepository } from 'src/modules/media/domain/media.repository.interface';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { BrandStatus } from '../domain/brand-status.enum';
@@ -9,9 +14,12 @@ import { IMediaService } from 'src/shared/media/media.service.interface';
 
 @Injectable()
 export class CreateBrandCommandHandler {
-  constructor(private readonly brandRepository: IBrandRepository,
-              private readonly mediaRepository: IMediaRepository,
-            private readonly mediaService: IMediaService) {}
+  constructor(
+    private readonly brandRepository: IBrandRepository,
+    private readonly mediaRepository: IMediaRepository,
+    private readonly brandTypeRepository: IBrandRepository,
+    private readonly mediaService: IMediaService
+  ) {}
 
   @LogMethod()
   async handle(command: CreateBrandCommand): Promise<Brand> {
@@ -25,13 +33,18 @@ export class CreateBrandCommandHandler {
       throw new NotFoundException('Logo not found');
     }
 
+    const brandType = await this.brandTypeRepository.findById(command.brandTypeId);
+    if (!brandType) {
+      throw new NotFoundException('Brand type not found');
+    }
+
     const brandData = {
       name: command.name,
       description: command.description,
       brandTypeId: command.brandTypeId,
       status: command.status as BrandStatus,
       registeredAt: command.registeredAt,
-      logoId: logo.id, 
+      logoId: logo.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

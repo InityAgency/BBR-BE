@@ -1,31 +1,21 @@
-import {
-  Controller,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Get,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PaginationResponse } from '../../../../shared/ui/response/pagination.response';
+import { ContinentResponse } from '../../continent/ui/response/continent.response';
+import { PhoneCode } from '../../phone_code/domain/phone-code.entity';
+import { PhoneCodeResponse } from '../../phone_code/ui/response/phone-code.response';
+import { CreateCountryCommand } from '../application/commands/create-country.command';
+import { FetchCountriesQuery } from '../application/commands/fetch-countries.query';
+import { UpdateCountryCommand } from '../application/commands/update-country.command';
+import { CreateCountryCommandHandler } from '../application/handler/create-country.command.handler';
+import { DeleteCountryCommandHandler } from '../application/handler/delete-country.command.handler';
+import { UpdateCountryCommandHandler } from '../application/handler/update-country.command.handler';
+import { FetchCountriesCommandQuery } from '../application/query/fetch-countries.command.query';
+import { FindCountryByIdCommandQuery } from '../application/query/find-country-by-id.command.query';
+import { Country } from '../domain/country.entity';
 import { CreateCountryRequest } from './request/create-country.request';
 import { UpdateCountryRequest } from './request/update-country.request';
-import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { CreateCountryCommandHandler } from '../application/handler/create-country.command.handler';
-import { UpdateCountryCommandHandler } from '../application/handler/update-country.command.handler';
-import { CreateCountryCommand } from '../application/commands/create-country.command';
-import { UpdateCountryCommand } from '../application/commands/update-country.command';
-import { DeleteCountryCommandHandler } from '../application/handler/delete-country.command.handler';
-import { FindCountryByIdCommandQuery } from '../application/query/find-country-by-id.command.query';
 import { CountryResponse } from './response/country.response';
-import { PaginationResponse } from '../../../../shared/ui/response/pagination.response';
-import { FetchCountriesQuery } from '../application/commands/fetch-countries.query';
-import { FetchCountriesCommandQuery } from '../application/query/fetch-countries.command.query';
-import { ContinentResponse } from '../../continent/ui/response/continent.response';
-import { MediaResponse } from '../../../media/ui/response/media.response';
-import { Country } from '../domain/country.entity';
-import { PhoneCodeResponse } from '../../phone_code/ui/response/phone-code.response';
-import { PhoneCode } from '../../phone_code/domain/phone-code.entity';
 
 @ApiTags('Countries')
 @Controller('countries')
@@ -91,11 +81,11 @@ export class CountryController {
     @Query('page') page?: number,
     @Query('limit') limit?: number
   ): Promise<{ data: CountryResponse[]; pagination: PaginationResponse }> {
-    const fetchQuery = new FetchCountriesQuery(query,page, limit);
+    const fetchQuery = new FetchCountriesQuery(query, page, limit);
     const result = await this.fetchCountriesCommandQuery.handler(fetchQuery);
-  
+
     return {
-      data: result.data.map((country) => this.mapToCountryResponse(country)), 
+      data: result.data.map((country) => this.mapToCountryResponse(country)),
       pagination: result.pagination,
     };
   }
@@ -122,16 +112,20 @@ export class CountryController {
       country.currency_name,
       country.currency_symbol,
       country.capital,
-      country.phoneCodes!==null ?  country.phoneCodes.map((phoneCode) => this.mapToPhoneCodeResponse(phoneCode)) : [],
+      country.phoneCodes !== null
+        ? country.phoneCodes.map((phoneCode) => this.mapToPhoneCodeResponse(phoneCode))
+        : [],
       country.subregion,
       country.flag,
-      country.continent !==null ? new ContinentResponse(
-        country.continent.id,
-        country.continent.name,
-        country.continent.code,
-        country.continent.createdAt,
-        country.continent.updatedAt
-      ) : null,
+      country.continent !== null
+        ? new ContinentResponse(
+            country.continent.id,
+            country.continent.name,
+            country.continent.code,
+            country.continent.createdAt,
+            country.continent.updatedAt
+          )
+        : null,
       country.createdAt,
       country.updatedAt
     );

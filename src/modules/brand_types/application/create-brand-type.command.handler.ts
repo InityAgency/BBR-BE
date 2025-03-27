@@ -9,6 +9,7 @@ export class CreateBrandTypesCommandHandler {
 
   async handle(command: CreateBrandTypesCommand) {
     const existingBrandType = await this.brandTypesRepository.findByName(command.name);
+
     if (existingBrandType) {
       throw new ConflictException('Brand type already exists');
     }

@@ -1,37 +1,36 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
   Body,
-  Param,
-  UsePipes,
-  ValidationPipe,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  Query,
+  Param,
   Patch,
+  Post,
+  Put,
+  Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { CreateBrandRequest } from './request/create-brand.request';
-import { UpdateBrandRequest } from './request/update-brand.request';
-import { BrandResponse } from './response/brand-response';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
-import { CreateBrandCommandHandler } from '../application/create-brand.command.handler';
-import { FindByIdBrandCommandHandler } from '../application/find-by-id-brand.command.handler';
-import { FetchAllBrandCommandHandler } from '../application/fetch-all-brands.command.handler';
-import { UpdateBrandCommandHandler } from '../application/update-brand.command.handler';
-import { DeleteBrandCommandHandler } from '../application/delete-brand.command.handler';
-import { UpdateBrandCommand } from '../application/command/update-brand.command';
-import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { CreateBrandCommand } from '../application/command/create-brand.command';
+import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
 import { UpdateBrandStatusCommand } from '../application/command/update-brand-status.command';
+import { UpdateBrandCommand } from '../application/command/update-brand.command';
+import { CreateBrandCommandHandler } from '../application/create-brand.command.handler';
+import { DeleteBrandCommandHandler } from '../application/delete-brand.command.handler';
+import { FetchAllBrandCommandHandler } from '../application/fetch-all-brands.command.handler';
+import { FindByIdBrandCommandHandler } from '../application/find-by-id-brand.command.handler';
 import { UpdateBrandStatusCommandHandler } from '../application/update-brand-status.command.handler';
-import { UpdateBrandStatusRequest } from './request/update-brand-status.request';
+import { UpdateBrandCommandHandler } from '../application/update-brand.command.handler';
 import { Brand } from '../domain/brand.entity';
-import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 import { BrandMapper } from './mappers/brand.mapper';
+import { CreateBrandRequest } from './request/create-brand.request';
+import { UpdateBrandStatusRequest } from './request/update-brand-status.request';
+import { UpdateBrandRequest } from './request/update-brand.request';
+import { BrandResponse } from './response/brand-response';
 
 @ApiTags('brands')
 @ApiBearerAuth()

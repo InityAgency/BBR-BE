@@ -18,6 +18,7 @@ import { MediaModule } from './modules/media/media.module';
 import { SchedulerModule } from './shared/scheduler/scheduler.module';
 import { ContinentModule } from './modules/shared/continent/continent.module';
 import { CountryModule } from './modules/shared/country/country.module';
+import { LifestyleModule } from './modules/lifestyles/lifestyle.module';
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { CountryModule } from './modules/shared/country/country.module';
     BrandTypesModule,
     EmailModule,
     CountryModule,
-    ContinentModule
+    ContinentModule,
+    LifestyleModule,
   ],
   providers: [],
 })

@@ -4,21 +4,37 @@ import { Media } from 'src/modules/media/domain/media.entity';
 export class Lifestyle extends Model {
   id!: string;
   order!: number;
-  logo?: string;
+  imageId?: string;
   name!: string;
-  created_at!: Date;
-  updated_at!: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
+  deletedAt!: Date;
+
+  image!: Media;
 
   static tableName = 'lifestyles';
 
   static relationMappings: RelationMappings = {
-    logo: {
+    image: {
       relation: Model.BelongsToOneRelation,
-      modelClass: Media,
+      modelClass: () => Media,
       join: {
-        from: 'lifestyles.logo',
+        from: 'lifestyles.imageId',
         to: 'media.id',
       },
     },
   };
+
+  $beforeInsert() {
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
+  }
+
+  $beforeUpdate() {
+    this.updatedAt = new Date();
+  }
+
+  static async create(data: Partial<Lifestyle>): Promise<Lifestyle> {
+    return Lifestyle.query().insert(data).returning('*');
+  }
 }
