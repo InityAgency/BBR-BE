@@ -108,9 +108,9 @@ export class CountryController {
       country.name,
       country.code,
       country.tld,
-      country.currency_code,
-      country.currency_name,
-      country.currency_symbol,
+      country.currencyCode,
+      country.currencyName,
+      country.currencySymbol,
       country.capital,
       country.phoneCodes !== null
         ? country.phoneCodes.map((phoneCode) => this.mapToPhoneCodeResponse(phoneCode))
