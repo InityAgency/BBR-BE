@@ -7,9 +7,9 @@ export class Country extends Model {
   name!: string;
   code!: string;
   tld!: string;
-  currency_code!: string;
-  currency_name!: string;
-  currency_symbol!: string;
+  currencyCode!: string;
+  currencyName!: string;
+  currencySymbol!: string;
   capital!: string;
   phoneCodes!: PhoneCode[];
   subregion!: string;

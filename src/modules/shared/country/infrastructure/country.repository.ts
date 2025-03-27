@@ -19,9 +19,9 @@ export class CountryRepositoryImpl implements ICountryRepository {
       name: country.name,
       code: country.code,
       capital: country.capital,
-      currency_code: country.currency_code,
-      currency_name: country.currency_name,
-      currency_symbol: country.currency_symbol,
+      currency_code: country.currencyCode,
+      currency_name: country.currencyName,
+      currency_symbol: country.currencySymbol,
       flag: country.flag,
       subregion: country.subregion,
       tld: country.tld,
@@ -51,7 +51,7 @@ export class CountryRepositoryImpl implements ICountryRepository {
 async findAll(
   fetchQuery: FetchCountriesQuery
 ): Promise<{ data: Country[]; pagination: PaginationResponse }> {
-  const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
+  const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
 
   let query = Country.query()
     .whereNull('deleted_at')
