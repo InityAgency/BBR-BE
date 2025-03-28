@@ -47,7 +47,10 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-          scp -r ./dist package.json pnpm-lock.yaml ecosystem.config.js ubuntu@${{ secrets.EC2_HOST }}:/var/www/nest-api/
+
+          tar -czf dist.tar.gz dist
+          scp dist.tar.gz package.json pnpm-lock.yaml ecosystem.config.js ubuntu@${{ secrets.EC2_HOST }}:/var/www/nest-api/
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} "cd /var/www/nest-api && tar -xzf dist.tar.gz && rm dist.tar.gz"
 
       - name: 🚀 Restart Application on EC2
         run: |
