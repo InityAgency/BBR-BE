@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from './modules/auth/auth.module';
-import { BrandTypesModule } from './modules/brand_types/brand-types.module';
+import { BrandTypesModule } from "./modules/brand_types/brand-types.module";
 import { CompanyModule } from './modules/company/company.module';
 import { RoleModule } from './modules/role/roles.module';
 import { UserModule } from './modules/user/user.module';
@@ -20,6 +20,7 @@ import { ContinentModule } from './modules/shared/continent/continent.module';
 import { CountryModule } from './modules/shared/country/country.module';
 import { LifestyleModule } from './modules/lifestyles/lifestyle.module';
 import { CityModule } from './modules/shared/city/city.module';
+import { AmenityModule } from './modules/residentmanagement/amenity/amenity.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { CityModule } from './modules/shared/city/city.module';
     ContinentModule,
     LifestyleModule,
     CityModule,
+    AmenityModule,
   ],
   providers: [],
 })

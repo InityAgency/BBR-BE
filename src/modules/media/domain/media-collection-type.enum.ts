@@ -3,4 +3,5 @@ export enum MediaCollectionType {
   COMPANY = 'COMPANY',
   BRAND = 'BRAND',
   LIFESTYLE = 'LIFESTYLE',
+  AMENITY = 'AMENITY',
 }

@@ -29,6 +29,10 @@ import { CompanyStorageConfig } from '../company/infrastructure/media/company-st
 import { UserStorageConfig } from '../user/infrastructure/media/user-storage.config';
 import { LifestyleMediaStorageService } from '../lifestyles/infrastructure/media/lifestyle-media-storage.service';
 import { LifestyleStorageConfig } from '../lifestyles/infrastructure/media/lifestyle-storage.config';
+import { AmenityStorageConfig } from '../residentmanagement/amenity/infrastructure/media/amenity-storage.config';
+import {
+  AmenityMediaStorageService
+} from '../residentmanagement/amenity/infrastructure/media/amenity-media-storage.service';
 @Global()
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
@@ -68,18 +72,22 @@ import { LifestyleStorageConfig } from '../lifestyles/infrastructure/media/lifes
         brandStorage: BrandMediaStorageService,
         companyStorage: CompanyMediaStorageService,
         userStorage: UserMediaStorageService,
-        lifestyleStorage: LifestyleMediaStorageService
-      ) => [brandStorage, companyStorage, userStorage, lifestyleStorage],
-      inject: [BrandMediaStorageService, CompanyMediaStorageService, UserMediaStorageService],
+        lifestyleStorage: LifestyleMediaStorageService,
+        amenityStorage: AmenityMediaStorageService,
+      ) => [brandStorage, companyStorage, userStorage, lifestyleStorage, amenityStorage],
+      inject: [BrandMediaStorageService, CompanyMediaStorageService, UserMediaStorageService,
+        AmenityMediaStorageService],
     },
     BrandStorageConfig,
-    CompanyStorageConfig,
-    UserStorageConfig,
-    LifestyleStorageConfig,
     BrandMediaStorageService,
-    CompanyMediaStorageService,
+    UserStorageConfig,
     UserMediaStorageService,
+    LifestyleStorageConfig,
     LifestyleMediaStorageService,
+    CompanyStorageConfig,
+    CompanyMediaStorageService,
+    AmenityStorageConfig,
+    AmenityMediaStorageService,
   ],
 
   exports: [
@@ -90,13 +98,15 @@ import { LifestyleStorageConfig } from '../lifestyles/infrastructure/media/lifes
     'LOCAL_MEDIA_STORAGE_SERVICE',
     'MEDIA_DOMAIN_STORAGE_SERVICES',
     BrandStorageConfig,
-    CompanyStorageConfig,
-    UserStorageConfig,
-    LifestyleStorageConfig,
     BrandMediaStorageService,
+    CompanyStorageConfig,
     CompanyMediaStorageService,
+    UserStorageConfig,
     UserMediaStorageService,
+    LifestyleStorageConfig,
     LifestyleMediaStorageService,
+    AmenityStorageConfig,
+    AmenityMediaStorageService,
   ],
 })
 export class MediaModule {}
