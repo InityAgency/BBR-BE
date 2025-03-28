@@ -10,7 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateLifestyleCommand } from '../application/command/create-lifestyle.command';
 import { CreateLifestyleCommandHandler } from '../application/create-lifestyle.command.handler';
 import { Lifestyle } from '../domain/lifestyle.entity';
@@ -40,10 +40,28 @@ export class LifestyleController {
 
   @Get()
   @ApiResponse({ status: 200, description: 'Lifestyles fetched successfully', type: [Lifestyle] })
+  @ApiQuery({
+    name: 'query',
+    required: false,
+    type: String,
+    description: 'Search query for lifestyle name',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page (default: 10)',
+  })
   async findAll(
     @Query('query') query?: string,
-    @Query('page') page?: number,
-    @Query('limit') limit?: number
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10
   ): Promise<{ data: LifestyleResponse[]; pagination: PaginationResponse }> {
     const fetchQuery = new FetchLifestyleQuery(query, page, limit);
     const { data, pagination } = await this.fetchAllLifestylesQueryHandler.handle(fetchQuery);
