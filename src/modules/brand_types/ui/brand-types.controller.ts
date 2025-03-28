@@ -47,6 +47,7 @@ export class BrandTypesController {
         new BrandTypeResponse(
           brandType.id,
           brandType.name,
+          brandType.description,
           brandType.createdAt,
           brandType.updatedAt,
           brandType.deletedAt
@@ -63,6 +64,7 @@ export class BrandTypesController {
     return new BrandTypeResponseWithBrands(
       brandType.id,
       brandType.name,
+      brandType.description,
       brandType.createdAt,
       brandType.updatedAt,
       brandType.deletedAt,
@@ -74,15 +76,16 @@ export class BrandTypesController {
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Create a new brand type' })
   async create(@Body() request: CreateBrandTypeRequest): Promise<BrandTypeResponse> {
-    const command = new CreateBrandTypesCommand(request.name);
-    const brand = await this.createBrandTypesCommandHandler.handle(command);
+    const command = new CreateBrandTypesCommand(request.name, request.description);
+    const brandType = await this.createBrandTypesCommandHandler.handle(command);
 
     return new BrandTypeResponse(
-      brand.id,
-      brand.name,
-      brand.createdAt,
-      brand.updatedAt,
-      brand.deletedAt
+      brandType.id,
+      brandType.name,
+      brandType.description,
+      brandType.createdAt,
+      brandType.updatedAt,
+      brandType.deletedAt
     );
   }
 
@@ -93,15 +96,16 @@ export class BrandTypesController {
     @Param('id') id: string,
     @Body() request: UpdateBrandTypeRequest
   ): Promise<BrandTypeResponse> {
-    const command = new UpdateBrandTypeCommand(id, request.name);
-    const brand = await this.updateBrandTypesCommandHandler.handle(command);
+    const command = new UpdateBrandTypeCommand(id, request.name, request.description);
+    const brandType = await this.updateBrandTypesCommandHandler.handle(command);
 
     return new BrandTypeResponse(
-      brand.id,
-      brand.name,
-      brand.createdAt,
-      brand.updatedAt,
-      brand.deletedAt
+      brandType.id,
+      brandType.name,
+      brandType.description,
+      brandType.createdAt,
+      brandType.updatedAt,
+      brandType.deletedAt
     );
   }
 

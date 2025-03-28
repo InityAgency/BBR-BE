@@ -12,7 +12,6 @@ export async function up(knex: Knex): Promise<void> {
       .references('id')
       .inTable('brand_types')
       .onDelete('CASCADE');
-    table.timestamp('registered_at').nullable();
     table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable();
     table.timestamp('updated_at').defaultTo(knex.fn.now()).notNullable();
     table.timestamp('deleted_at').nullable();

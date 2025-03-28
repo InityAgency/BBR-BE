@@ -9,7 +9,6 @@ export class BrandMapper {
       brand.name,
       brand.description,
       brand.status,
-      brand.registeredAt,
       brand.brandTypeId,
       brand.brandType,
       brand.logo

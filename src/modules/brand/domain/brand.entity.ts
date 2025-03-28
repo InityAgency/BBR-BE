@@ -9,7 +9,6 @@ export class Brand extends Model {
   description!: string;
   brandTypeId!: string;
   status!: BrandStatus;
-  registeredAt!: Date;
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;
@@ -48,6 +47,6 @@ export class Brand extends Model {
   }
 
   static async create(data: Partial<Brand>): Promise<Brand> {
-    return  Brand.query().insert(data).returning('*');
+    return Brand.query().insert(data).returning('*');
   }
 }

@@ -44,7 +44,6 @@ export class CreateBrandCommandHandler {
       description: command.description,
       brandTypeId: command.brandTypeId,
       status: command.status as BrandStatus,
-      registeredAt: command.registeredAt,
       logoId: logo.id,
       createdAt: new Date(),
       updatedAt: new Date(),

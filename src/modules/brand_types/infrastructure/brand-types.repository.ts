@@ -7,7 +7,7 @@ import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 export class BrandTypesRepository implements IBrandTypesRepository {
   @LogMethod()
   async findAll(): Promise<BrandType[]> {
-    return await BrandType.query().select('*');
+    return await BrandType.query().whereNull('deleted_at').select('*');
   }
 
   @LogMethod()

@@ -13,8 +13,10 @@ import { IMediaRepository } from '../../media/domain/media.repository.interface'
 
 @Injectable()
 export class UpdateBrandCommandHandler {
-  constructor(private readonly brandRepository: IBrandRepository,
-              private readonly mediaRepository: IMediaRepository) {}
+  constructor(
+    private readonly brandRepository: IBrandRepository,
+    private readonly mediaRepository: IMediaRepository
+  ) {}
 
   @LogMethod()
   async handle(command: UpdateBrandCommand): Promise<Brand> {
@@ -37,9 +39,8 @@ export class UpdateBrandCommandHandler {
       name: command.name,
       description: command.description,
       brandTypeId: command.brandTypeId,
-      logoId:logo.id,
+      logoId: logo.id,
       status: command.status as BrandStatus,
-      registeredAt: command.registeredAt,
     };
 
     const updatedBrand = await this.brandRepository.update(existingBrand.id, updateData);

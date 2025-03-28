@@ -4,6 +4,7 @@ import { Brand } from 'src/modules/brand/domain/brand.entity';
 export class BrandType extends Model {
   id!: string;
   name!: string;
+  description!: string;
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;

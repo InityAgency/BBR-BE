@@ -22,9 +22,4 @@ export class CreateBrandRequest {
 
   @IsEnum(BrandStatus)
   status: BrandStatus;
-
-  @IsNotEmpty()
-  @IsDate()
-  @Type(() => Date)
-  registeredAt: Date;
 }

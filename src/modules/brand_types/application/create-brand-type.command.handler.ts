@@ -16,6 +16,7 @@ export class CreateBrandTypesCommandHandler {
 
     const brandType = await BrandType.create({
       name: command.name,
+      description: command.description,
     });
 
     const created = await this.brandTypesRepository.findById(brandType.id);

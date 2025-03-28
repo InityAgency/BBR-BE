@@ -6,7 +6,6 @@ export class CreateBrandCommand {
     public readonly description: string,
     public readonly brandTypeId: string,
     public readonly logoId: string,
-    public readonly status: BrandStatus,
-    public readonly registeredAt: Date
+    public readonly status: BrandStatus
   ) {}
 }

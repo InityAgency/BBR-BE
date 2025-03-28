@@ -58,8 +58,7 @@ export class BrandController {
       request.description,
       request.brandTypeId,
       request.logoId,
-      request.status,
-      request.registeredAt
+      request.status
     );
     const brand = await this.createBrandHandler.handle(command);
 
@@ -120,8 +119,7 @@ export class BrandController {
       request.description,
       request.brandTypeId,
       request.logoId,
-      request.status,
-      request.registeredAt
+      request.status
     );
 
     const brand = await this.updateBrandHandler.handle(command);

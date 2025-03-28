@@ -7,7 +7,6 @@ export class BrandResponse {
     public readonly name: string,
     public readonly description: string,
     public readonly status: string,
-    public readonly registeredAt: Date,
     public readonly brandTypeId: string,
     public readonly brandType?: BrandType,
     public readonly logo?: MediaResponse | null
