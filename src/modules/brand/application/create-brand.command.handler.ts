@@ -11,13 +11,14 @@ import { Brand } from '../domain/brand.entity';
 import { IBrandRepository } from '../domain/brand.repository.interface';
 import { CreateBrandCommand } from './command/create-brand.command';
 import { IMediaService } from 'src/shared/media/media.service.interface';
+import { IBrandTypesRepository } from 'src/modules/brand_types/domain/brand-type.repository.interface';
 
 @Injectable()
 export class CreateBrandCommandHandler {
   constructor(
     private readonly brandRepository: IBrandRepository,
     private readonly mediaRepository: IMediaRepository,
-    private readonly brandTypeRepository: IBrandRepository,
+    private readonly brandTypeRepository: IBrandTypesRepository,
     private readonly mediaService: IMediaService
   ) {}
 

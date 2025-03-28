@@ -11,6 +11,8 @@ import { IBrandRepository } from './domain/brand.repository.interface';
 import { UpdateBrandStatusCommandHandler } from './application/update-brand-status.command.handler';
 import { MediaModule } from '../media/media.module';
 import { BrandMapper } from './ui/mappers/brand.mapper';
+import { IBrandTypesRepository } from '../brand_types/domain/brand-type.repository.interface';
+import { BrandTypesRepository } from '../brand_types/infrastructure/brand-types.repository';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
@@ -19,6 +21,10 @@ import { BrandMapper } from './ui/mappers/brand.mapper';
     {
       provide: IBrandRepository,
       useClass: BrandRepositoryImpl,
+    },
+    {
+      provide: IBrandTypesRepository,
+      useClass: BrandTypesRepository,
     },
     CreateBrandCommandHandler,
     FindByIdBrandCommandHandler,
