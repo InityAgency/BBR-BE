@@ -11,24 +11,12 @@ import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 export class LifestyleRepositoryIml implements ILifestyleRepository {
   constructor(private readonly knexService: KnexService) {}
 
-  async create(lifestyle: Partial<Lifestyle>): Promise<Lifestyle> {
-    return await Lifestyle.create(lifestyle);
-  }
-
-  async update(id: string, data: Partial<Lifestyle>): Promise<Lifestyle | undefined> {
-    return await Lifestyle.query().patchAndFetchById(id, data);
-  }
-
-  async delete(id: string): Promise<any> {
-    return await Lifestyle.query().update({ deletedAt: new Date() }).where('id', id);
-  }
-
   async findAll(
     fetchQuery: FetchLifestyleQuery
   ): Promise<{ data: Lifestyle[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
 
-    let query = Lifestyle.query().whereNull('deleted_at').withGraphFetched('[image]');
+    let query = Lifestyle.query().withGraphFetched('[image]');
 
     if (sortBy && sortOrder) {
       const allowedColumns = ['name', 'created_at', 'updated_at'];
@@ -59,10 +47,22 @@ export class LifestyleRepositoryIml implements ILifestyleRepository {
   }
 
   async findById(id: string): Promise<Lifestyle | undefined> {
-    return await Lifestyle.query().whereNull('deleted_at').findById(id).withGraphFetched('[image]');
+    return await Lifestyle.query().findById(id).withGraphFetched('[image]');
   }
 
   async findByName(name: string): Promise<Lifestyle | undefined> {
-    return await Lifestyle.query().whereNull('deleted_at').findOne({ name });
+    return await Lifestyle.query().findOne({ name });
+  }
+
+  async create(lifestyle: Partial<Lifestyle>): Promise<Lifestyle> {
+    return await Lifestyle.create(lifestyle);
+  }
+
+  async update(id: string, data: Partial<Lifestyle>): Promise<Lifestyle | undefined> {
+    return await Lifestyle.query().patchAndFetchById(id, data);
+  }
+
+  async delete(id: string): Promise<any> {
+    return await Lifestyle.query().deleteById(id);
   }
 }

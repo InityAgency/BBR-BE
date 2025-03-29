@@ -31,10 +31,27 @@ export class EmailQueue {
     this.worker = new Worker(
       QueuesEnum.EMAIL,
       async (job) => {
-        await this.emailJobProcessor.process(job);
+        try {
+          await this.emailJobProcessor.process(job);
+        } catch (error) {
+          console.error(`[EMAIL QUEUE] Job ${job.id} failed:`, error);
+          throw error;
+        }
       },
       { connection: redisConfig, concurrency: 5 }
     );
+
+    this.worker.on('failed', (job, err) => {
+      console.error(`[EMAIL QUEUE] Job ${job?.id} failed`, err);
+    });
+
+    this.worker.on('completed', (job) => {
+      console.log(`[EMAIL QUEUE] Job ${job.id} completed`);
+    });
+
+    this.worker.on('error', (err) => {
+      console.error('[EMAIL QUEUE] Worker error:', err);
+    });
   }
 
   async addEmailJob(
@@ -50,8 +67,9 @@ export class EmailQueue {
       QueuesEnum.EMAIL,
       { action, ...data },
       {
+        jobId: `${action}:${data.to}:${Date.now()}`,
         attempts: 3,
-        backoff: { type: 'exponential', delay: 3000 },
+        backoff: { type: 'exponential', delay: 5 * 60 * 1000 }, // 5 minutes
         removeOnComplete: true,
         removeOnFail: false,
       }

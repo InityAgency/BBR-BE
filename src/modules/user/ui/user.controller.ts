@@ -43,6 +43,7 @@ import { UpdateUserStatusCommand } from '../application/command/update-user-stat
 import { UpdateUserStatusCommandHandler } from '../application/handler/update-user-status.command.handler';
 import { Permissions } from 'src/shared/decorators/permissions.decorator';
 import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { UserMapper } from './mappers/user.mapper';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -85,7 +86,7 @@ export class UserController {
     );
 
     const user = await this.createUserHandler.handle(command);
-    return new UserResponse(user);
+    return UserMapper.toResponse(user);
   }
 
   @Get()
@@ -113,7 +114,6 @@ export class UserController {
   // * Verify email
   @HttpCode(HttpStatus.OK)
   @Post(':token/verify-email')
-  @UseGuards(SessionAuthGuard)
   async verifyEmail(@Param('token') token: string) {
     const command = new VerificationCommand(token);
 
@@ -157,7 +157,9 @@ export class UserController {
   @Permissions(PermissionsEnum.ADMIN)
   async findOne(@Param('id') id: string): Promise<UserResponse> {
     const user = await this.findByIdUserHandler.handle(id);
-    return new UserResponse(user);
+
+    console.log(user);
+    return UserMapper.toResponse(user);
   }
 
   @Put(':id')
@@ -180,7 +182,7 @@ export class UserController {
       request.emailNotifications
     );
     const user = await this.updateUserHandler.handle(command);
-    return new UserResponse(user);
+    return UserMapper.toResponse(user);
   }
 
   @Delete(':id')

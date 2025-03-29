@@ -1,8 +1,8 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from './modules/auth/auth.module';
-import { BrandTypesModule } from "./modules/brand_types/brand-types.module";
+import { BrandTypesModule } from './modules/brand_type/brand-type.module';
 import { CompanyModule } from './modules/company/company.module';
 import { RoleModule } from './modules/role/roles.module';
 import { UserModule } from './modules/user/user.module';
@@ -21,6 +21,10 @@ import { CountryModule } from './modules/shared/country/country.module';
 import { LifestyleModule } from './modules/lifestyles/lifestyle.module';
 import { CityModule } from './modules/shared/city/city.module';
 import { AmenityModule } from './modules/residentmanagement/amenity/amenity.module';
+import { UnitTypeModule } from './modules/unit_type/unit-type.module';
+import { BullModule } from '@nestjs/bullmq';
+import { getBullConfig } from './shared/config/bull.config';
+import { QueuesEnum } from './shared/types/queues.enum';
 
 @Module({
   imports: [
@@ -29,6 +33,11 @@ import { AmenityModule } from './modules/residentmanagement/amenity/amenity.modu
       isGlobal: true,
       // envFilePath will be handled by dotenv-cli, so no need to specify here
     }),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: getBullConfig,
+    }),
+    BullModule.registerQueue({ name: QueuesEnum.EMAIL }, { name: QueuesEnum.NOTIFICATION }),
     AwsModule,
     SchedulerModule,
     UserModule,
@@ -47,6 +56,7 @@ import { AmenityModule } from './modules/residentmanagement/amenity/amenity.modu
     LifestyleModule,
     CityModule,
     AmenityModule,
+    UnitTypeModule,
   ],
   providers: [],
 })

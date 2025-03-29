@@ -17,6 +17,7 @@ import {
 import { UpdateUserProfileRequest } from '../ui/request/update-user-profile.request';
 import { buildUpdatePayload } from 'src/shared/utils/build-update-payload';
 import { UserStatusEnum } from 'src/shared/types/user-status.enum';
+import { UserMapper } from '../ui/mappers/user.mapper';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -88,7 +89,7 @@ export class UserRepositoryImpl implements IUserRepository {
     const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
 
     return {
-      data: data.map((user) => new UserResponse(user)),
+      data: data.map((user) => UserMapper.toResponse(user)),
       pagination: {
         total: totalResult ? Number(totalResult.total) : 0,
         totalPages: Math.ceil((totalResult ? Number(totalResult.total) : 0) / limit),
@@ -100,7 +101,7 @@ export class UserRepositoryImpl implements IUserRepository {
 
   @LogMethod()
   async update(userId: string, updateData: UpdateUserRequest): Promise<User> {
-    const updatedUser = await User.query().updateAndFetchById(userId, updateData);
+    const updatedUser = await User.query().patchAndFetchById(userId, updateData);
 
     return updatedUser;
   }
@@ -128,46 +129,48 @@ export class UserRepositoryImpl implements IUserRepository {
 
       const isBuyer = await trx('user_buyers').where({ userId: userId }).first();
 
-      if (!isBuyer) return;
+      console.log(isBuyer);
 
-      const buyerUpdatePayload = buildUpdatePayload({
-        imageId: updateData.imageId,
-        phoneNumber: updateData.phoneNumber,
-        phoneNumberCountryCode: updateData.phoneNumber,
-        budgetRangeFrom: updateData.budgetRangeFrom,
-        budgetRangeTo: updateData.budgetRangeTo,
-        currentLocation: updateData.currentLocation,
-        preferredContactMethod: updateData.preferredContactMethod,
-        preferredResidenceLocation: updateData.preferredResidenceLocation,
-      });
+      if (isBuyer) {
+        const buyerUpdatePayload = buildUpdatePayload({
+          imageId: updateData.imageId,
+          phoneNumber: updateData.phoneNumber,
+          phoneNumberCountryCode: updateData.phoneNumber,
+          budgetRangeFrom: updateData.budgetRangeFrom,
+          budgetRangeTo: updateData.budgetRangeTo,
+          currentLocation: updateData.currentLocation,
+          preferredContactMethod: updateData.preferredContactMethod,
+          preferredResidenceLocation: updateData.preferredResidenceLocation,
+        });
 
-      if (Object.keys(buyerUpdatePayload).length) {
-        await trx('user_buyers').where({ userId: userId }).update(buyerUpdatePayload);
-      }
-
-      if (updateData.unitTypes) {
-        await trx('user_buyer_unit_types').where({ userId: userId }).delete();
-
-        if (updateData.unitTypes.length) {
-          await trx('user_buyer_unit_types').insert(
-            updateData.unitTypes.map((id) => ({
-              userId: userId,
-              unitTypeId: id,
-            }))
-          );
+        if (Object.keys(buyerUpdatePayload).length) {
+          await trx('user_buyers').where({ userId: userId }).update(buyerUpdatePayload);
         }
-      }
 
-      if (updateData.lifestyles) {
-        await trx('user_buyer_lifestyles').where({ userId: userId }).delete();
+        if (updateData.unitTypes) {
+          await trx('user_buyer_unit_types').where({ userId: userId }).delete();
 
-        if (updateData.lifestyles.length) {
-          await trx('user_buyer_lifestyles').insert(
-            updateData.lifestyles.map((id) => ({
-              userId: userId,
-              lifestyleId: id,
-            }))
-          );
+          if (updateData.unitTypes.length) {
+            await trx('user_buyer_unit_types').insert(
+              updateData.unitTypes.map((id) => ({
+                userId: userId,
+                unitTypeId: id,
+              }))
+            );
+          }
+        }
+
+        if (updateData.lifestyles) {
+          await trx('user_buyer_lifestyles').where({ userId: userId }).delete();
+
+          if (updateData.lifestyles.length) {
+            await trx('user_buyer_lifestyles').insert(
+              updateData.lifestyles.map((id) => ({
+                userId: userId,
+                lifestyleId: id,
+              }))
+            );
+          }
         }
       }
     });

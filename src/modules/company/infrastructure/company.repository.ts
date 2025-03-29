@@ -1,18 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { ICompanyRepository } from '../domain/company.repository.interface';
-import { Company } from '../domain/company.entity';
-import { KnexService } from 'src/shared/infrastructure/database/knex.service';
-import { applyPagination } from 'src/shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-import { CompanyResponse } from '../ui/response/company.response';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { applyPagination } from 'src/shared/utils/pagination.util';
 import { FetchCompaniesQuery } from '../application/commands/fetch-all-company.query';
+import { Company } from '../domain/company.entity';
+import { ICompanyRepository } from '../domain/company.repository.interface';
 
 @Injectable()
 export class CompanyRepository implements ICompanyRepository {
-  private tableName = 'companies';
-
-  constructor(private readonly knexService: KnexService) {}
+  constructor() {}
 
   async create(company: Company): Promise<Company> {
     const createdCompany = await Company.create(company);
@@ -20,16 +16,22 @@ export class CompanyRepository implements ICompanyRepository {
   }
 
   async update(id: string, company: Company): Promise<Company> {
-    const updatedCompany = await Company.query().patchAndFetchById(id, company);
+    const updatedCompany = await Company.query()
+      .whereNull('deleted_at')
+      .patchAndFetchById(id, company)
+      .withGraphFetched('[image, contactPersonAvatar]');
     return updatedCompany;
   }
 
   async delete(id: string): Promise<void> {
-    await Company.query().patchAndFetchById(id, { deletedAt: new Date() });
+    await Company.query().whereNull('deleted_at').patchAndFetchById(id, { deletedAt: new Date() });
   }
 
   async findById(id: string): Promise<Company | undefined> {
-    const company = await Company.query().findById(id);
+    const company = await Company.query()
+      .whereNull('deleted_at')
+      .findById(id)
+      .withGraphFetched('[image, contactPersonAvatar]');
     return company;
   }
 
@@ -39,7 +41,9 @@ export class CompanyRepository implements ICompanyRepository {
   ): Promise<{ data: Company[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder } = fetchQuery;
 
-    let query = Company.query().withGraphFetched('[image, contactPersonAvatar]');
+    let query = Company.query()
+      .whereNull('deleted_at')
+      .withGraphFetched('[image, contactPersonAvatar]');
 
     if (sortBy && sortOrder) {
       if (this.allowedSortColumns.includes(sortBy)) {
@@ -70,11 +74,9 @@ export class CompanyRepository implements ICompanyRepository {
   private readonly allowedSortColumns: string[] = [
     'name',
     'address',
-    'logo',
     'phoneNumber',
     'phoneNumberCountryCode',
     'website',
-    'contactPersonAvatar',
     'contactPersonFullName',
     'contactPersonJobTitle',
     'contactPersonEmail',

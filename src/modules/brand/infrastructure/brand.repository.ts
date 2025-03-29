@@ -74,7 +74,7 @@ export class BrandRepositoryImpl implements IBrandRepository {
 
   @LogMethod()
   async update(id: string, updateData: Partial<Brand>): Promise<Brand | undefined> {
-    const result = await Brand.query().patchAndFetchById(id, updateData).whereNull('deleted_at');
+    const result = await Brand.query().whereNull('deleted_at').patchAndFetchById(id, updateData);
 
     return this.findById(result.id);
   }

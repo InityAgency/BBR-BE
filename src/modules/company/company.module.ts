@@ -3,12 +3,12 @@ import { DatabaseModule } from 'src/shared/infrastructure/database/database.modu
 import { ICompanyRepository } from './domain/company.repository.interface';
 import { CompanyRepository } from './infrastructure/company.repository';
 import { CompanyController } from './ui/company.controller';
-import { FetchAllCompanyCommandQuery } from './application/query/fetch-all-company.command.query';
-import { FetchCompanyByIdCommandQuery } from './application/query/fetch-company-by-id.command.query';
 import { DeleteCompanyCommandHandler } from './application/handlers/delete-company.command.handler';
 import { UpdateCompanyCommandHandler } from './application/handlers/update-company.command.handler';
 import { UpdateCompanyProfileCommandHandler } from './application/handlers/update-company-profile.command.handler';
 import { MediaModule } from '../media/media.module';
+import { FetchAllCompanyQueryHandler } from './application/query/fetch-all-company.query.handler';
+import { FindByIdCompanyQueryHandler } from './application/query/find-by-id-company.query.handler';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
@@ -18,8 +18,8 @@ import { MediaModule } from '../media/media.module';
       provide: ICompanyRepository,
       useClass: CompanyRepository,
     },
-    FetchAllCompanyCommandQuery,
-    FetchCompanyByIdCommandQuery,
+    FetchAllCompanyQueryHandler,
+    FindByIdCompanyQueryHandler,
     DeleteCompanyCommandHandler,
     UpdateCompanyCommandHandler,
     UpdateCompanyProfileCommandHandler,

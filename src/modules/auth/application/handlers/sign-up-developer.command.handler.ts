@@ -6,6 +6,7 @@ import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 import { SignUpDeveloperCommand } from '../commands/sign-up-developer.command';
 import { SendVerificationCommand } from 'src/modules/user/application/command/send-verification.command';
 import { SendVerifyEmailCommandHandler } from 'src/modules/user/application/handler/send-verify-email.command.handler';
+import { User } from 'src/modules/user/domain/user.entity';
 
 @Injectable()
 export class SignUpDeveloperCommandHandler {
@@ -15,7 +16,7 @@ export class SignUpDeveloperCommandHandler {
   ) {}
 
   @LogMethod()
-  async handler(command: SignUpDeveloperCommand) {
+  async handler(command: SignUpDeveloperCommand): Promise<User> {
     const existingUser = await this.authRepository.findByEmail(command.email!);
     if (existingUser) {
       throw new ConflictException('Email is already registered');
@@ -39,6 +40,10 @@ export class SignUpDeveloperCommandHandler {
     };
 
     const createdUser = await this.authRepository.create(user);
+
+    if (!createdUser) {
+      throw new BadRequestException('User can not be created');
+    }
 
     await this.sendVerifyEmailCommandHandler.handle(new SendVerificationCommand(createdUser.id));
 

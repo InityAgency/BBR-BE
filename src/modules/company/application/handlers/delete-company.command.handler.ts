@@ -7,7 +7,7 @@ export class DeleteCompanyCommandHandler {
   constructor(private readonly companyRepository: ICompanyRepository) {}
 
   @LogMethod()
-  async handler(id: string): Promise<void> {
+  async handle(id: string): Promise<void> {
     const company = await this.companyRepository.findById(id);
 
     if (!company) {

@@ -1,10 +1,9 @@
 import { Role } from 'src/modules/role/domain/role.entity';
 import { User } from 'src/modules/user/domain/user.entity';
-import { UserResponse } from 'src/modules/user/ui/response/user-response';
 
 export abstract class IAuthRepository {
-  abstract findByEmail(email: string): Promise<any>;
-  abstract create(userData: Partial<User>): Promise<UserResponse>;
+  abstract findByEmail(email: string): Promise<User | undefined>;
+  abstract create(userData: Partial<User>): Promise<User | undefined>;
   abstract saveResetToken(userId: string, resetToken: string): Promise<User>;
-  abstract findRoleByName(name: string): Promise<Role>;
+  abstract findRoleByName(name: string): Promise<Role | undefined>;
 }

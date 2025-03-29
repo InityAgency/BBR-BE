@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/modules/user/domain/user.entity';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
-import { IAuthRepository } from '../domain/auth.repository.interface';
-import { v4 as uuidv4 } from 'uuid';
-import { CreateUserRequest } from '../ui/request/create-user.request';
-import { UserResponse } from 'src/modules/user/ui/response/user-response';
 import {
-  buildRoleJoin,
-  buildCompanyJoin,
   buildBuyerJoin,
+  buildCompanyJoin,
   buildLifestylesJoin,
-  buildUnitTypesJoin,
   buildPermissionsJoin,
+  buildRoleJoin,
+  buildUnitTypesJoin,
 } from 'src/shared/user-query';
+import { v4 as uuidv4 } from 'uuid';
+import { IAuthRepository } from '../domain/auth.repository.interface';
 @Injectable()
 export class AuthRepository implements IAuthRepository {
   private tableName = 'users';
@@ -41,31 +39,63 @@ export class AuthRepository implements IAuthRepository {
     return this.knexService.connection('roles').where({ name: name.toLowerCase() }).first();
   }
 
-  async create(userData: Partial<CreateUserRequest>): Promise<UserResponse> {
+  async create(userData: Partial<User>): Promise<User | undefined> {
     return this.knexService.connection.transaction(async (trx) => {
-      const user = await User.query(trx).insert(userData).returning('*');
+      const user = await User.query(trx)
+        .insert({
+          fullName: userData.fullName,
+          email: userData.email,
+          password: userData.password,
+          roleId: userData.roleId,
+          signupMethod: userData.signupMethod,
+          status: userData.status,
+        })
+        .returning('*');
 
-      // ✅ If the user is a developer, create a company
-      const role = await trx('roles')
-        .where({ name: 'developer', id: user.roleId })
-        .select('id', 'name')
-        .first();
+      if (user) {
+        // ✅ If the user is a developer, create a company
+        const isDeveloper = await trx('roles')
+          .where({ name: 'developer', id: user.roleId })
+          .select('id', 'name')
+          .first();
 
-      if (role) {
-        // ✅ Create a company for developers
-        const companyId = uuidv4();
-        await trx('companies').insert({
-          id: companyId,
-          name: userData.companyName || `${userData.fullName}'s Company`,
-          address: null,
-          phone_number: null,
-          website: null,
-        });
+        const isBuyer = await trx('roles')
+          .where({ name: 'buyer', id: user.roleId })
+          .select('id', 'name')
+          .first();
 
-        // ✅ Link developer user to the created company
-        await trx('users').where({ id: user.id }).update({ company_id: companyId });
+        if (isDeveloper) {
+          // ✅ Create a company for developers
+          const companyId = uuidv4();
+          await trx('companies').insert({
+            id: companyId,
+            name: userData.companyName || `${userData.fullName}'s Company`,
+            address: null,
+            phone_number: null,
+            website: null,
+          });
 
-        return { ...user, company_id: companyId };
+          // ✅ Link developer user to the created company
+          await trx('users').where({ id: user.id }).update({ company_id: companyId });
+        }
+
+        if (isBuyer) {
+          // ✅ Create a company for developers
+          await trx('user_buyers').insert({
+            userId: user.id,
+            imageId: null,
+            phoneNumber: null,
+            phoneNumberCountryCode: null,
+            budgetRangeFrom: null,
+            budgetRangeTo: null,
+            currentLocation: null,
+            preferredContactMethod: null,
+            preferredResidenceLocation: null,
+          });
+
+          const updatedUser = await User.query(trx).findById(user.id);
+          return updatedUser;
+        }
       }
 
       return user;

@@ -11,20 +11,20 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { CreateLifestyleCommand } from '../application/command/create-lifestyle.command';
-import { CreateLifestyleCommandHandler } from '../application/create-lifestyle.command.handler';
+import { DeleteLifestyleCommand } from '../application/command/delete-lifestyle.command';
+import { FetchLifestyleQuery } from '../application/command/fetch-lifestyle.query';
+import { UpdateLifestyleCommand } from '../application/command/update-lifestyle.command';
+import { CreateLifestyleCommandHandler } from '../application/handlers/create-lifestyle.command.handler';
+import { DeleteLifestyleCommandHandler } from '../application/handlers/delete-lifestyle.command.handler';
+import { UpdateLifestyleCommandHandler } from '../application/handlers/update-lifestyle.command.handler';
+import { FetchAllLifestylesQueryHandler } from '../application/query/fetch-all-lifestyles.query.handler';
+import { FindByIdLifestyleQueryHandler } from '../application/query/find-by-id-lifestyle.query.handler';
 import { Lifestyle } from '../domain/lifestyle.entity';
+import { LifestyleMapper } from './mappers/lifestyle.mapper';
 import { CreateLifestyleRequest } from './request/create-lifestyle.request';
 import { UpdateLifestyleRequest } from './request/update-lifestyle.request';
-import { UpdateLifestyleCommand } from '../application/command/update-lifestyle.command';
-import { UpdateLifestyleCommandHandler } from '../application/update-lifestyle.command.handler';
-import { DeleteLifestyleCommand } from '../application/command/delete-lifestyle.command';
-import { DeleteLifestyleCommandHandler } from '../application/delete-lifestyle.command.handler';
-import { FetchAllLifestylesQueryHandler } from '../application/fetch-all-lifestyles.query.handler';
-import { FetchLifestyleQuery } from '../application/command/fetch-lifestyle.query';
-import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
-import { FindByIdLifestyleQueryHandler } from '../application/find-by-id-lifestyle.query.handler';
-import { LifestyleMapper } from './mappers/lifestyle.mapper';
 import { LifestyleResponse } from './response/lifestyle.response';
 
 @ApiTags('Lifestyles')

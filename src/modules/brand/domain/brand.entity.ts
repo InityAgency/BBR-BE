@@ -1,7 +1,7 @@
 import { Model } from 'objection';
 import { BrandStatus } from './brand-status.enum';
 import { Media } from 'src/modules/media/domain/media.entity';
-import { BrandType } from 'src/modules/brand_types/domain/brand-type.entity';
+import { BrandType } from 'src/modules/brand_type/domain/brand-type.entity';
 
 export class Brand extends Model {
   id!: string;

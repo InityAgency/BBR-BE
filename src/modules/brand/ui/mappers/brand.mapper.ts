@@ -9,7 +9,8 @@ export class BrandMapper {
       brand.name,
       brand.description,
       brand.status,
-      brand.brandTypeId,
+      brand.createdAt,
+      brand.updatedAt,
       brand.brandType,
       brand.logo
         ? new MediaResponse(

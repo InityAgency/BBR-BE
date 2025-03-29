@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
-import { CreateBrandCommandHandler } from './application/create-brand.command.handler';
-import { FindByIdBrandCommandHandler } from './application/find-by-id-brand.command.handler';
-import { FetchAllBrandCommandHandler } from './application/fetch-all-brands.command.handler';
-import { UpdateBrandCommandHandler } from './application/update-brand.command.handler';
-import { DeleteBrandCommandHandler } from './application/delete-brand.command.handler';
-import { BrandController } from './ui/brand.controller';
-import { BrandRepositoryImpl } from './infrastructure/brand.repository';
 import { DatabaseModule } from 'src/shared/infrastructure/database/database.module';
-import { IBrandRepository } from './domain/brand.repository.interface';
-import { UpdateBrandStatusCommandHandler } from './application/update-brand-status.command.handler';
+import { IBrandTypesRepository } from '../brand_type/domain/brand-type.repository.interface';
+import { BrandTypesRepository } from '../brand_type/infrastructure/brand-types.repository';
 import { MediaModule } from '../media/media.module';
+import { CreateBrandCommandHandler } from './application/handlers/create-brand.command.handler';
+import { DeleteBrandCommandHandler } from './application/handlers/delete-brand.command.handler';
+import { UpdateBrandStatusCommandHandler } from './application/handlers/update-brand-status.command.handler';
+import { UpdateBrandCommandHandler } from './application/handlers/update-brand.command.handler';
+import { IBrandRepository } from './domain/brand.repository.interface';
+import { BrandRepositoryImpl } from './infrastructure/brand.repository';
+import { BrandController } from './ui/brand.controller';
 import { BrandMapper } from './ui/mappers/brand.mapper';
-import { IBrandTypesRepository } from '../brand_types/domain/brand-type.repository.interface';
-import { BrandTypesRepository } from '../brand_types/infrastructure/brand-types.repository';
+import { FindByIdBrandQueryHandler } from './application/query/find-by-id-brand.query.handler';
+import { FetchAllBrandQueryHandler } from './application/query/fetch-all-brands.query.handler';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
@@ -27,8 +27,8 @@ import { BrandTypesRepository } from '../brand_types/infrastructure/brand-types.
       useClass: BrandTypesRepository,
     },
     CreateBrandCommandHandler,
-    FindByIdBrandCommandHandler,
-    FetchAllBrandCommandHandler,
+    FindByIdBrandQueryHandler,
+    FetchAllBrandQueryHandler,
     UpdateBrandCommandHandler,
     DeleteBrandCommandHandler,
     UpdateBrandStatusCommandHandler,

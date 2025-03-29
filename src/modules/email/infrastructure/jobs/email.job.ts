@@ -44,7 +44,7 @@ export class EmailJobProcessor extends WorkerHost {
         break;
       }
       case EmailAction.VERIFY_EMAIL: {
-        const command = new SendVerifyEmailCommand(data.to, data.variables?.otp);
+        const command = new SendVerifyEmailCommand(data.to, data.variables?.verificationLink);
         await this.verifyEmail.handle(command);
         break;
       }

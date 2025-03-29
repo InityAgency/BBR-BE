@@ -23,12 +23,12 @@ export class CompanyMapper {
       company.website,
       company.contactPersonAvatar
         ? new MediaResponse(
-            company.image.id,
-            company.image.originalFileName,
-            company.image.mimeType,
-            company.image.uploadStatus,
-            company.image.size,
-            company.image.securedUrl
+            company.contactPersonAvatar.id,
+            company.contactPersonAvatar.originalFileName,
+            company.contactPersonAvatar.mimeType,
+            company.contactPersonAvatar.uploadStatus,
+            company.contactPersonAvatar.size,
+            company.contactPersonAvatar.securedUrl
           )
         : null,
       company.contactPersonFullName,

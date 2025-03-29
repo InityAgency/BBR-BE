@@ -29,6 +29,7 @@ import { ResetPasswordRequest } from './request/reset-password.request';
 import { AcceptInviteRequest } from './request/accept-invite.request';
 import { AcceptInviteCommand } from '../application/commands/accept-invite.command';
 import { AcceptInviteCommandHandler } from '../application/handlers/accept-invite.command.handler';
+import { UserMapper } from 'src/modules/user/ui/mappers/user.mapper';
 
 @Controller('auth')
 export class AuthController {
@@ -44,13 +45,13 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   async login(@Req() req) {
-    return new UserResponse(req.user);
+    return UserMapper.toResponse(req.user);
   }
 
   @Post('login/admin')
   @UseGuards(LocalAdminAuthGuard)
   async loginAdmin(@Req() req) {
-    return new UserResponse(req.user);
+    return UserMapper.toResponse(req.user);
   }
 
   @Get('google')
@@ -66,13 +67,13 @@ export class AuthController {
   @Post('signup/developer')
   async signUpDeveloper(@Body() command: CreateUserRequest): Promise<UserResponse> {
     const user = await this.signUpDeveloperHandler.handler(command);
-    return new UserResponse(user);
+    return UserMapper.toResponse(user);
   }
 
   @Post('signup/buyer')
   async signUpBuyer(@Body() command: CreateUserRequest): Promise<UserResponse> {
     const user = await this.signUpBuyerHandler.handler(command);
-    return new UserResponse(user);
+    return UserMapper.toResponse(user);
   }
 
   @Get('me')

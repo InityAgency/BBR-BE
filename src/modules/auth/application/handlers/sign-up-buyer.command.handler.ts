@@ -6,6 +6,7 @@ import { SignupMethodEnum } from 'src/shared/types/signup-method.enum';
 import { SignUpBuyerCommand } from '../commands/sign-up-buyer.command';
 import { SendVerifyEmailCommandHandler } from 'src/modules/user/application/handler/send-verify-email.command.handler';
 import { SendVerificationCommand } from 'src/modules/user/application/command/send-verification.command';
+import { User } from 'src/modules/user/domain/user.entity';
 
 @Injectable()
 export class SignUpBuyerCommandHandler {
@@ -15,15 +16,13 @@ export class SignUpBuyerCommandHandler {
   ) {}
 
   @LogMethod()
-  async handler(command: SignUpBuyerCommand) {
+  async handler(command: SignUpBuyerCommand): Promise<User> {
     const existingUser = await this.authRepository.findByEmail(command.email!);
     if (existingUser) {
       throw new ConflictException('Email is already registered');
     }
 
-    // find user role 'Buyer' by name
     const role = await this.authRepository.findRoleByName('Buyer');
-
     if (!role) {
       throw new BadRequestException('User can not be created');
     }
@@ -38,6 +37,9 @@ export class SignUpBuyerCommandHandler {
     };
 
     const createdUser = await this.authRepository.create(user);
+    if (!createdUser) {
+      throw new BadRequestException('User can not be created');
+    }
 
     await this.sendVerifyEmailCommandHandler.handle(new SendVerificationCommand(createdUser.id));
 

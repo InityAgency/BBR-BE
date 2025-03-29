@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 import { UserRepositoryImpl } from 'src/modules/user/infrastructure/user.repository';
+import { UserMapper } from 'src/modules/user/ui/mappers/user.mapper';
 import { UserResponse } from 'src/modules/user/ui/response/user-response';
 import { validate as isUUID } from 'uuid';
 
@@ -22,7 +23,7 @@ export class SessionSerializer extends PassportSerializer {
         return done(null, false);
       }
 
-      done(null, new UserResponse(user));
+      done(null, UserMapper.toResponse(user));
     } catch (error) {
       done(error, false);
     }

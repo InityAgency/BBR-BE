@@ -19,18 +19,18 @@ import { CreateBrandCommand } from '../application/command/create-brand.command'
 import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
 import { UpdateBrandStatusCommand } from '../application/command/update-brand-status.command';
 import { UpdateBrandCommand } from '../application/command/update-brand.command';
-import { CreateBrandCommandHandler } from '../application/create-brand.command.handler';
-import { DeleteBrandCommandHandler } from '../application/delete-brand.command.handler';
-import { FetchAllBrandCommandHandler } from '../application/fetch-all-brands.command.handler';
-import { FindByIdBrandCommandHandler } from '../application/find-by-id-brand.command.handler';
-import { UpdateBrandStatusCommandHandler } from '../application/update-brand-status.command.handler';
-import { UpdateBrandCommandHandler } from '../application/update-brand.command.handler';
+import { CreateBrandCommandHandler } from '../application/handlers/create-brand.command.handler';
+import { DeleteBrandCommandHandler } from '../application/handlers/delete-brand.command.handler';
+import { UpdateBrandStatusCommandHandler } from '../application/handlers/update-brand-status.command.handler';
+import { UpdateBrandCommandHandler } from '../application/handlers/update-brand.command.handler';
 import { Brand } from '../domain/brand.entity';
 import { BrandMapper } from './mappers/brand.mapper';
 import { CreateBrandRequest } from './request/create-brand.request';
 import { UpdateBrandStatusRequest } from './request/update-brand-status.request';
 import { UpdateBrandRequest } from './request/update-brand.request';
 import { BrandResponse } from './response/brand-response';
+import { FindByIdBrandQueryHandler } from '../application/query/find-by-id-brand.query.handler';
+import { FetchAllBrandQueryHandler } from '../application/query/fetch-all-brands.query.handler';
 
 @ApiTags('brands')
 @ApiBearerAuth()
@@ -38,8 +38,8 @@ import { BrandResponse } from './response/brand-response';
 export class BrandController {
   constructor(
     private readonly createBrandHandler: CreateBrandCommandHandler,
-    private readonly findByIdBrandHandler: FindByIdBrandCommandHandler,
-    private readonly fetchAllBrandHandler: FetchAllBrandCommandHandler,
+    private readonly findByIdBrandHandler: FindByIdBrandQueryHandler,
+    private readonly fetchAllBrandHandler: FetchAllBrandQueryHandler,
     private readonly updateBrandHandler: UpdateBrandCommandHandler,
     private readonly deleteBrandHandler: DeleteBrandCommandHandler,
     private readonly updateBrandStatusCommandHandler: UpdateBrandStatusCommandHandler

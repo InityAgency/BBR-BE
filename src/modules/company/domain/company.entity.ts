@@ -2,14 +2,14 @@ import { Model, RelationMappings } from 'objection';
 import { Media } from 'src/modules/media/domain/media.entity';
 
 export class Company extends Model {
-  id!: string;
-  name!: string;
+  id: string;
+  name: string;
   address?: string;
-  imageId?: string;
+  image?: Media;
   phoneNumber?: string;
   phoneNumberCountryCode?: string;
   website?: string;
-  contactPersonAvatarId?: string;
+  contactPersonAvatar?: Media;
   contactPersonFullName?: string;
   contactPersonJobTitle?: string;
   contactPersonEmail?: string;
@@ -18,9 +18,6 @@ export class Company extends Model {
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;
-
-  image!: Media;
-  contactPersonAvatar!: Media;
 
   static tableName = 'companies';
 
