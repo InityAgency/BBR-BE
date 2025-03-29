@@ -15,35 +15,35 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
+import { Permissions } from 'src/shared/decorators/permissions.decorator';
 import { RBACGuard } from 'src/shared/guards/rbac.guard';
-import { UpdateUserCommand } from '../application/command/update-user.command';
-import { CreateUserCommandHandler } from '../application/handler/create-user.command.handler';
-import { DeleteUserCommandHandler } from '../application/handler/delete-user.command.handler';
-import { FetchUsersCommandHandler } from '../application/query/fetch-users-command.query';
-import { FindByIdUserCommandHandler } from '../application/query/find-by-id-user.command.query';
-import { UpdateUserCommandHandler } from '../application/handler/update-user-command.handler';
-import { CreateUserRequest } from './request/create-user.request';
-import { UpdateUserRequest } from './request/update-user.request';
-import { UserResponse } from './response/user-response';
+import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
 import { PaginationRequest } from 'src/shared/ui/request/pagination.request';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
-import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
-import { SendVerificationCommand } from '../application/command/send-verification.command';
-import { SendVerifyEmailCommandHandler } from '../application/handler/send-verify-email.command.handler';
-import { VerificationCommand } from '../application/command/verification.command';
-import { VerifyEmailCommandHandler } from '../application/handler/verify-email.command.handler';
-import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
-import { User } from '../domain/user.entity';
 import { CreateUserCommand } from '../application/command/create-user.command';
+import { SendVerificationCommand } from '../application/command/send-verification.command';
 import { UpdateUserProfileCommand } from '../application/command/update-user-profile.command';
-import { UpdateUserProfileRequest } from './request/update-user-profile.request';
-import { UpdateUserProfileCommandHandler } from '../application/handler/update-user-profile.command.handler';
-import { UpdateUserStatusRequest } from './request/update-user-status.request';
 import { UpdateUserStatusCommand } from '../application/command/update-user-status.command';
+import { UpdateUserCommand } from '../application/command/update-user.command';
+import { VerificationCommand } from '../application/command/verification.command';
+import { CreateUserCommandHandler } from '../application/handler/create-user.command.handler';
+import { DeleteUserCommandHandler } from '../application/handler/delete-user.command.handler';
+import { SendVerifyEmailCommandHandler } from '../application/handler/send-verify-email.command.handler';
+import { UpdateUserCommandHandler } from '../application/handler/update-user-command.handler';
+import { UpdateUserProfileCommandHandler } from '../application/handler/update-user-profile.command.handler';
 import { UpdateUserStatusCommandHandler } from '../application/handler/update-user-status.command.handler';
-import { Permissions } from 'src/shared/decorators/permissions.decorator';
-import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { VerifyEmailCommandHandler } from '../application/handler/verify-email.command.handler';
+import { FetchUsersCommandHandler } from '../application/query/fetch-users-command.query';
+import { FindByIdUserCommandHandler } from '../application/query/find-by-id-user.command.query';
+import { User } from '../domain/user.entity';
 import { UserMapper } from './mappers/user.mapper';
+import { CreateUserRequest } from './request/create-user.request';
+import { UpdateUserProfileRequest } from './request/update-user-profile.request';
+import { UpdateUserStatusRequest } from './request/update-user-status.request';
+import { UpdateUserRequest } from './request/update-user.request';
+import { UserResponse } from './response/user-response';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -181,6 +181,7 @@ export class UserController {
       request.signupMethod,
       request.emailNotifications
     );
+
     const user = await this.updateUserHandler.handle(command);
     return UserMapper.toResponse(user);
   }
