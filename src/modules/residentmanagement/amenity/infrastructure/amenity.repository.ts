@@ -31,10 +31,7 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
 
   @LogMethod()
   async findById(id: string): Promise<Amenity | undefined> {
-    return Amenity.query()
-      .findById(id)
-      .whereNull('deleted_at')
-      .withGraphFetched('[icon]');
+    return Amenity.query().findById(id).whereNull('deleted_at').withGraphFetched('[icon]');
   }
 
   @LogMethod()
@@ -56,7 +53,10 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
 
     const paginatedAmenities = await applyPagination(query, page, limit);
 
-    const totalResult = (await query.count('* as total').first()) as { total: string } | undefined;
+    const totalResult = (await Amenity.query()
+      .whereNull('deleted_at')
+      .count('* as total')
+      .first()) as { total: string } | undefined;
 
     const totalCount = totalResult ? Number(totalResult.total) : 0;
     const totalPages = Math.ceil(totalCount / limit);
