@@ -16,7 +16,7 @@ export class LifestyleRepositoryIml implements ILifestyleRepository {
   ): Promise<{ data: Lifestyle[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
 
-    let query = Lifestyle.query().withGraphFetched('[image]');
+    let query = Lifestyle.query();
 
     if (sortBy && sortOrder) {
       const allowedColumns = ['name', 'created_at', 'updated_at'];
@@ -49,7 +49,7 @@ export class LifestyleRepositoryIml implements ILifestyleRepository {
   }
 
   async findById(id: string): Promise<Lifestyle | undefined> {
-    return await Lifestyle.query().findById(id).withGraphFetched('[image]');
+    return await Lifestyle.query().findById(id);
   }
 
   async findByName(name: string): Promise<Lifestyle | undefined> {

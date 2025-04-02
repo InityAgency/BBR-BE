@@ -76,7 +76,7 @@ export class LifestyleController {
   @UsePipes(new ValidationPipe())
   @ApiResponse({ status: 201, description: 'Lifestyle created successfully', type: Lifestyle })
   async create(@Body() request: CreateLifestyleRequest): Promise<Lifestyle> {
-    const command = new CreateLifestyleCommand(request.name, request.imageId, request.order);
+    const command = new CreateLifestyleCommand(request.name, request.order);
 
     const lifestyle = await this.createLifestyleCommandHandler.handle(command);
 
@@ -97,7 +97,7 @@ export class LifestyleController {
     @Param('id') id: string,
     @Body() request: UpdateLifestyleRequest
   ): Promise<Lifestyle> {
-    const command = new UpdateLifestyleCommand(id, request.name, request.imageId, request.order);
+    const command = new UpdateLifestyleCommand(id, request.name, request.order);
 
     return await this.updateLifestyleCommandHandler.handle(command);
   }

@@ -5,7 +5,6 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
     table.string('name').notNullable();
     table.integer('order').notNullable().defaultTo(0);
-    table.uuid('imageId').nullable().references('id').inTable('media').onDelete('SET NULL');
     table.timestamps(true, true);
   });
 }

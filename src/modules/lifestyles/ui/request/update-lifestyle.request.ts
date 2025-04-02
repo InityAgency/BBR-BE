@@ -6,10 +6,6 @@ export class UpdateLifestyleRequest {
   name: string;
 
   @IsOptional()
-  @IsUUID()
-  imageId: string;
-
-  @IsOptional()
   @IsNumber()
   order: number;
 }

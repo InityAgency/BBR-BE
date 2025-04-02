@@ -10,16 +10,6 @@ export class LifestyleMapper {
       lifestyle.name,
       lifestyle.createdAt,
       lifestyle.updatedAt,
-      lifestyle.image
-        ? new MediaResponse(
-            lifestyle.image.id,
-            lifestyle.image.originalFileName,
-            lifestyle.image.mimeType,
-            lifestyle.image.uploadStatus,
-            lifestyle.image.size,
-            lifestyle.image.securedUrl
-          )
-        : null,
       lifestyle.order
     );
   }

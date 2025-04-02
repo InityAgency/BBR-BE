@@ -5,10 +5,6 @@ export class CreateLifestyleRequest {
   @IsNotEmpty()
   name: string;
 
-  @IsNotEmpty()
-  @IsUUID()
-  imageId: string;
-
   @IsOptional()
   @IsNumber()
   order: number;
