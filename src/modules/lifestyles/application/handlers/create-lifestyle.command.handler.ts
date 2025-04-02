@@ -24,18 +24,11 @@ export class CreateLifestyleCommandHandler {
       throw new ConflictException('Lifestyle already exists');
     }
 
-    const logo = await this.mediaService.findById(command.imageId);
-    if (!logo) {
-      throw new NotFoundException('Logo not found');
-    }
-
     const created = await this.lifestyleRepository.create(command);
 
     if (!created) {
       throw new InternalServerErrorException('Lifestyle can not be created');
     }
-
-    await this.mediaService.addTemporalUrl(created.image);
 
     return created;
   }

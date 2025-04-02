@@ -16,7 +16,6 @@ export class UpdateLifestyleCommandHandler {
 
     const updateData = {
       name: command.name,
-      imageId: command.imageId,
       order: command.order,
     };
 
