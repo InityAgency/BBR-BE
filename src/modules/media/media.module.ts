@@ -33,6 +33,8 @@ import { AmenityStorageConfig } from '../residentmanagement/amenity/infrastructu
 import { AmenityMediaStorageService } from '../residentmanagement/amenity/infrastructure/media/amenity-media-storage.service';
 import { RankingCategoryStorageConfig } from '../shared/rankingmanagement/category/infrastructure/media/ranking-category-storage.config';
 import { RankingCategoryMediaStorageService } from '../shared/rankingmanagement/category/infrastructure/media/ranking-category-media-storage.service';
+import { ResidenceMediaStorageService } from '../residentmanagement/residence/infrastructure/media/residence-media-storage.service';
+import { ResidenceStorageConfig } from '../residentmanagement/residence/infrastructure/media/residence-storage.config';
 @Global()
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
@@ -74,7 +76,8 @@ import { RankingCategoryMediaStorageService } from '../shared/rankingmanagement/
         userStorage: UserMediaStorageService,
         lifestyleStorage: LifestyleMediaStorageService,
         amenityStorage: AmenityMediaStorageService,
-        rankingCategoryStorage: RankingCategoryMediaStorageService
+        rankingCategoryStorage: RankingCategoryMediaStorageService,
+        residenceStorage: ResidenceMediaStorageService
       ) => [
         brandStorage,
         companyStorage,
@@ -82,6 +85,7 @@ import { RankingCategoryMediaStorageService } from '../shared/rankingmanagement/
         lifestyleStorage,
         amenityStorage,
         rankingCategoryStorage,
+        residenceStorage,
       ],
       inject: [
         BrandMediaStorageService,
@@ -89,6 +93,7 @@ import { RankingCategoryMediaStorageService } from '../shared/rankingmanagement/
         UserMediaStorageService,
         AmenityMediaStorageService,
         RankingCategoryMediaStorageService,
+        ResidenceMediaStorageService,
       ],
     },
     BrandStorageConfig,
@@ -103,6 +108,8 @@ import { RankingCategoryMediaStorageService } from '../shared/rankingmanagement/
     AmenityMediaStorageService,
     RankingCategoryStorageConfig,
     RankingCategoryMediaStorageService,
+    ResidenceStorageConfig,
+    ResidenceMediaStorageService,
   ],
 
   exports: [
@@ -124,6 +131,8 @@ import { RankingCategoryMediaStorageService } from '../shared/rankingmanagement/
     AmenityMediaStorageService,
     RankingCategoryStorageConfig,
     RankingCategoryMediaStorageService,
+    ResidenceStorageConfig,
+    ResidenceMediaStorageService,
   ],
 })
 export class MediaModule {}

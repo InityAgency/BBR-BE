@@ -1,24 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { MediaCollectionType } from 'src/modules/media/domain/media-collection-type.enum';
 import { IMediaService } from 'src/shared/media/media.service.interface';
-import { RankingCategoryStorageConfig } from './ranking-category-storage.config';
 import { Media } from 'src/modules/media/domain/media.entity';
 import { DomainMediaStorage } from 'src/modules/media/domain/domain.media.storage';
+import { ResidenceStorageConfig } from './residence-storage.config';
 
 @Injectable()
-export class RankingCategoryMediaStorageService implements DomainMediaStorage {
+export class ResidenceMediaStorageService implements DomainMediaStorage {
   constructor(
     private readonly mediaService: IMediaService,
-    private readonly rankingCategoryStorageConfig: RankingCategoryStorageConfig
+    private readonly residenceStorageConfig: ResidenceStorageConfig
   ) {}
 
   getCollectionType(): MediaCollectionType {
-    return MediaCollectionType.RANKING_CATEGORY;
+    return MediaCollectionType.RESIDENCE;
   }
 
   async uploadMedia(multipartFile: Express.Multer.File): Promise<Media | null> {
-    const storageType = this.rankingCategoryStorageConfig.storage;
-    const basePath = this.rankingCategoryStorageConfig.basePath;
+    const storageType = this.residenceStorageConfig.storage;
+    const basePath = this.residenceStorageConfig.basePath;
 
     return this.mediaService.uploadMedia(multipartFile, storageType, basePath);
   }

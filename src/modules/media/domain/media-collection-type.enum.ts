@@ -5,4 +5,5 @@ export enum MediaCollectionType {
   LIFESTYLE = 'LIFESTYLE',
   AMENITY = 'AMENITY',
   RANKING_CATEGORY = 'RANKING_CATEGORY',
+  RESIDENCE = 'RESIDENCE',
 }
