@@ -1,0 +1,5 @@
+export enum DevelompentStatusEnum {
+  COMPLETED = 'COMPLETED',
+  UNDER_CONSTRUCTION = 'UNDER_CONSTRUCTION',
+  PLANNED = 'PLANNED',
+}

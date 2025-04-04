@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Amenity } from '../domain/amenity.entity';
 import { IAmenityRepository } from '../domain/amenity.repository.interface';
 import { FetchAmenitiesQuery } from '../application/commands/fetch-amenities.query';
@@ -85,5 +85,16 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
   @LogMethod()
   async delete(id: string): Promise<void> {
     await Amenity.query().deleteById(id);
+  }
+
+  @LogMethod()
+  async validateAndFetchByIds(ids: string[]): Promise<Amenity[]> {
+    const amenities = await Amenity.query().whereIn('id', ids).whereNull('deleted_at');
+
+    if (ids.length !== amenities.length) {
+      throw new NotFoundException('Some amenities not found');
+    }
+
+    return amenities;
   }
 }

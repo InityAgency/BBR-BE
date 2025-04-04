@@ -25,6 +25,8 @@ import { UnitTypeModule } from './modules/unit_type/unit-type.module';
 import { BullModule } from '@nestjs/bullmq';
 import { getBullConfig } from './shared/config/bull.config';
 import { QueuesEnum } from './shared/types/queues.enum';
+import { KeyFeatureModule } from './modules/residentmanagement/key_feature/key-feature.module';
+import { ResidenceModule } from './modules/residentmanagement/residence/residence.module';
 
 @Module({
   imports: [
@@ -57,6 +59,8 @@ import { QueuesEnum } from './shared/types/queues.enum';
     CityModule,
     AmenityModule,
     UnitTypeModule,
+    ResidenceModule,
+    KeyFeatureModule,
   ],
   providers: [],
 })

@@ -1,0 +1,101 @@
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { IResidenceRepository } from '../domain/residence.repository.interface';
+import { Residence } from '../domain/residence.entity';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
+import { KnexService } from 'src/shared/infrastructure/database/knex.service';
+import { applySearchFilter } from 'src/shared/filter/query.filter';
+import { applyPagination } from 'src/shared/utils/pagination.util';
+
+@Injectable()
+export class ResidenceRepository implements IResidenceRepository {
+  constructor(private readonly knexService: KnexService) {}
+
+  async create(residence: Partial<Residence>): Promise<Residence | undefined> {
+    return await this.knexService.connection.transaction(async (trx) => {
+      const created = await Residence.create(residence);
+
+      if (!created) {
+        throw new InternalServerErrorException('Residence not created');
+      }
+
+      if (residence.keyFeatures) {
+        await created.$relatedQuery('keyFeatures').relate(residence.keyFeatures);
+      }
+
+      if (residence.amenities) {
+        await created.$relatedQuery('amenities').relate(residence.amenities);
+      }
+
+      return created;
+    });
+  }
+
+  async update(id: string, data: Partial<Residence>): Promise<Residence | undefined> {
+    return await Residence.query()
+      .patchAndFetchById(id, data)
+      .withGraphFetched('[videoTour, featuredImage, brand.logo, keyFeatures, city, country]');
+  }
+  async delete(id: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  async findById(id: string): Promise<Residence | undefined> {
+    return await Residence.query()
+      .findById(id)
+      .whereNull('deleted_at')
+      .withGraphFetched('[videoTour, featuredImage, brand.logo, keyFeatures, city, country]');
+  }
+  async findByName(name: string): Promise<Residence | undefined> {
+    throw new Error('Method not implemented.');
+  }
+  async findAll(
+    fetchQuery: FetchResidencesQuery
+  ): Promise<{ data: Residence[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery, status } = fetchQuery;
+
+    const baseQuery = Residence.query()
+      .whereNull('deleted_at')
+      .modify((qb) => {
+        if (status) {
+          qb.where('status', status);
+        }
+      })
+      .withGraphFetched('[videoTour, featuredImage, brand.logo, keyFeatures, city, country]');
+
+    const columnsToSearch = ['name'];
+    const searchableQuery = applySearchFilter(
+      baseQuery.clone(),
+      searchQuery,
+      columnsToSearch,
+      'residences'
+    );
+
+    const countQuery = searchableQuery
+      .clone()
+      .clearSelect()
+      .clearOrder()
+      .count('* as total')
+      .first();
+    const totalCount = Number((await countQuery)?.['total'] ?? 0);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    if (sortBy && sortOrder) {
+      const allowedColumns = ['name', 'created_at', 'updated_at'];
+      if (allowedColumns.includes(sortBy)) {
+        searchableQuery.orderBy(sortBy, sortOrder);
+      }
+    }
+
+    const paginated = await applyPagination(searchableQuery, page, limit);
+
+    return {
+      data: paginated,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page: page,
+        limit: limit,
+      },
+    };
+  }
+}
