@@ -6,6 +6,8 @@ import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
+import { ResidenceStatusEnum } from '../domain/residence-status.enum';
+import { applyAdvancedSearchFilter } from 'src/shared/filter/advanced-query.filter';
 
 @Injectable()
 export class ResidenceRepository implements IResidenceRepository {
@@ -30,9 +32,13 @@ export class ResidenceRepository implements IResidenceRepository {
         '[videoTour, featuredImage, brand.logo, keyFeatures, city, country,  mainGallery, secondaryGallery]'
       );
   }
+
   async delete(id: string): Promise<void> {
-    throw new Error('Method not implemented.');
+    await Residence.query()
+      .patch({ deletedAt: new Date(), status: ResidenceStatusEnum.DELETED })
+      .where('id', id);
   }
+
   async findById(id: string): Promise<Residence | undefined> {
     return await Residence.query()
       .findById(id)
@@ -41,32 +47,52 @@ export class ResidenceRepository implements IResidenceRepository {
         '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery]'
       );
   }
+
   async findByName(name: string): Promise<Residence | undefined> {
     throw new Error('Method not implemented.');
   }
+
   async findAll(
     fetchQuery: FetchResidencesQuery
   ): Promise<{ data: Residence[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery, status } = fetchQuery;
+    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery, status, cityId } = fetchQuery;
 
     const baseQuery = Residence.query()
-      .whereNull('deleted_at')
+      .whereNull('residences.deleted_at')
       .modify((qb) => {
         if (status) {
-          qb.where('status', status);
+          qb.where('residences.status', status);
+        }
+
+        if (cityId) {
+          qb.where('residences.city_id', cityId);
         }
       })
+      .joinRelated('city')
+      .leftJoinRelated('company')
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery]'
       );
 
-    const columnsToSearch = ['name'];
-    const searchableQuery = applySearchFilter(
+    const columnsToSearch = [
+      'residences.name',
+      'city.name',
+      'company.name',
+      'company.contact_person_full_name',
+      'company.contact_person_email',
+    ];
+    const searchableQuery = applyAdvancedSearchFilter(
       baseQuery.clone(),
       searchQuery,
-      columnsToSearch,
-      'residences'
+      columnsToSearch
     );
+    // const columnsToSearch = ['name'];
+    // const searchableQuery = applySearchFilter(
+    //   baseQuery.clone(),
+    //   searchQuery,
+    //   columnsToSearch,
+    //   Residence.tableName
+    // );
 
     if (sortBy && sortOrder) {
       const allowedColumns = ['name', 'created_at', 'updated_at'];

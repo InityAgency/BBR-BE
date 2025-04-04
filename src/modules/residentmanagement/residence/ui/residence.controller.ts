@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderByDirection } from 'objection';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
@@ -14,6 +26,9 @@ import { ResidenceResponse } from './response/residence.response';
 import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
 import { FindAllResidencesCommandQuery } from '../application/query/find-all-residences.query';
 import { FindByIdResidenceCommandQuery } from '../application/query/find-by-id-residence.query';
+import { UpdateResidenceStatusCommand } from '../application/commands/update-residence-status.command';
+import { UpdateResidenceStatusCommandHandler } from '../application/handlers/update-status-residence.command.handler';
+import { DeleteResidenceCommandHandler } from '../application/handlers/delete-residence.command.handler';
 
 ApiTags('Residence');
 @Controller('residences')
@@ -21,6 +36,8 @@ export class ResidenceController {
   constructor(
     private readonly createResidenceCommandHandler: CreateResidenceCommandHandler,
     private readonly updateResidenceCommandHandler: UpdateResidenceCommandHandler,
+    private readonly updateResidenceStatusCommandHandler: UpdateResidenceStatusCommandHandler,
+    private readonly deleteResidenceCommandHandler: DeleteResidenceCommandHandler,
     private readonly findAllResidencesCommandQuery: FindAllResidencesCommandQuery,
     private readonly findByIdResidenceCommandQuery: FindByIdResidenceCommandQuery
   ) {}
@@ -39,9 +56,18 @@ export class ResidenceController {
     @Query('limit') limit: number = 10,
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
-    @Query('status') status?: ResidenceStatusEnum
+    @Query('status') status?: ResidenceStatusEnum,
+    @Query('cityId') cityId?: string
   ): Promise<{ data: ResidenceResponse[]; pagination: PaginationResponse }> {
-    const fetchQuery = new FetchResidencesQuery(query, page, limit, sortBy, sortOrder, status);
+    const fetchQuery = new FetchResidencesQuery(
+      query,
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      status,
+      cityId
+    );
 
     const { data, pagination } = await this.findAllResidencesCommandQuery.handle(fetchQuery);
 
@@ -73,6 +99,18 @@ export class ResidenceController {
     const created = await this.createResidenceCommandHandler.handle(command);
 
     return ResidenceMapper.toResponse(created);
+  }
+
+  @Patch(':id/status')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Update a residence status' })
+  @ApiResponse({ status: 200, description: 'Residence status updated', type: ResidenceResponse })
+  async updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: ResidenceStatusEnum
+  ): Promise<void> {
+    const command = new UpdateResidenceStatusCommand(id, status);
+    await this.updateResidenceStatusCommandHandler.handle(command);
   }
 
   @Put(':id')
@@ -125,5 +163,13 @@ export class ResidenceController {
   async findById(@Param('id') id: string): Promise<ResidenceResponse> {
     const residence = await this.findByIdResidenceCommandQuery.handle(id);
     return ResidenceMapper.toResponse(residence);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a residence' })
+  @ApiResponse({ status: 200, description: 'Residence deleted' })
+  async delete(@Param('id') id: string): Promise<void> {
+    await this.deleteResidenceCommandHandler.handle(id);
   }
 }

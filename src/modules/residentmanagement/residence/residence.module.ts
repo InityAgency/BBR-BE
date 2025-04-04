@@ -20,6 +20,8 @@ import { FindByIdResidenceCommandQuery } from './application/query/find-by-id-re
 import { IResidenceRepository } from './domain/residence.repository.interface';
 import { ResidenceRepository } from './infrastructure/residence.repository';
 import { ResidenceController } from './ui/residence.controller';
+import { UpdateResidenceStatusCommandHandler } from './application/handlers/update-status-residence.command.handler';
+import { DeleteResidenceCommandHandler } from './application/handlers/delete-residence.command.handler';
 
 @Module({
   controllers: [ResidenceController],
@@ -60,6 +62,8 @@ import { ResidenceController } from './ui/residence.controller';
     FindByIdResidenceCommandQuery,
     CreateResidenceCommandHandler,
     UpdateResidenceCommandHandler,
+    UpdateResidenceStatusCommandHandler,
+    DeleteResidenceCommandHandler,
   ],
   exports: [],
 })

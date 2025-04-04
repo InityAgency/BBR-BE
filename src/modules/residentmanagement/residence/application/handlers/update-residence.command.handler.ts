@@ -86,8 +86,6 @@ export class UpdateResidenceCommandHandler {
         .relate(keyFeatures.map((keyFeatureId) => keyFeatureId));
     }
 
-    console.log('command.mainGallery', command.mainGallery);
-
     if (command.mainGallery?.length) {
       await this.residenceRepository.syncOrderedMediaGallery(
         command.id,
