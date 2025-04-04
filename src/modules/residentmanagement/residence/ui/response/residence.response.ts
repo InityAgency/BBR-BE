@@ -28,7 +28,7 @@ export class ResidenceResponse {
     public readonly updatedAt: Date,
     public readonly rentalPotential?: RentalPotentialEnum,
     public readonly websiteUrl?: string,
-    public readonly yearBuild?: string,
+    public readonly yearBuilt?: string,
     public readonly floorSqft?: string,
     public readonly staffRatio?: number,
     public readonly avgPricePerUnit?: string,

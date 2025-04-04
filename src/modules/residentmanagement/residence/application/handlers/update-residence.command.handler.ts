@@ -86,6 +86,22 @@ export class UpdateResidenceCommandHandler {
         .relate(keyFeatures.map((keyFeatureId) => keyFeatureId));
     }
 
+    if (command.mainGallery?.length) {
+      await this.residenceRepository.syncOrderedMediaGallery(
+        command.id,
+        command.mainGallery,
+        'mainGallery'
+      );
+    }
+
+    if (command.secondaryGallery?.length) {
+      await this.residenceRepository.syncOrderedMediaGallery(
+        command.id,
+        command.secondaryGallery,
+        'secondaryGallery'
+      );
+    }
+
     const updateResidence = {
       name: command.name,
       websiteUrl: command.websiteUrl,

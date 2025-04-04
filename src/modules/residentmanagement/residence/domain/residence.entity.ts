@@ -23,7 +23,7 @@ export class Residence extends Model {
   longitude!: string;
   latitude!: string;
   websiteUrl?: string;
-  yearBuild!: string;
+  yearBuilt!: string;
   floorSqft!: string;
   staffRatio!: number;
   avgPricePerUnit?: string;

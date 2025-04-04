@@ -97,4 +97,12 @@ export class UpdateResidenceRequest {
   @IsOptional()
   @IsUUID()
   companyId: string;
+
+  @IsOptional()
+  @IsUUID('all', { each: true })
+  mainGallery: string[];
+
+  @IsOptional()
+  @IsUUID('all', { each: true })
+  secondaryGallery: string[];
 }

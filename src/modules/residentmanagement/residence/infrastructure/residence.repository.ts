@@ -19,14 +19,6 @@ export class ResidenceRepository implements IResidenceRepository {
         throw new InternalServerErrorException('Residence not created');
       }
 
-      if (residence.keyFeatures) {
-        await created.$relatedQuery('keyFeatures').relate(residence.keyFeatures);
-      }
-
-      if (residence.amenities) {
-        await created.$relatedQuery('amenities').relate(residence.amenities);
-      }
-
       return created;
     });
   }
@@ -92,5 +84,27 @@ export class ResidenceRepository implements IResidenceRepository {
         limit: limit,
       },
     };
+  }
+
+  async syncOrderedMediaGallery(
+    residenceId: string,
+    gallery: { id: string; order: number }[],
+    type: 'mainGallery' | 'secondaryGallery'
+  ) {
+    await this.knexService
+      .connection('residence_media')
+      .where({ residence_id: residenceId, media_type: type })
+      .delete();
+
+    if (gallery?.length) {
+      const rows = gallery.map((item) => ({
+        residence_id: residenceId,
+        media_id: item.id,
+        media_type: type,
+        order: item.order,
+      }));
+
+      await this.knexService.connection('residence_media').insert(rows);
+    }
   }
 }

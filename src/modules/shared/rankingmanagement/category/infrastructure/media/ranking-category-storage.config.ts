@@ -7,10 +7,10 @@ export class RankingCategoryStorageConfig {
   constructor(private configService: ConfigService) {}
 
   get storage(): MediaStorageType {
-    return fromString(this.configService.get<string>('media.ranking-category.storage'));
+    return fromString(this.configService.get<string>('media.ranking_category.storage'));
   }
 
   get basePath(): string {
-    return this.configService.get<string>('media.ranking-category.basePath') || 'undefined';
+    return this.configService.get<string>('media.ranking_category.basePath') || 'undefined';
   }
 }

@@ -11,4 +11,10 @@ export abstract class IResidenceRepository {
   abstract findAll(
     query: FetchResidencesQuery
   ): Promise<{ data: Residence[]; pagination: PaginationResponse }>;
+
+  abstract syncOrderedMediaGallery(
+    residenceId: string,
+    gallery: { id: string; order: number }[],
+    type: 'mainGallery' | 'secondaryGallery'
+  ): Promise<void>;
 }

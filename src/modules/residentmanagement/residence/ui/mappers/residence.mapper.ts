@@ -26,7 +26,7 @@ export class ResidenceMapper {
       residence.updatedAt,
       residence.rentalPotential,
       residence.websiteUrl,
-      residence.yearBuild,
+      residence.yearBuilt,
       residence.floorSqft,
       residence.staffRatio,
       residence.avgPricePerUnit,

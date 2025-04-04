@@ -30,6 +30,8 @@ export class UpdateResidenceCommand {
     public readonly featuredImageId?: string,
     public readonly keyFeatures?: string[],
     public readonly amenities?: string[],
-    public readonly companyId?: string
+    public readonly companyId?: string,
+    public readonly mainGallery?: { id: string; order: number }[],
+    public readonly secondaryGallery?: { id: string; order: number }[]
   ) {}
 }
