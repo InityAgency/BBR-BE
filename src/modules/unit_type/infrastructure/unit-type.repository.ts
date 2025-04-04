@@ -28,7 +28,7 @@ export class UnitTypeRepository {
 
     const paginatedBrands = await applyPagination(query, page, limit);
 
-    const totalResult = (await UnitType.query().count('* as total').first()) as
+    const totalResult = (await query.clone().clearSelect().clearOrder().count('* as total').first()) as
       | { total: string }
       | undefined;
 

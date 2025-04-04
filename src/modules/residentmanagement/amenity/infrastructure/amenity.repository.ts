@@ -53,7 +53,7 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
 
     const paginatedAmenities = await applyPagination(query, page, limit);
 
-    const totalResult = (await Amenity.query()
+    const totalResult = (await query.clone().clearSelect().clearOrder()
       .whereNull('deleted_at')
       .count('* as total')
       .first()) as { total: string } | undefined;
@@ -84,7 +84,7 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
 
   @LogMethod()
   async delete(id: string): Promise<void> {
-    await Amenity.query().deleteById(id);
+    await Amenity.query().where('id', id).patch({ deletedAt: new Date() });
   }
 
   @LogMethod()

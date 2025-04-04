@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAmenityCommand } from '../commands/create-amenity.command';
 import { Amenity } from '../../domain/amenity.entity';
 import { LogMethod } from '../../../../../shared/infrastructure/logger/log.decorator';
@@ -8,8 +13,8 @@ import { IAmenityRepository } from '../../domain/amenity.repository.interface';
 @Injectable()
 export class CreateAmenityCommandHandler {
   constructor(
-    private readonly amenityRepository: IAmenityRepository,  
-    private readonly mediaRepository: IMediaRepository  
+    private readonly amenityRepository: IAmenityRepository,
+    private readonly mediaRepository: IMediaRepository
   ) {}
 
   @LogMethod()

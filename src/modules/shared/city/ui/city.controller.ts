@@ -17,6 +17,7 @@ import { CreateCityCommand } from '../application/commands/create-city.command';
 import { CreateCityRequest } from './request/create-city.request';
 import { UpdateCityRequest } from './request/update-city.request';
 import { UpdateCityCommand } from '../application/commands/update-city.command';
+import { OrderByDirection } from 'objection';
 
 @ApiTags('Cities')
 @Controller('cities')
@@ -26,7 +27,7 @@ export class CityController {
     private readonly fetchCitiesCommandQuery: FetchCitiesCommandQuery,
     private readonly createCityCommandHandler: CreateCityCommandHandler,
     private readonly updateCityCommandHandler: UpdateCityCommandHandler,
-    private readonly deleteCityCommandHandler: DeleteCityCommandHandler,
+    private readonly deleteCityCommandHandler: DeleteCityCommandHandler
   ) {}
 
   @Get()
@@ -52,10 +53,12 @@ export class CityController {
   @ApiResponse({ status: 200, description: 'List of cities', type: [CityResponse] })
   async findAll(
     @Query('query') query?: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection
   ): Promise<{ data: CityResponse[]; pagination: PaginationResponse }> {
-    const fetchQuery = new FetchCitiesQuery(query, page, limit);
+    const fetchQuery = new FetchCitiesQuery(query, page, limit, sortBy, sortOrder);
     const cities = await this.fetchCitiesCommandQuery.handler(fetchQuery);
     return {
       data: cities.data.map((city) => this.mapToCityResponse(city)),
@@ -92,10 +95,7 @@ export class CityController {
   @Put(':id')
   @ApiOperation({ summary: 'Update a city' })
   @ApiResponse({ status: 200, description: 'City updated', type: CityResponse })
-  async update(
-    @Param('id') id: string,
-    @Body() request: UpdateCityRequest
-  ): Promise<CityResponse> {
+  async update(@Param('id') id: string, @Body() request: UpdateCityRequest): Promise<CityResponse> {
     const command = new UpdateCityCommand(
       id,
       request.name,

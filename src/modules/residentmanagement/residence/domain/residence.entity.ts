@@ -46,6 +46,9 @@ export class Residence extends Model {
   amenities?: Amenity[];
   company?: Company;
 
+  mainGallery: Media[];
+  secondaryGallery: Media[];
+
   static tableName = 'residences';
 
   static relationMappings: RelationMappings = {
@@ -119,6 +122,34 @@ export class Residence extends Model {
       join: {
         from: 'residences.companyId',
         to: 'companies.id',
+      },
+    },
+    mainGallery: {
+      relation: Model.ManyToManyRelation,
+      modelClass: Media,
+      join: {
+        from: 'residences.id',
+        through: {
+          from: 'residence_media.residence_id',
+          to: 'residence_media.media_id',
+          extra: ['media_type', 'order'],
+          filter: (builder) => builder.where('media_type', 'mainGallery'),
+        },
+        to: 'media.id',
+      },
+    },
+    secondaryGallery: {
+      relation: Model.ManyToManyRelation,
+      modelClass: Media,
+      join: {
+        from: 'residences.id',
+        through: {
+          from: 'residence_media.residence_id',
+          to: 'residence_media.media_id',
+          extra: ['media_type', 'order'],
+          filter: (builder) => builder.where('media_type', 'secondaryGallery'),
+        },
+        to: 'media.id',
       },
     },
   };

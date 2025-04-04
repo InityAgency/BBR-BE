@@ -1,10 +1,14 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ICityRepository } from '../../domain/city.repository.interface';
 import { ICountryRepository } from '../../domain/country.repository.interface';
 import { City } from '../../domain/city.entity';
 import { UpdateCityCommand } from '../commands/update-city.command';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-
 
 @Injectable()
 export class UpdateCityCommandHandler {
@@ -37,7 +41,7 @@ export class UpdateCityCommandHandler {
       timezone: command.timezone,
       xCoordinate: command.xCoordinate,
       yCoordinate: command.yCoordinate,
-      country: country
+      country: country,
     });
 
     if (!updatedCity) {

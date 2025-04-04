@@ -5,6 +5,7 @@ import { applyPagination } from 'src/shared/utils/pagination.util';
 import { FetchCompaniesQuery } from '../application/commands/fetch-all-company.query';
 import { Company } from '../domain/company.entity';
 import { ICompanyRepository } from '../domain/company.repository.interface';
+import { applySearchFilter } from 'src/shared/filter/query.filter';
 
 @Injectable()
 export class CompanyRepository implements ICompanyRepository {
@@ -39,23 +40,23 @@ export class CompanyRepository implements ICompanyRepository {
   async findAll(
     fetchQuery: FetchCompaniesQuery
   ): Promise<{ data: Company[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder } = fetchQuery;
+    const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
 
     let query = Company.query()
       .whereNull('deleted_at')
       .withGraphFetched('[image, contactPersonAvatar]');
 
+    query = applySearchFilter(query, searchQuery, this.columnsToSearchAndSort, Company.tableName);
+
     if (sortBy && sortOrder) {
-      if (this.allowedSortColumns.includes(sortBy)) {
+      if (this.columnsToSearchAndSort.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }
     }
 
     const paginatedCompanies = await applyPagination(query, page, limit);
 
-    const totalResult = (await Company.query().count('* as total').first()) as
-      | { total: string }
-      | undefined;
+    const totalResult = (await query.clone().clearSelect().clearOrder().count('* as total').first()) as { total: string } | undefined;
 
     const totalCount = totalResult ? Number(totalResult.total) : 0;
     const totalPages = Math.ceil(totalCount / (limit || 1)); // Avoid division by zero
@@ -71,18 +72,16 @@ export class CompanyRepository implements ICompanyRepository {
     };
   }
 
-  private readonly allowedSortColumns: string[] = [
+  private readonly columnsToSearchAndSort: string[] = [
     'name',
     'address',
-    'phoneNumber',
-    'phoneNumberCountryCode',
+    'phone_number',
+    'phone_number_country_code',
     'website',
-    'contactPersonFullName',
-    'contactPersonJobTitle',
-    'contactPersonEmail',
-    'contactPersonPhoneNumber',
-    'contactPersonPhoneNumberCountryCode',
-    'createdAt',
-    'updatedAt',
+    'contact_person_full_name',
+    'contact_person_job_title',
+    'contact_person_email',
+    'contact_person_phone_number',
+    'contact_person_phone_number_country_code',
   ];
 }

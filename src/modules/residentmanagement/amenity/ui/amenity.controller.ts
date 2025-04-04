@@ -11,6 +11,7 @@ import { DeleteAmenityCommandHandler } from '../application/handler/delete-ameni
 import { FetchAmenitiesQuery } from '../application/commands/fetch-amenities.query';
 import { UpdateAmenityRequest } from './request/update-amenity.request';
 import { AmenityMapper } from './mapper/amenity.ui.mapper';
+import { OrderByDirection } from 'objection';
 
 @ApiTags('Amenities')
 @Controller('amenities')
@@ -20,7 +21,7 @@ export class AmenityController {
     private readonly findAmenityByIdCommandQuery: FindAmenityByIdCommandQuery,
     private readonly createAmenityCommandHandler: CreateAmenityCommandHandler,
     private readonly updateAmenityCommandHandler: UpdateAmenityCommandHandler,
-    private readonly deleteAmenityCommandHandler: DeleteAmenityCommandHandler,
+    private readonly deleteAmenityCommandHandler: DeleteAmenityCommandHandler
   ) {}
 
   @Get()
@@ -30,9 +31,11 @@ export class AmenityController {
     @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection
   ) {
     const { data, pagination } = await this.fetchAmenitiesCommandQuery.handler(
-      new FetchAmenitiesQuery(query, page, limit),
+      new FetchAmenitiesQuery(query, page, limit, sortBy, sortOrder)
     );
 
     const mappedAmenities = data.map((amenity: Amenity) => AmenityMapper.toResponse(amenity));
@@ -56,7 +59,7 @@ export class AmenityController {
   @ApiOperation({ summary: 'Create an amenity' })
   @ApiResponse({ type: AmenityResponse })
   async create(@Body() createAmenityRequest: CreateAmenityRequest) {
-    const command  = AmenityMapper.toCreateCommand(createAmenityRequest);
+    const command = AmenityMapper.toCreateCommand(createAmenityRequest);
     const createdAmenity = await this.createAmenityCommandHandler.handle(command);
 
     return AmenityMapper.toResponse(createdAmenity);
@@ -65,12 +68,8 @@ export class AmenityController {
   @Put(':id')
   @ApiOperation({ summary: 'Update an amenity' })
   @ApiResponse({ type: AmenityResponse })
-  async update(
-    @Param('id') id: string,
-    @Body() updateAmenityRequest: UpdateAmenityRequest,
-  ) {
-
-    const command  = AmenityMapper.toUpdateCommand(id, updateAmenityRequest);
+  async update(@Param('id') id: string, @Body() updateAmenityRequest: UpdateAmenityRequest) {
+    const command = AmenityMapper.toUpdateCommand(id, updateAmenityRequest);
     const updatedAmenity = await this.updateAmenityCommandHandler.handle(command);
 
     return AmenityMapper.toResponse(updatedAmenity);

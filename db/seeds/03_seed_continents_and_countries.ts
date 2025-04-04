@@ -32,6 +32,7 @@ export async function seed(knex: Knex): Promise<void> {
   const filePath = `${__dirname}/../csv/GeoData - Countries.csv`;
   const countries = await parseCSV(filePath);
 
+  await knex('cities').del(); 
   await knex('phone_codes').del(); 
   await knex('countries').del();
   await knex('continents').del();

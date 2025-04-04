@@ -1,4 +1,9 @@
-import { ConflictException, NotFoundException, InternalServerErrorException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  InternalServerErrorException,
+  Injectable,
+} from '@nestjs/common';
 import { UpdateContinentCommand } from '../command/update-continent.command';
 import { Continent } from '../../domain/continent.entity';
 import { IContinentRepository } from '../../domain/continent.repository.interface';
@@ -20,7 +25,10 @@ export class UpdateContinentCommandHandler {
       throw new ConflictException('Continent with this code already exists');
     }
 
-    const updatedContinent = await this.continentRepository.update(command.id, { name: command.name, code: command.code });
+    const updatedContinent = await this.continentRepository.update(command.id, {
+      name: command.name,
+      code: command.code,
+    });
     if (!updatedContinent) {
       throw new InternalServerErrorException('Continent not updated');
     }

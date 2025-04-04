@@ -27,6 +27,8 @@ import { getBullConfig } from './shared/config/bull.config';
 import { QueuesEnum } from './shared/types/queues.enum';
 import { KeyFeatureModule } from './modules/residentmanagement/key_feature/key-feature.module';
 import { ResidenceModule } from './modules/residentmanagement/residence/residence.module';
+import { RankingCategoryTypeModule } from './modules/shared/rankingmanagement/categorytype/ranking-category-type.module';
+import { RankingCategoryModule } from './modules/shared/rankingmanagement/category/ranking-category.module';
 
 @Module({
   imports: [
@@ -61,6 +63,8 @@ import { ResidenceModule } from './modules/residentmanagement/residence/residenc
     UnitTypeModule,
     ResidenceModule,
     KeyFeatureModule,
+    RankingCategoryTypeModule,
+    RankingCategoryModule,
   ],
   providers: [],
 })

@@ -7,7 +7,9 @@ import { validate as isUUID } from 'uuid';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
-  constructor(private readonly userRepository: UserRepositoryImpl) {
+  constructor(private readonly userRepository: UserRepositoryImpl,
+    private readonly userMapper: UserMapper
+  ) {
     super();
   }
 
@@ -23,7 +25,7 @@ export class SessionSerializer extends PassportSerializer {
         return done(null, false);
       }
 
-      done(null, UserMapper.toResponse(user));
+      done(null, this.userMapper.toResponse(user));
     } catch (error) {
       done(error, false);
     }

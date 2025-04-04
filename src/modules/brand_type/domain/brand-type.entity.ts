@@ -7,6 +7,7 @@ export class BrandType extends Model {
   description!: string;
   createdAt!: Date;
   updatedAt!: Date;
+  deletedAt?: Date;
   brands?: Brand[];
 
   static tableName = 'brand_types';

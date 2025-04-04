@@ -7,8 +7,7 @@ import { Country } from '../../domain/country.entity';
 
 @Injectable()
 export class FetchCountriesCommandQuery {
-  constructor(private readonly countryRepository: ICountryRepository) {
-  }
+  constructor(private readonly countryRepository: ICountryRepository) {}
 
   @LogMethod()
   async handler(

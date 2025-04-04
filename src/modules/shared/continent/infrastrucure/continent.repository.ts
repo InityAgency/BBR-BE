@@ -5,8 +5,10 @@ import { FetchContinentsQuery } from '../application/command/fetch-continents.qu
 import { applyPagination } from '../../../../shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { applySearchFilter } from 'src/shared/filter/query.filter';
+import { KnexService } from '../../../../shared/infrastructure/database/knex.service';
 
 export class ContinentRepositoryImpl implements IContinentRepository {
+  constructor(private readonly knexService: KnexService) {}
   @LogMethod()
   async findById(id: string): Promise<Continent | undefined> {
     return Continent.query().findById(id).whereNull('deleted_at');
@@ -26,10 +28,9 @@ export class ContinentRepositoryImpl implements IContinentRepository {
 
     const columnsToSearch = ['name', 'code'];
     query = applySearchFilter(query, searchQuery, columnsToSearch, 'continents');
-
     const paginatedContinents = await applyPagination(query, page, limit);
 
-    const totalResult = (await query.count('* as total').first()) as { total: string } | undefined;
+    const totalResult = (await query.clone().clearSelect().clearOrder().count('* as total').first()) as { total: string } | undefined;
 
     const totalCount = totalResult ? Number(totalResult.total) : 0;
     const totalPages = Math.ceil(totalCount / limit);

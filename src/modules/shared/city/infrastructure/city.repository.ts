@@ -64,7 +64,7 @@ export class CityRepositoryImpl implements ICityRepository {
 
     const paginatedCities = await applyPagination(query, page, limit);
 
-    const totalResult = (await query.count('* as total').first()) as { total: string } | undefined;
+    const totalResult = (await query.clone().clearSelect().clearOrder().count('* as total').first()) as { total: string } | undefined;
 
     const totalCount = totalResult ? Number(totalResult.total) : 0;
     const totalPages = Math.ceil(totalCount / limit);

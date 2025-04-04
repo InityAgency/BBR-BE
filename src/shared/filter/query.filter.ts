@@ -12,9 +12,9 @@ export function applySearchFilter<T extends Model, R>(
     columns.forEach((column, index) => {
       const qualifiedColumn = `${tableAlias}.${column}`;
       if (index === 0) {
-        this.where(qualifiedColumn, 'ILIKE', searchTerm);
+        this.whereRaw(`CAST(${qualifiedColumn} AS TEXT) ILIKE ?`, [searchTerm]);
       } else {
-        this.orWhere(qualifiedColumn, 'ILIKE', searchTerm);
+        this.orWhereRaw(`CAST(${qualifiedColumn} AS TEXT) ILIKE ?`, [searchTerm]);
       }
     });
   });

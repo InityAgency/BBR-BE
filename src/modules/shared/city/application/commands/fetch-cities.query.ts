@@ -1,13 +1,7 @@
-import { BaseFetchQuery } from "src/shared/query/base-fetch.query";
+import { BaseFetchQuery } from 'src/shared/query/base-fetch.query';
 
 export class FetchCitiesQuery extends BaseFetchQuery {
-  constructor(
-    query?: string, 
-    page?: number, 
-    limit?: number, 
-    sortBy?: string, 
-    sortOrder?
-  ) {
+  constructor(query?: string, page?: number, limit?: number, sortBy?: string, sortOrder?) {
     super(query, page, limit, sortBy, sortOrder);
   }
 }

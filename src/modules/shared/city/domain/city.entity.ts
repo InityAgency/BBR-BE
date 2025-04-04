@@ -16,17 +16,16 @@ export class City extends Model {
 
   static tableName = 'cities';
 
-
-    static relationMappings = {
-      country: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: () => Country,
-        join: {
-          from: 'cities.countryId',
-          to: 'countries.id',
-        },
+  static relationMappings = {
+    country: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => Country,
+      join: {
+        from: 'cities.countryId',
+        to: 'countries.id',
       },
-    };
+    },
+  };
 
   $beforeInsert() {
     this.createdAt = new Date();

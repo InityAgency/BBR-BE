@@ -26,6 +26,7 @@ import { IInviteRepository } from '../user/domain/invite.repository.interface';
 import { InviteRepositoryImpl } from '../user/infrastructure/invite.repository';
 import { AcceptInviteCommandHandler } from './application/handlers/accept-invite.command.handler';
 import { IUserRepository } from '../user/domain/user.repository.interface';
+import { UserMapper } from '../user/ui/mappers/user.mapper';
 
 @Module({
   imports: [DatabaseModule, UserModule],
@@ -66,6 +67,7 @@ import { IUserRepository } from '../user/domain/user.repository.interface';
     VerifyResetOtpCommandHandler,
     SendResetPasswordEmailCommandHandler,
     AcceptInviteCommandHandler,
+    UserMapper,
   ],
   exports: [],
 })

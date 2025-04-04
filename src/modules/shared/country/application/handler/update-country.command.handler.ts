@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateCountryCommand } from '../commands/update-country.command';
 import { Country } from '../../domain/country.entity';
 import { ICountryRepository } from '../../domain/country.repository.interface';
@@ -9,11 +14,12 @@ import { IPhoneCodeRepository } from 'src/modules/shared/phone_code/domain/phone
 
 @Injectable()
 export class UpdateCountryCommandHandler {
-  constructor(private readonly countryRepository: ICountryRepository,
-              private readonly continentRepository: IContinentRepository,
-                private readonly phoneCodeRepository: IPhoneCodeRepository,
+  constructor(
+    private readonly countryRepository: ICountryRepository,
+    private readonly continentRepository: IContinentRepository,
+    private readonly phoneCodeRepository: IPhoneCodeRepository
   ) {}
-  
+
   @LogMethod()
   async handle(command: UpdateCountryCommand): Promise<Country> {
     const existingCountry = await this.countryRepository.findById(command.id);
@@ -31,7 +37,10 @@ export class UpdateCountryCommandHandler {
       throw new NotFoundException('Continent not found');
     }
 
-    const phoneCodes = await this.phoneCodeRepository.createOrUpdatePhoneCodesForCountry( command.phoneCodes, existingCountry.id);
+    const phoneCodes = await this.phoneCodeRepository.createOrUpdatePhoneCodesForCountry(
+      command.phoneCodes,
+      existingCountry.id
+    );
     if (phoneCodes.length !== command.phoneCodes.length) {
       throw new NotFoundException('One or more phone codes not found');
     }
@@ -47,7 +56,7 @@ export class UpdateCountryCommandHandler {
       phoneCodes: phoneCodes,
       subregion: command.subregion,
       flag: command.flag,
-      continent: continent
+      continent: continent,
     });
 
     if (!updatedCountry) {

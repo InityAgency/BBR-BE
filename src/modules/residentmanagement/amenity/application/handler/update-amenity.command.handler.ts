@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateAmenityCommand } from '../commands/update-amenity.command';
 import { Amenity } from '../../domain/amenity.entity';
 import { LogMethod } from '../../../../../shared/infrastructure/logger/log.decorator';
@@ -32,7 +37,7 @@ export class UpdateAmenityCommandHandler {
     const updatedAmenity = await this.amenityRepository.update(command.id, {
       name: command.name,
       description: command.description,
-      icon: icon
+      icon: icon,
     });
 
     if (!updatedAmenity) {
