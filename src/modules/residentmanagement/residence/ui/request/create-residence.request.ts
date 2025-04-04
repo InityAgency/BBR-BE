@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString, IsUrl, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, IsUUID } from 'class-validator';
 
 export class CreateResidenceRequest {
   @IsNotEmpty()
@@ -18,12 +19,14 @@ export class CreateResidenceRequest {
   websiteUrl: string;
 
   @IsNotEmpty()
-  @IsString()
-  budgetStartRange: string;
+  @IsNumber()
+  @Type(() => Number)
+  budgetStartRange: number;
 
   @IsNotEmpty()
-  @IsString()
-  budgetEndRange: string;
+  @IsNumber()
+  @Type(() => Number)
+  budgetEndRange: number;
 
   @IsNotEmpty()
   @IsString()

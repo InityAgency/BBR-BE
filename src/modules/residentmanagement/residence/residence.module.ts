@@ -15,7 +15,8 @@ import { IKeyFeatureRepository } from '../key_feature/domain/key-feature.reposit
 import { KeyFeatureRepository } from '../key_feature/infrastructure/key-feature.repository';
 import { CreateResidenceCommandHandler } from './application/handlers/create-residence.command.handler';
 import { UpdateResidenceCommandHandler } from './application/handlers/update-residence.command.handler';
-import { FindAllResidencesQueryHandler } from './application/query/find-all-residences.query.handler';
+import { FindAllResidencesCommandQuery } from './application/query/find-all-residences.query';
+import { FindByIdResidenceCommandQuery } from './application/query/find-by-id-residence.query';
 import { IResidenceRepository } from './domain/residence.repository.interface';
 import { ResidenceRepository } from './infrastructure/residence.repository';
 import { ResidenceController } from './ui/residence.controller';
@@ -55,7 +56,8 @@ import { ResidenceController } from './ui/residence.controller';
       provide: IKeyFeatureRepository,
       useClass: KeyFeatureRepository,
     },
-    FindAllResidencesQueryHandler,
+    FindAllResidencesCommandQuery,
+    FindByIdResidenceCommandQuery,
     CreateResidenceCommandHandler,
     UpdateResidenceCommandHandler,
   ],

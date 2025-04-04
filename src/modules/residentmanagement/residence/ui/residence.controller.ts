@@ -3,24 +3,26 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderByDirection } from 'objection';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { CreateResidenceCommand } from '../application/commands/create-residence.command';
-import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
 import { UpdateResidenceCommand } from '../application/commands/update-residence.command';
 import { CreateResidenceCommandHandler } from '../application/handlers/create-residence.command.handler';
 import { UpdateResidenceCommandHandler } from '../application/handlers/update-residence.command.handler';
-import { FindAllResidencesQueryHandler } from '../application/query/find-all-residences.query.handler';
 import { ResidenceStatusEnum } from '../domain/residence-status.enum';
 import { ResidenceMapper } from './mappers/residence.mapper';
 import { CreateResidenceRequest } from './request/create-residence.request';
 import { UpdateResidenceRequest } from './request/update-residence.request';
 import { ResidenceResponse } from './response/residence.response';
+import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
+import { FindAllResidencesCommandQuery } from '../application/query/find-all-residences.query';
+import { FindByIdResidenceCommandQuery } from '../application/query/find-by-id-residence.query';
 
 ApiTags('Residence');
 @Controller('residences')
 export class ResidenceController {
   constructor(
-    private readonly createResidenceHandler: CreateResidenceCommandHandler,
+    private readonly createResidenceCommandHandler: CreateResidenceCommandHandler,
     private readonly updateResidenceCommandHandler: UpdateResidenceCommandHandler,
-    private readonly findAllResidencesQueryHandler: FindAllResidencesQueryHandler
+    private readonly findAllResidencesCommandQuery: FindAllResidencesCommandQuery,
+    private readonly findByIdResidenceCommandQuery: FindByIdResidenceCommandQuery
   ) {}
 
   @Get()
@@ -41,7 +43,7 @@ export class ResidenceController {
   ): Promise<{ data: ResidenceResponse[]; pagination: PaginationResponse }> {
     const fetchQuery = new FetchResidencesQuery(query, page, limit, sortBy, sortOrder, status);
 
-    const { data, pagination } = await this.findAllResidencesQueryHandler.handle(fetchQuery);
+    const { data, pagination } = await this.findAllResidencesCommandQuery.handle(fetchQuery);
 
     return {
       data: data.map((residence) => ResidenceMapper.toResponse(residence)),
@@ -68,7 +70,7 @@ export class ResidenceController {
       request.cityId
     );
 
-    const created = await this.createResidenceHandler.handle(command);
+    const created = await this.createResidenceCommandHandler.handle(command);
 
     return ResidenceMapper.toResponse(created);
   }
@@ -115,5 +117,13 @@ export class ResidenceController {
 
     const created = await this.updateResidenceCommandHandler.handle(command);
     return ResidenceMapper.toResponse(created);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a residence by id' })
+  @ApiResponse({ status: 200, description: 'Residence found', type: ResidenceResponse })
+  async findById(@Param('id') id: string): Promise<ResidenceResponse> {
+    const residence = await this.findByIdResidenceCommandQuery.handle(id);
+    return ResidenceMapper.toResponse(residence);
   }
 }

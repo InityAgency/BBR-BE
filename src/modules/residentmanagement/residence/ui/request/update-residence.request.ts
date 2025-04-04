@@ -1,7 +1,8 @@
-import { IsBoolean, IsEnum, IsOptional, isUUID, IsUUID } from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsOptional, isUUID, IsUUID } from 'class-validator';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
 import { DevelompentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
+import { Type } from 'class-transformer';
 
 export class UpdateResidenceRequest {
   @IsOptional()
@@ -25,10 +26,14 @@ export class UpdateResidenceRequest {
   description: string;
 
   @IsOptional()
-  budgetStartRange: string;
+  @IsNumber()
+  @Type(() => Number)
+  budgetStartRange: number;
 
   @IsOptional()
-  budgetEndRange: string;
+  @IsNumber()
+  @Type(() => Number)
+  budgetEndRange: number;
 
   @IsOptional()
   address: string;
@@ -56,16 +61,23 @@ export class UpdateResidenceRequest {
   yearBuilt: string;
 
   @IsOptional()
-  floorSqft: string;
+  @IsNumber()
+  @Type(() => Number)
+  floorSqft: number;
 
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
   staffRatio: number;
 
   @IsOptional()
-  avgPricePerUnit: string;
+  @IsNumber()
+  @Type(() => Number)
+  avgPricePerUnit: number;
 
   @IsOptional()
-  avgPricePerSqft: string;
+  @Type(() => Number)
+  avgPricePerSqft: number;
 
   @IsOptional()
   @IsBoolean()

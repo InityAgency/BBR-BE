@@ -1,6 +1,6 @@
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
-import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
 import { Residence } from './residence.entity';
+import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
 
 export abstract class IResidenceRepository {
   abstract create(residence: Partial<Residence>): Promise<Residence | undefined>;

@@ -2,10 +2,10 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { IResidenceRepository } from '../domain/residence.repository.interface';
 import { Residence } from '../domain/residence.entity';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
-import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { applyPagination } from 'src/shared/utils/pagination.util';
+import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
 
 @Injectable()
 export class ResidenceRepository implements IResidenceRepository {
@@ -26,7 +26,9 @@ export class ResidenceRepository implements IResidenceRepository {
   async update(id: string, data: Partial<Residence>): Promise<Residence | undefined> {
     return await Residence.query()
       .patchAndFetchById(id, data)
-      .withGraphFetched('[videoTour, featuredImage, brand.logo, keyFeatures, city, country]');
+      .withGraphFetched(
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country,  mainGallery, secondaryGallery]'
+      );
   }
   async delete(id: string): Promise<void> {
     throw new Error('Method not implemented.');
@@ -35,7 +37,9 @@ export class ResidenceRepository implements IResidenceRepository {
     return await Residence.query()
       .findById(id)
       .whereNull('deleted_at')
-      .withGraphFetched('[videoTour, featuredImage, brand.logo, keyFeatures, city, country]');
+      .withGraphFetched(
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery]'
+      );
   }
   async findByName(name: string): Promise<Residence | undefined> {
     throw new Error('Method not implemented.');

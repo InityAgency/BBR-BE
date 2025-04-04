@@ -11,20 +11,20 @@ export async function up(knex: Knex): Promise<void> {
     table.string('website_url').nullable();
     table.string('subtitle').notNullable();
     table.text('description').notNullable();
-    table.string('budget_start_range').notNullable();
-    table.string('budget_end_range').notNullable();
+    table.integer('budget_start_range').notNullable();
+    table.integer('budget_end_range').notNullable();
     table.string('address').notNullable();
     table.string('latitude').notNullable();
     table.string('longitude').notNullable();
-    table.string('year_build').nullable();
+    table.string('year_built').nullable();
     table
       .enum('development_status', ['COMPLETED', 'UNDER_CONSTRUCTION', 'PLANNED'])
       .notNullable()
       .defaultTo('PLANNED');
-    table.string('floor_sqft').nullable();
+    table.decimal('floor_sqft', 10, 2).nullable();
     table.integer('staff_ratio').nullable();
-    table.string('avg_price_per_unit').nullable();
-    table.string('avg_price_per_sqft').nullable();
+    table.decimal('avg_price_per_unit', 15, 2).nullable();
+    table.decimal('avg_price_per_sqft', 15, 2).nullable();
     table.enum('rental_potential', ['HIGH', 'MEDIUM', 'LOW']).nullable();
     table.boolean('pet_friendly').notNullable().defaultTo(false);
     table.boolean('disabled_friendly').notNullable().defaultTo(false);

@@ -12,6 +12,8 @@ import { FindRankingCategoryByIdCommandQuery } from '../application/query/find-b
 import { DeleteRankingCategoryCommandHandler } from '../application/handler/delete-ranking-category.command.handler';
 import { FetchRankingCategoriesQuery } from '../application/command/fetch-ranking.categories.query';
 import { OrderByDirection } from 'objection';
+import { UpdateRankingCategoryCommandHandler } from '../application/handler/update-ranking-category.command.handler';
+import { UpdateRankingCategoryRequest } from './request/update-ranking-category.request';
 
 @ApiTags('Ranking Categories')
 @Controller('ranking-categories')
@@ -20,6 +22,7 @@ export class RankingCategoryController {
     private readonly fetchRankingCategoriesCommandQuery: FetchRankingCategoriesCommandQuery,
     private readonly findRankingCategoryByIdCommandQuery: FindRankingCategoryByIdCommandQuery,
     private readonly createRankingCategoryCommandHandler: CreateRankingCategoryCommandHandler,
+    private readonly updateRankingCategoryCommandHandler: UpdateRankingCategoryCommandHandler,
     private readonly updateRankingCategoryStatusCommandHandler: UpdateRankingCategoryStatusCommandHandler,
     private readonly deleteRankingCategoryCommandHandler: DeleteRankingCategoryCommandHandler
   ) {}
@@ -65,6 +68,19 @@ export class RankingCategoryController {
     const createdRankingCategory = await this.createRankingCategoryCommandHandler.handle(command);
 
     return RankingCategoryMapper.toResponse(createdRankingCategory);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a ranking category' })
+  @ApiResponse({ type: RankingCategoryResponse })
+  async update(
+    @Param('id') id: string,
+    @Body() updateRankingCategoryRequest: UpdateRankingCategoryRequest
+  ) {
+    const command = RankingCategoryMapper.toUpdateCommand(id, updateRankingCategoryRequest);
+    const updatedRankingCategory = await this.updateRankingCategoryCommandHandler.handle(command);
+
+    return RankingCategoryMapper.toResponse(updatedRankingCategory);
   }
 
   @Patch(':id/status')

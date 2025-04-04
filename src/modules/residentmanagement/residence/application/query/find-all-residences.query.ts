@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { FetchResidencesQuery } from '../commands/fetch-residences.query';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { Residence } from '../../domain/residence.entity';
 import { IResidenceRepository } from '../../domain/residence.repository.interface';
+import { FetchResidencesQuery } from '../commands/fetch-residences.query';
 
 @Injectable()
-export class FindAllResidencesQueryHandler {
+export class FindAllResidencesCommandQuery {
   constructor(private readonly residenceRepository: IResidenceRepository) {}
 
   async handle(
