@@ -8,7 +8,7 @@ export class RankingCategory extends Model {
   name!: string;
   description!: string;
   rankingCategoryType!: RankingCategoryType;
-  residenceLimitation!: string;
+  residenceLimitation!: number;
   rankingPrice!: number;
   featuredImage!: Media;
   status!: RankingCategoryStatus;

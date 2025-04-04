@@ -1,19 +1,18 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateResidenceRequest } from './request/create-residence.request';
-import { ResidenceResponse } from './response/residence.response';
-import { CreateResidenceCommand } from '../application/commands/create-residence.command';
-import { CreateResidenceCommandHandler } from '../application/handlers/create-residence.command.handler';
-import { Residence } from '../domain/residence.entity';
-import { ResidenceMapper } from './mappers/residence.mapper';
+import { OrderByDirection } from 'objection';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { CreateResidenceCommand } from '../application/commands/create-residence.command';
 import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
+import { UpdateResidenceCommand } from '../application/commands/update-residence.command';
+import { CreateResidenceCommandHandler } from '../application/handlers/create-residence.command.handler';
+import { UpdateResidenceCommandHandler } from '../application/handlers/update-residence.command.handler';
 import { FindAllResidencesQueryHandler } from '../application/query/find-all-residences.query.handler';
 import { ResidenceStatusEnum } from '../domain/residence-status.enum';
-import { OrderByDirection } from 'objection';
-import { UpdateResidenceCommand } from '../application/commands/update-residence.command';
+import { ResidenceMapper } from './mappers/residence.mapper';
+import { CreateResidenceRequest } from './request/create-residence.request';
 import { UpdateResidenceRequest } from './request/update-residence.request';
-import { UpdateResidenceCommandHandler } from '../application/handlers/update-residence.command.handler';
+import { ResidenceResponse } from './response/residence.response';
 
 ApiTags('Residence');
 @Controller('residences')
@@ -109,7 +108,9 @@ export class ResidenceController {
       request.featuredImageId,
       request.keyFeatures,
       request.amenities,
-      request.companyId
+      request.companyId,
+      request.mainGallery,
+      request.secondaryGallery
     );
 
     const created = await this.updateResidenceCommandHandler.handle(command);

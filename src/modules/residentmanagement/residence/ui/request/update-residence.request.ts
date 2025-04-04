@@ -99,10 +99,8 @@ export class UpdateResidenceRequest {
   companyId: string;
 
   @IsOptional()
-  @IsUUID('all', { each: true })
-  mainGallery: string[];
+  mainGallery: { id: string; order: number }[];
 
   @IsOptional()
-  @IsUUID('all', { each: true })
-  secondaryGallery: string[];
+  secondaryGallery: { id: string; order: number }[];
 }

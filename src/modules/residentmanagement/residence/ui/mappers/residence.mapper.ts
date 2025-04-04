@@ -59,7 +59,20 @@ export class ResidenceMapper {
         : [],
       residence.brand ? BrandMapper.toResponse(residence.brand) : null,
       residence.amenities ? residence.amenities.map((data) => AmenityMapper.toResponse(data)) : [],
-      residence.company ? CompanyMapper.toResponse(residence.company) : null
+      residence.company ? CompanyMapper.toResponse(residence.company) : null,
+      residence.mainGallery
+        ? residence.mainGallery.map(
+            (media) =>
+              new MediaResponse(
+                media.id,
+                media.originalFileName,
+                media.mimeType,
+                media.uploadStatus,
+                media.size,
+                media.securedUrl
+              )
+          )
+        : []
     );
   }
 }

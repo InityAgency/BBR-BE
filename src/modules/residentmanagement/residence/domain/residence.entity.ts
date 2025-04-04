@@ -46,8 +46,8 @@ export class Residence extends Model {
   amenities?: Amenity[];
   company?: Company;
 
-  mainGallery: Media[];
-  secondaryGallery: Media[];
+  mainGallery?: Media[];
+  secondaryGallery?: Media[];
 
   static tableName = 'residences';
 

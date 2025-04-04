@@ -27,7 +27,7 @@ export class CreateRankingCategoryRequest {
 
   @IsString()
   @MaxLength(512)
-  residenceLimitation: string;
+  residenceLimitation: number;
 
   @IsNumber()
   @Type(() => Number)

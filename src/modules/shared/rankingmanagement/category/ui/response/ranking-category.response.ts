@@ -7,7 +7,7 @@ export class RankingCategoryResponse {
     public readonly name: string,
     public readonly description: string,
     public readonly rankingCategoryType: RankingCategoryTypeResponse,
-    public readonly residenceLimitation: string,
+    public readonly residenceLimitation: number,
     public readonly rankingPrice: number,
     public readonly featuredImage: MediaResponse | null,
     public readonly status: string

@@ -52,7 +52,9 @@ export class ResidenceRepository implements IResidenceRepository {
           qb.where('status', status);
         }
       })
-      .withGraphFetched('[videoTour, featuredImage, brand.logo, keyFeatures, city, country]');
+      .withGraphFetched(
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery]'
+      );
 
     const columnsToSearch = ['name'];
     const searchableQuery = applySearchFilter(
@@ -103,6 +105,8 @@ export class ResidenceRepository implements IResidenceRepository {
         media_type: type,
         order: item.order,
       }));
+
+      console.log('rows', rows);
 
       await this.knexService.connection('residence_media').insert(rows);
     }

@@ -15,9 +15,9 @@ export class UpdateRankingCategoryRequest {
   @IsUUID()
   rankingCategoryTypeId: string;
 
-  @IsString()
-  @MaxLength(512)
-  residenceLimitation: string;
+  @IsNumber()
+  @Type(() => Number)
+  residenceLimitation: number;
 
   @IsNumber()
   @Type(() => Number)

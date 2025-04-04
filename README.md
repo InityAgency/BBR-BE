@@ -70,8 +70,16 @@ pnpm run migration:knex:run
 
 ### 4️⃣ Seed Postgres the database (Optional)
 
+#### (RECOMMENDED) This command lets you interactively choose a seed file from your configured seeds directory
+
 ```bash
 pnpm run seed:knex:run
+```
+
+#### Run all seeders at once (use only if fresh setup)
+
+```bash
+pnpm run seed:knex:run:all
 ```
 
 ## 📔 Migrations & Seeds

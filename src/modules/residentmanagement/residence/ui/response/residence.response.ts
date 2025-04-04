@@ -38,9 +38,11 @@ export class ResidenceResponse {
     public readonly videoTourUrl?: string,
     public readonly videoTour?: MediaResponse | null,
     public readonly featuredImage?: MediaResponse | null,
-    public readonly keyFeatures?: KeyFeatureResponse[] | null,
+    public readonly keyFeatures?: KeyFeatureResponse[] | [],
     public readonly brand?: BrandResponse | null,
-    public readonly amenities?: AmenityResponse[] | null,
-    public readonly company?: CompanyResponse | null
+    public readonly amenities?: AmenityResponse[] | [],
+    public readonly company?: CompanyResponse | null,
+    public readonly mainGallery?: MediaResponse[] | [],
+    public readonly secondaryGallery?: MediaResponse[] | []
   ) {}
 }
