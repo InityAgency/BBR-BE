@@ -30,9 +30,9 @@ import { UserStorageConfig } from '../user/infrastructure/media/user-storage.con
 import { LifestyleMediaStorageService } from '../lifestyles/infrastructure/media/lifestyle-media-storage.service';
 import { LifestyleStorageConfig } from '../lifestyles/infrastructure/media/lifestyle-storage.config';
 import { AmenityStorageConfig } from '../residentmanagement/amenity/infrastructure/media/amenity-storage.config';
-import {
-  AmenityMediaStorageService
-} from '../residentmanagement/amenity/infrastructure/media/amenity-media-storage.service';
+import { AmenityMediaStorageService } from '../residentmanagement/amenity/infrastructure/media/amenity-media-storage.service';
+import { RankingCategoryStorageConfig } from '../shared/rankingmanagement/category/infrastructure/media/ranking-category-storage.config';
+import { RankingCategoryMediaStorageService } from '../shared/rankingmanagement/category/infrastructure/media/ranking-category-media-storage.service';
 @Global()
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
@@ -74,9 +74,22 @@ import {
         userStorage: UserMediaStorageService,
         lifestyleStorage: LifestyleMediaStorageService,
         amenityStorage: AmenityMediaStorageService,
-      ) => [brandStorage, companyStorage, userStorage, lifestyleStorage, amenityStorage],
-      inject: [BrandMediaStorageService, CompanyMediaStorageService, UserMediaStorageService,
-        AmenityMediaStorageService],
+        rankingCategoryStorage: RankingCategoryMediaStorageService
+      ) => [
+        brandStorage,
+        companyStorage,
+        userStorage,
+        lifestyleStorage,
+        amenityStorage,
+        rankingCategoryStorage,
+      ],
+      inject: [
+        BrandMediaStorageService,
+        CompanyMediaStorageService,
+        UserMediaStorageService,
+        AmenityMediaStorageService,
+        RankingCategoryMediaStorageService,
+      ],
     },
     BrandStorageConfig,
     BrandMediaStorageService,
@@ -88,6 +101,8 @@ import {
     CompanyMediaStorageService,
     AmenityStorageConfig,
     AmenityMediaStorageService,
+    RankingCategoryStorageConfig,
+    RankingCategoryMediaStorageService,
   ],
 
   exports: [
@@ -107,6 +122,8 @@ import {
     LifestyleMediaStorageService,
     AmenityStorageConfig,
     AmenityMediaStorageService,
+    RankingCategoryStorageConfig,
+    RankingCategoryMediaStorageService,
   ],
 })
 export class MediaModule {}

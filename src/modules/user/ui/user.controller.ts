@@ -44,6 +44,8 @@ import { UpdateUserProfileRequest } from './request/update-user-profile.request'
 import { UpdateUserStatusRequest } from './request/update-user-status.request';
 import { UpdateUserRequest } from './request/update-user.request';
 import { UserResponse } from './response/user-response';
+import { OrderByDirection } from 'objection';
+import { FetchUsersQuery } from '../application/command/fetch-users.query';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -59,7 +61,8 @@ export class UserController {
     private readonly sendVerifyEmailHandler: SendVerifyEmailCommandHandler,
     private readonly verifyEmailCommandHandler: VerifyEmailCommandHandler,
     private readonly updateUserProfileCommandHandler: UpdateUserProfileCommandHandler,
-    private readonly updateUserStatusCommandHandler: UpdateUserStatusCommandHandler
+    private readonly updateUserStatusCommandHandler: UpdateUserStatusCommandHandler,
+    private readonly userMapper : UserMapper
   ) {}
 
   @Post()
@@ -86,7 +89,7 @@ export class UserController {
     );
 
     const user = await this.createUserHandler.handle(command);
-    return UserMapper.toResponse(user);
+    return this.userMapper.toResponse(user);
   }
 
   @Get()
@@ -95,10 +98,17 @@ export class UserController {
   @UseGuards(SessionAuthGuard, RBACGuard)
   @Permissions(PermissionsEnum.ADMIN)
   async findAll(
-    @Query() query: PaginationRequest
+      @Query('query') query?: string,
+      @Query('page') page?: number,
+      @Query('limit') limit?: number,
+      @Query('sortBy') sortBy?: string,
+      @Query('sortOrder') sortOrder?: OrderByDirection
   ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
-    const users = await this.fetchUsersHandler.handle(query);
-    return users;
+    const users = await this.fetchUsersHandler.handle(new FetchUsersQuery(query, page, limit, sortBy, sortOrder));
+    return {
+      data: users.data.map((user) => this.userMapper.toResponse(user)),
+      pagination: users.pagination,
+    };
   }
 
   // * Resend verification email
@@ -158,8 +168,7 @@ export class UserController {
   async findOne(@Param('id') id: string): Promise<UserResponse> {
     const user = await this.findByIdUserHandler.handle(id);
 
-    console.log(user);
-    return UserMapper.toResponse(user);
+    return this.userMapper.toResponse(user);
   }
 
   @Put(':id')
@@ -183,7 +192,7 @@ export class UserController {
     );
 
     const user = await this.updateUserHandler.handle(command);
-    return UserMapper.toResponse(user);
+    return this.userMapper.toResponse(user);
   }
 
   @Delete(':id')

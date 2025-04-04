@@ -26,6 +26,7 @@ import { LifestyleMapper } from './mappers/lifestyle.mapper';
 import { CreateLifestyleRequest } from './request/create-lifestyle.request';
 import { UpdateLifestyleRequest } from './request/update-lifestyle.request';
 import { LifestyleResponse } from './response/lifestyle.response';
+import { OrderByDirection } from 'objection';
 
 @ApiTags('Lifestyles')
 @Controller('lifestyles')
@@ -60,10 +61,12 @@ export class LifestyleController {
   })
   async findAll(
     @Query('query') query?: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection
   ): Promise<{ data: LifestyleResponse[]; pagination: PaginationResponse }> {
-    const fetchQuery = new FetchLifestyleQuery(query, page, limit);
+    const fetchQuery = new FetchLifestyleQuery(query, page, limit, sortBy, sortOrder);
     const { data, pagination } = await this.fetchAllLifestylesQueryHandler.handle(fetchQuery);
 
     return {

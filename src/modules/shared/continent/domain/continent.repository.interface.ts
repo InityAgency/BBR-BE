@@ -5,7 +5,9 @@ import { FetchContinentsQuery } from '../application/command/fetch-continents.qu
 export abstract class IContinentRepository {
   abstract findById(id: string): Promise<Continent | undefined>;
   abstract findByCode(code: string): Promise<Continent | undefined>;
-  abstract findAll(query: FetchContinentsQuery): Promise<{ data: Continent[]; pagination: PaginationResponse }>;
+  abstract findAll(
+    query: FetchContinentsQuery
+  ): Promise<{ data: Continent[]; pagination: PaginationResponse }>;
   abstract create(data: Partial<Continent>): Promise<Continent>;
   abstract update(id: string, data: Partial<Continent>): Promise<Continent | undefined>;
   abstract delete(id: string): Promise<void>;

@@ -1,4 +1,4 @@
-import {  IsString, MaxLength, IsUUID, IsInt } from 'class-validator';
+import { IsString, MaxLength, IsUUID, IsInt } from 'class-validator';
 
 export class UpdateCityRequest {
   @IsString()

@@ -5,7 +5,7 @@ import { LogMethod } from '../../../../../shared/infrastructure/logger/log.decor
 @Injectable()
 export class DeleteCountryCommandHandler {
   constructor(private readonly countryRepository: ICountryRepository) {}
-  
+
   @LogMethod()
   async handle(id: string): Promise<void> {
     const country = await this.countryRepository.findById(id);

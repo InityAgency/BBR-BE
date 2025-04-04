@@ -30,7 +30,7 @@ export class LifestyleRepositoryIml implements ILifestyleRepository {
 
     const paginatedBrands = await applyPagination(query, page, limit);
 
-    const totalResult = (await Lifestyle.query().count('* as total').first()) as
+    const totalResult = (await query.clone().clearSelect().clearOrder().count('* as total').first()) as
       | { total: string }
       | undefined;
 

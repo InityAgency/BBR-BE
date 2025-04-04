@@ -25,6 +25,8 @@ import { UnitTypeModule } from './modules/unit_type/unit-type.module';
 import { BullModule } from '@nestjs/bullmq';
 import { getBullConfig } from './shared/config/bull.config';
 import { QueuesEnum } from './shared/types/queues.enum';
+import { RankingCategoryTypeModule } from './modules/shared/rankingmanagement/categorytype/ranking-category-type.module';
+import { RankingCategoryModule } from './modules/shared/rankingmanagement/category/ranking-category.module';
 
 @Module({
   imports: [
@@ -57,6 +59,8 @@ import { QueuesEnum } from './shared/types/queues.enum';
     CityModule,
     AmenityModule,
     UnitTypeModule,
+    RankingCategoryTypeModule,
+    RankingCategoryModule,
   ],
   providers: [],
 })

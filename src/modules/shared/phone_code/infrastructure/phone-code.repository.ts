@@ -8,7 +8,6 @@ import { FetchPhoneCodesQuery } from '../application/command/fetch-phone-codes.q
 
 @Injectable()
 export class PhoneCodeRepositoryImpl implements IPhoneCodeRepository {
-
   @LogMethod()
   async create(phoneCode: Partial<PhoneCode>): Promise<PhoneCode> {
     return PhoneCode.create(phoneCode);
@@ -24,47 +23,48 @@ export class PhoneCodeRepositoryImpl implements IPhoneCodeRepository {
     return PhoneCode.query().findOne({ code }).whereNull('deleted_at');
   }
 
-  async createOrUpdatePhoneCodesForCountry(codes: string[], countryId: string): Promise<PhoneCode[]> {
+  async createOrUpdatePhoneCodesForCountry(
+    codes: string[],
+    countryId: string
+  ): Promise<PhoneCode[]> {
     const phoneCodes = await PhoneCode.query()
-    .whereIn('code', codes)
-    .where('countryId', countryId)
-    .whereNull('deleted_at');
+      .whereIn('code', codes)
+      .where('countryId', countryId)
+      .whereNull('deleted_at');
 
-  const missingCodes = codes.filter(code => !phoneCodes.some(pc => pc.code === code));
+    const missingCodes = codes.filter((code) => !phoneCodes.some((pc) => pc.code === code));
 
-  const updatedPhoneCodes = await Promise.all(
-    phoneCodes.map(async (pc) => {
-      if (pc.countryId !== countryId) {
-        return PhoneCode.query().patchAndFetchById(pc.id, { countryId });
-      }
-      return pc; 
-    })
-  );
-
-  if (missingCodes.length > 0) {
-    const newPhoneCodes = await PhoneCode.query().insertGraph(
-      missingCodes.map(code => ({
-        code,
-        countryId, 
-      }))
+    const updatedPhoneCodes = await Promise.all(
+      phoneCodes.map(async (pc) => {
+        if (pc.countryId !== countryId) {
+          return PhoneCode.query().patchAndFetchById(pc.id, { countryId });
+        }
+        return pc;
+      })
     );
 
-    return [...updatedPhoneCodes, ...newPhoneCodes];
-  }
+    if (missingCodes.length > 0) {
+      const newPhoneCodes = await PhoneCode.query().insertGraph(
+        missingCodes.map((code) => ({
+          code,
+          countryId,
+        }))
+      );
 
-  const codesArray = Array.from(codes);
-  const phoneCodesToDelete = await PhoneCode.query()
-    .where('countryId', countryId)
-    .whereNotIn('code', codesArray) 
-    .whereNull('deleted_at');
+      return [...updatedPhoneCodes, ...newPhoneCodes];
+    }
 
-  await Promise.all(
-    phoneCodesToDelete.map(pc => 
-      PhoneCode.query().delete().where({id: pc.id}) 
-    )
-  );
+    const codesArray = Array.from(codes);
+    const phoneCodesToDelete = await PhoneCode.query()
+      .where('countryId', countryId)
+      .whereNotIn('code', codesArray)
+      .whereNull('deleted_at');
 
-  return updatedPhoneCodes;
+    await Promise.all(
+      phoneCodesToDelete.map((pc) => PhoneCode.query().delete().where({ id: pc.id }))
+    );
+
+    return updatedPhoneCodes;
   }
 
   @LogMethod()
@@ -79,9 +79,9 @@ export class PhoneCodeRepositoryImpl implements IPhoneCodeRepository {
 
     const paginatedPhoneCodes = await applyPagination(query, page, limit);
 
-    const totalResult = (await PhoneCode.query()
-      .count('* as total')
-      .first()) as { total: string } | undefined;
+    const totalResult = (await query.clone().clearSelect().clearOrder().count('* as total').first()) as
+      | { total: string }
+      | undefined;
 
     const totalCount = totalResult ? Number(totalResult.total) : 0;
     const totalPages = Math.ceil(totalCount / limit);

@@ -27,8 +27,6 @@ export class User extends Model {
   buyer?: UserBuyer;
   company?: Company;
   role?: Role;
-  lifestyles?: Lifestyle[];
-  unitTypes: UnitType[];
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;
@@ -38,19 +36,32 @@ export class User extends Model {
   static tableName = 'users';
 
   static relationMappings = {
-    unitTypes: {
-      relation: Model.ManyToManyRelation,
-      modelClass: () => UnitType,
+    buyer: {
+      relation: Model.HasOneRelation,
+      modelClass: () => UserBuyer,
       join: {
         from: 'users.id',
-        through: {
-          from: 'users_unit_types.userId',
-          to: 'users_unit_types.unitTypeId',
-        },
-        to: 'unit_types.id',
+        to: 'user_buyers.user_id',
+      },
+    },
+    company: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => Company,
+      join: {
+        from: 'users.company_id',
+        to: 'companies.id',
+      },
+    },
+    role: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => Role,
+      join: {
+        from: 'users.role_id',
+        to: 'roles.id',
       },
     },
   };
+  
 
   async $beforeInsert() {
     if (this.password) {

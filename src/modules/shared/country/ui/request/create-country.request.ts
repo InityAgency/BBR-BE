@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsString, MaxLength, IsOptional, IsDate, IsUUID, IsArray } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  IsOptional,
+  IsDate,
+  IsUUID,
+  IsArray,
+} from 'class-validator';
 
 export class CreateCountryRequest {
   @IsNotEmpty()

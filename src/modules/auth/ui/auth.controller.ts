@@ -39,19 +39,20 @@ export class AuthController {
     private readonly requestResetPasswordHandler: RequestPasswordCommandHandler,
     private readonly verifyResetOtpHandler: VerifyResetOtpCommandHandler,
     private readonly resetPasswordHandler: ResetPasswordCOmmandHandler,
-    private readonly acceptInviteCommandHandler: AcceptInviteCommandHandler
+    private readonly acceptInviteCommandHandler: AcceptInviteCommandHandler,
+    private readonly userMapper : UserMapper
   ) {}
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
   async login(@Req() req) {
-    return UserMapper.toResponse(req.user);
+    return this.userMapper.toResponse(req.user);
   }
 
   @Post('login/admin')
   @UseGuards(LocalAdminAuthGuard)
   async loginAdmin(@Req() req) {
-    return UserMapper.toResponse(req.user);
+    return this.userMapper.toResponse(req.user);
   }
 
   @Get('google')
@@ -67,13 +68,13 @@ export class AuthController {
   @Post('signup/developer')
   async signUpDeveloper(@Body() command: CreateUserRequest): Promise<UserResponse> {
     const user = await this.signUpDeveloperHandler.handler(command);
-    return UserMapper.toResponse(user);
+    return this.userMapper.toResponse(user);
   }
 
   @Post('signup/buyer')
   async signUpBuyer(@Body() command: CreateUserRequest): Promise<UserResponse> {
     const user = await this.signUpBuyerHandler.handler(command);
-    return UserMapper.toResponse(user);
+    return this.userMapper.toResponse(user);
   }
 
   @Get('me')

@@ -8,6 +8,6 @@ export class AmenityResponse {
     public icon: MediaResponse | null,
     public createdAt: Date,
     public updatedAt: Date,
-    public deletedAt?: Date,
+    public deletedAt?: Date
   ) {}
 }

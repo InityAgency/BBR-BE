@@ -6,7 +6,10 @@ export abstract class IPhoneCodeRepository {
   abstract create(phoneCode: Partial<PhoneCode>): Promise<PhoneCode>;
   abstract findById(id: string): Promise<PhoneCode | undefined>;
   abstract findByCode(code: string): Promise<PhoneCode | undefined>;
-  abstract createOrUpdatePhoneCodesForCountry(codes: string[], countryId: string): Promise<PhoneCode[]>;
+  abstract createOrUpdatePhoneCodesForCountry(
+    codes: string[],
+    countryId: string
+  ): Promise<PhoneCode[]>;
   abstract findAll(
     query: FetchPhoneCodesQuery
   ): Promise<{ data: PhoneCode[]; pagination: PaginationResponse }>;

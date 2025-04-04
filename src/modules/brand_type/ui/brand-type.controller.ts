@@ -28,6 +28,7 @@ import { BrandTypeMapper } from './mappers/brand-type.mapper';
 import { CreateBrandTypeRequest } from './request/create-brand-type.request';
 import { UpdateBrandTypeRequest } from './request/update-brand-type.request';
 import { BrandTypeResponse } from './response/brand-type.response';
+import { OrderByDirection } from 'objection';
 
 @ApiTags('Brand Types')
 @Controller('brand-types')
@@ -56,11 +57,13 @@ export class BrandTypesController {
   @ApiOperation({ summary: 'Get all brand types' })
   async findAll(
     @Query('query') query?: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection
   ): Promise<{ data: BrandTypeResponse[]; pagination: PaginationResponse }> {
     const { data, pagination } = await this.fetchAllBrandTypesQueryHandler.handle(
-      new FetchBrandTypesQuery(query, page, limit)
+      new FetchBrandTypesQuery(query, page, limit, sortBy, sortOrder)
     );
 
     return {

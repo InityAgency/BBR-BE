@@ -12,7 +12,6 @@ import { FetchCitiesCommandQuery } from './application/query/fetch-cities.comman
 import { UpdateCityCommandHandler } from './application/handler/update-city.command.handler';
 import { DeleteCityCommandHandler } from './application/handler/delete-city.command.handler';
 
-
 @Module({
   imports: [DatabaseModule],
   controllers: [CityController],

@@ -18,6 +18,7 @@ import { UpdateUserProfileRequest } from '../ui/request/update-user-profile.requ
 import { buildUpdatePayload } from 'src/shared/utils/build-update-payload';
 import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 import { UserMapper } from '../ui/mappers/user.mapper';
+import { FetchUsersQuery } from '../application/command/fetch-users.query';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -61,10 +62,8 @@ export class UserRepositoryImpl implements IUserRepository {
   }
 
   @LogMethod()
-  async findAll(
-    page: number,
-    limit: number
-  ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
+  async findAll(fetchQuery: FetchUsersQuery): Promise<{ data: User[]; pagination: PaginationResponse }> {
+    const { page, limit, searchQuery } = fetchQuery;
     const knex = this.knexService.connection;
 
     let query = this.knexService
@@ -89,7 +88,7 @@ export class UserRepositoryImpl implements IUserRepository {
     const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
 
     return {
-      data: data.map((user) => UserMapper.toResponse(user)),
+      data: data,
       pagination: {
         total: totalResult ? Number(totalResult.total) : 0,
         totalPages: Math.ceil((totalResult ? Number(totalResult.total) : 0) / limit),
@@ -128,9 +127,6 @@ export class UserRepositoryImpl implements IUserRepository {
       });
 
       const isBuyer = await trx('user_buyers').where({ userId: userId }).first();
-
-      console.log(isBuyer);
-
       if (isBuyer) {
         const buyerUpdatePayload = buildUpdatePayload({
           imageId: updateData.imageId,

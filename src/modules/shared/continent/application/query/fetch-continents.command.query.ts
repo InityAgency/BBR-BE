@@ -15,7 +15,16 @@ export class FetchContinentsCommandQuery {
   ): Promise<{ data: ContinentResponse[]; pagination: PaginationResponse }> {
     const result = await this.continentRepository.findAll(query);
     return {
-      data: result.data.map((continent) => new ContinentResponse(continent.id, continent.name, continent.code, continent.createdAt, continent.updatedAt)),
+      data: result.data.map(
+        (continent) =>
+          new ContinentResponse(
+            continent.id,
+            continent.name,
+            continent.code,
+            continent.createdAt,
+            continent.updatedAt
+          )
+      ),
       pagination: result.pagination,
     };
   }

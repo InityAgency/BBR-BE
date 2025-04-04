@@ -16,6 +16,7 @@ import { Country } from '../domain/country.entity';
 import { CreateCountryRequest } from './request/create-country.request';
 import { UpdateCountryRequest } from './request/update-country.request';
 import { CountryResponse } from './response/country.response';
+import { OrderByDirection } from 'objection';
 
 @ApiTags('Countries')
 @Controller('countries')
@@ -79,9 +80,11 @@ export class CountryController {
   async findAll(
     @Query('query') query?: string,
     @Query('page') page?: number,
-    @Query('limit') limit?: number
+    @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection
   ): Promise<{ data: CountryResponse[]; pagination: PaginationResponse }> {
-    const fetchQuery = new FetchCountriesQuery(query, page, limit);
+    const fetchQuery = new FetchCountriesQuery(query, page, limit, sortBy, sortOrder);
     const result = await this.fetchCountriesCommandQuery.handler(fetchQuery);
 
     return {

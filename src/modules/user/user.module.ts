@@ -24,6 +24,7 @@ import EmailModule from '../email/email.module';
 import { UpdateUserProfileCommandHandler } from './application/handler/update-user-profile.command.handler';
 import { MediaModule } from '../media/media.module';
 import { UpdateUserStatusCommandHandler } from './application/handler/update-user-status.command.handler';
+import { UserMapper } from './ui/mappers/user.mapper';
 
 @Module({
   imports: [DatabaseModule, EmailModule, MediaModule],
@@ -58,6 +59,7 @@ import { UpdateUserStatusCommandHandler } from './application/handler/update-use
     UpdateUserProfileCommandHandler,
     UpdateUserStatusCommandHandler,
     ConfigService,
+    UserMapper
   ],
   exports: [SendVerifyEmailCommandHandler],
 })

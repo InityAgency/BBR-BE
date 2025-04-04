@@ -28,11 +28,12 @@ import { FindByIdCompanyQueryHandler } from '../application/query/find-by-id-com
 import { FetchAllCompanyQueryHandler } from '../application/query/fetch-all-company.query.handler';
 import { PermissionsEnum } from 'src/shared/types/permissions.enum';
 import { Permissions } from 'src/shared/decorators/permissions.decorator';
+import { OrderByDirection } from 'objection';
+import { FetchCompaniesQuery } from '../application/commands/fetch-all-company.query';
 
 @ApiTags('Companies')
 @ApiCookieAuth()
 @Controller('companies')
-@UseGuards(RBACGuard)
 export class CompanyController {
   constructor(
     private readonly fetchAllCompanyQueryHandler: FetchAllCompanyQueryHandler,
@@ -44,12 +45,16 @@ export class CompanyController {
 
   @Get()
   @ApiOperation({ summary: 'Company Find All' })
-  @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
   async findAll(
-    @Query() query: FetchAllCompanyRequest
+    @Query('query') query?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection
   ): Promise<{ data: CompanyResponse[]; pagination: PaginationResponse }> {
-    const { data, pagination } = await this.fetchAllCompanyQueryHandler.handle(query);
+    const { data, pagination } = await this.fetchAllCompanyQueryHandler.handle(
+      new FetchCompaniesQuery(query, page, limit, sortBy, sortOrder)
+    );
     return {
       data: data.map((company) => CompanyMapper.toResponse(company)),
       pagination,

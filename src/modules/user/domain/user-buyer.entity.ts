@@ -13,6 +13,8 @@ export class UserBuyer extends Model {
   phoneNumberCountryCode?: string;
   preferredContactMethod?: string;
   preferredResidenceLocation?: string;
+  lifestyles?: Lifestyle[];
+  unitTypes: UnitType[];
 
   static tableName = 'user_buyers';
 
@@ -27,24 +29,24 @@ export class UserBuyer extends Model {
     },
     unitTypes: {
       relation: Model.ManyToManyRelation,
-      modelClass: UnitType,
+      modelClass: () => UnitType,
       join: {
-        from: 'user_buyers.userId',
+        from: 'user_buyers.user_id',
         through: {
-          from: 'user_buyer_unit_types.userId',
-          to: 'user_buyer_unit_types.unitTypeId',
+          from: 'user_buyer_unit_types.user_id',
+          to: 'user_buyer_unit_types.unit_type_id',
         },
         to: 'unit_types.id',
       },
     },
     lifestyles: {
       relation: Model.ManyToManyRelation,
-      modelClass: Lifestyle,
+      modelClass: () => Lifestyle,
       join: {
-        from: 'user_buyers.userId',
+        from: 'user_buyers.user_id',
         through: {
-          from: 'user_buyer_lifestyles.userId',
-          to: 'user_buyer_lifestyles.lifestylesId',
+          from: 'user_buyer_lifestyles.user_id',
+          to: 'user_buyer_lifestyles.lifestyle_id', 
         },
         to: 'lifestyles.id',
       },

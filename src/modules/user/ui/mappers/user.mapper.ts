@@ -2,7 +2,8 @@ import { User } from '../../domain/user.entity';
 import { UserResponse } from '../response/user-response';
 
 export class UserMapper {
-  static toResponse(user: User): UserResponse {
+  public toResponse(user: User): UserResponse {
+
     return new UserResponse(
       user.id,
       user.fullName,
@@ -20,8 +21,8 @@ export class UserMapper {
       user.buyer,
       user.company,
       user.role,
-      user.lifestyles,
-      user.unitTypes,
+      user.buyer?.lifestyles,
+      user.buyer?.unitTypes,
       user.createdAt,
       user.updatedAt,
       user.deletedAt

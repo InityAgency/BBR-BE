@@ -3,12 +3,12 @@ import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
 import { Brand } from './brand.entity';
 
 export abstract class IBrandRepository {
-  abstract create(brand: Partial<Brand>):  Promise<Brand | undefined>;
+  abstract create(brand: Partial<Brand>): Promise<Brand | undefined>;
   abstract findById(id: string): Promise<Brand | undefined>;
   abstract findByName(name: string): Promise<Brand | undefined>;
   abstract findAll(
     query: FetchBrandsQuery
   ): Promise<{ data: Brand[]; pagination: PaginationResponse }>;
-  abstract update(id: string, updateData: Partial<Brand >): Promise<Brand| undefined>;
+  abstract update(id: string, updateData: Partial<Brand>): Promise<Brand | undefined>;
   abstract delete(id: string): Promise<void>;
 }
