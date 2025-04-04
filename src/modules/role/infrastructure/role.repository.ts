@@ -36,17 +36,13 @@ export class RoleRepositoryImpl implements IRoleRepository {
     limit: number
   ): Promise<{ data: Role[]; pagination: PaginationResponse }> {
     const query = this.knexService.connection('roles').select('*');
-    const paginatedQuery = applyPagination(query, page, limit);
-
-    const totalQuery = this.knexService.connection('roles').count('* as total').first();
-
-    const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 
     return {
-      data,
+      data: paginatedQuery,
       pagination: {
-        total: totalResult ? Number(totalResult.total) : 0,
-        totalPages: Math.ceil((totalResult ? Number(totalResult.total) : 0) / limit),
+        total: totalCount,
+        totalPages,
         page,
         limit,
       },

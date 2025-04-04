@@ -40,29 +40,32 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
   ): Promise<{ data: Amenity[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
 
-    let query = Amenity.query().whereNull('deleted_at').withGraphFetched('[icon]');
+    const baseQuery = Amenity.query().whereNull('deleted_at').withGraphFetched('[icon]');
 
     const columnsToSearchAndSort = ['name', 'description'];
-    query = applySearchFilter(query, searchQuery, columnsToSearchAndSort, 'amenities');
 
-    if (sortBy && sortOrder) {
-      if (columnsToSearchAndSort.includes(sortBy)) {
-        query = query.orderBy(sortBy, sortOrder);
-      }
+    // search
+    const searchableQuery = applySearchFilter(
+      baseQuery.clone(),
+      searchQuery,
+      columnsToSearchAndSort,
+      Amenity.tableName
+    );
+
+    // sort
+    if (sortBy && sortOrder && columnsToSearchAndSort.includes(sortBy)) {
+      searchableQuery.orderBy(sortBy, sortOrder);
     }
 
-    const paginatedAmenities = await applyPagination(query, page, limit);
-
-    const totalResult = (await query.clone().clearSelect().clearOrder()
-      .whereNull('deleted_at')
-      .count('* as total')
-      .first()) as { total: string } | undefined;
-
-    const totalCount = totalResult ? Number(totalResult.total) : 0;
-    const totalPages = Math.ceil(totalCount / limit);
+    // paginate
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      searchableQuery,
+      page,
+      limit
+    );
 
     return {
-      data: paginatedAmenities,
+      data: paginatedQuery,
       pagination: {
         total: totalCount,
         totalPages,

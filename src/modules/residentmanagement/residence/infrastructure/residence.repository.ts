@@ -70,15 +70,6 @@ export class ResidenceRepository implements IResidenceRepository {
       'residences'
     );
 
-    const countQuery = searchableQuery
-      .clone()
-      .clearSelect()
-      .clearOrder()
-      .count('* as total')
-      .first();
-    const totalCount = Number((await countQuery)?.['total'] ?? 0);
-    const totalPages = Math.ceil(totalCount / limit);
-
     if (sortBy && sortOrder) {
       const allowedColumns = ['name', 'created_at', 'updated_at'];
       if (allowedColumns.includes(sortBy)) {
@@ -86,10 +77,14 @@ export class ResidenceRepository implements IResidenceRepository {
       }
     }
 
-    const paginated = await applyPagination(searchableQuery, page, limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      searchableQuery,
+      page,
+      limit
+    );
 
     return {
-      data: paginated,
+      data: paginatedQuery,
       pagination: {
         total: totalCount,
         totalPages,

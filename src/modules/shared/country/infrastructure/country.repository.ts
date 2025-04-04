@@ -70,15 +70,10 @@ export class CountryRepositoryImpl implements ICountryRepository {
       }
     }
 
-    const paginatedCountries = await applyPagination(query, page, limit);
-
-    const totalResult = (await query.clone().clearSelect().clearOrder().count('* as total').first()) as { total: string } | undefined;
-
-    const totalCount = totalResult ? Number(totalResult.total) : 0;
-    const totalPages = Math.ceil(totalCount / limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 
     return {
-      data: paginatedCountries,
+      data: paginatedQuery,
       pagination: {
         total: totalCount,
         totalPages,

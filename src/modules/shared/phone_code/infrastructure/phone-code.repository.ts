@@ -77,17 +77,10 @@ export class PhoneCodeRepositoryImpl implements IPhoneCodeRepository {
 
     query = query.select('id', 'code', 'countryId', 'createdAt');
 
-    const paginatedPhoneCodes = await applyPagination(query, page, limit);
-
-    const totalResult = (await query.clone().clearSelect().clearOrder().count('* as total').first()) as
-      | { total: string }
-      | undefined;
-
-    const totalCount = totalResult ? Number(totalResult.total) : 0;
-    const totalPages = Math.ceil(totalCount / limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 
     return {
-      data: paginatedPhoneCodes,
+      data: paginatedQuery,
       pagination: {
         total: totalCount,
         totalPages,

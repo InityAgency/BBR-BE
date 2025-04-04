@@ -53,15 +53,10 @@ export class KeyFeatureRepository implements IKeyFeatureRepository {
     const columnsToSearch = ['name'];
     query = applySearchFilter(query, searchQuery, columnsToSearch, 'key_features');
 
-    const paginatedBrands = await applyPagination(query, page, limit);
-
-    const totalResult = (await query.count('* as total').first()) as { total: string } | undefined;
-
-    const totalCount = totalResult ? Number(totalResult.total) : 0;
-    const totalPages = Math.ceil(totalCount / limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 
     return {
-      data: paginatedBrands,
+      data: paginatedQuery,
       pagination: {
         total: totalCount,
         totalPages,

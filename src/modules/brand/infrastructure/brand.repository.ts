@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { applySearchFilter } from 'src/shared/filter/query.filter';
+import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
+import { BrandStatus } from '../domain/brand-status.enum';
 import { Brand } from '../domain/brand.entity';
 import { IBrandRepository } from '../domain/brand.repository.interface';
-import { BrandStatus } from '../domain/brand-status.enum';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
-import { KnexService } from 'src/shared/infrastructure/database/knex.service';
+import { validate as isValidUUID } from 'uuid';
+
 @Injectable()
 export class BrandRepositoryImpl implements IBrandRepository {
   constructor(private readonly knexService: KnexService) {}
@@ -40,34 +42,46 @@ export class BrandRepositoryImpl implements IBrandRepository {
   async findAll(
     fetchQuery: FetchBrandsQuery
   ): Promise<{ data: Brand[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
+    const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
 
-    let query = Brand.query().whereNull('deleted_at').withGraphFetched('[brandType, logo]');
+    let baseQuery = Brand.query().whereNull('deleted_at').withGraphFetched('[brandType, logo]');
 
+    // check if brandTypeId is valid
+    if (fetchQuery.brandTypeId && isValidUUID(fetchQuery.brandTypeId)) {
+      baseQuery = baseQuery.where('brand_type_id', fetchQuery.brandTypeId);
+    }
+
+    // filter by status
+    if (fetchQuery.status) {
+      baseQuery = baseQuery.where('status', fetchQuery.status);
+    }
+
+    // sort
     if (sortBy && sortOrder) {
       const allowedColumns = ['name', 'status', 'registered_at', 'created_at', 'updated_at'];
       if (allowedColumns.includes(sortBy)) {
-        query = query.orderBy(sortBy, sortOrder);
+        baseQuery = baseQuery.orderBy(sortBy, sortOrder);
       }
     }
 
+    // search
     const columnsToSearch = ['name', 'description', 'status'];
-    query = applySearchFilter(query, searchQuery, columnsToSearch, 'brands');
+    baseQuery = applySearchFilter(baseQuery, searchQuery, columnsToSearch, 'brands');
 
-    const paginatedBrands = await applyPagination(query, page, limit);
-
-    const totalResult = (await query.clone().clearSelect().clearOrder().count('* as total').first()) as { total: string } | undefined;
-
-    const totalCount = totalResult ? Number(totalResult.total) : 0;
-    const totalPages = Math.ceil(totalCount / limit);
+    // now paginate
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      baseQuery,
+      page,
+      limit
+    );
 
     return {
-      data: paginatedBrands,
+      data: paginatedQuery,
       pagination: {
         total: totalCount,
         totalPages,
-        page: page,
-        limit: limit,
+        page,
+        limit,
       },
     };
   }

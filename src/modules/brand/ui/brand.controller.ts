@@ -32,6 +32,7 @@ import { BrandResponse } from './response/brand-response';
 import { FindByIdBrandQueryHandler } from '../application/query/find-by-id-brand.query.handler';
 import { FetchAllBrandQueryHandler } from '../application/query/fetch-all-brands.query.handler';
 import { OrderByDirection } from 'objection';
+import { BrandStatus } from '../domain/brand-status.enum';
 
 @ApiTags('brands')
 @ApiBearerAuth()
@@ -86,9 +87,19 @@ export class BrandController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: OrderByDirection
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('status') status?: BrandStatus,
+    @Query('brandTypeId') brandTypeId?: string
   ): Promise<{ data: BrandResponse[]; pagination: PaginationResponse }> {
-    const fetchQuery = new FetchBrandsQuery(query, page, limit, sortBy, sortOrder);
+    const fetchQuery = new FetchBrandsQuery(
+      query,
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      status,
+      brandTypeId
+    );
     const { data, pagination } = await this.fetchAllBrandHandler.handle(fetchQuery);
 
     return {

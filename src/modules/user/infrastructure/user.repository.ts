@@ -1,25 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
-import { applyPagination } from 'src/shared/utils/pagination.util';
-import { User } from '../domain/user.entity';
-import { IUserRepository } from '../domain/user.repository.interface';
-import { UpdateUserRequest } from '../ui/request/update-user.request';
-import { UserResponse } from '../ui/response/user-response';
 import {
-  buildUnitTypesJoin,
+  buildBuyerJoin,
+  buildCompanyJoin,
   buildLifestylesJoin,
   buildRoleJoin,
-  buildCompanyJoin,
-  buildBuyerJoin,
+  buildUnitTypesJoin,
 } from 'src/shared/user-query';
-import { UpdateUserProfileRequest } from '../ui/request/update-user-profile.request';
 import { buildUpdatePayload } from 'src/shared/utils/build-update-payload';
-import { UserStatusEnum } from 'src/shared/types/user-status.enum';
-import { UserMapper } from '../ui/mappers/user.mapper';
+import { applyPagination } from 'src/shared/utils/pagination.util';
 import { FetchUsersQuery } from '../application/command/fetch-users.query';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
+import { User } from '../domain/user.entity';
+import { IUserRepository } from '../domain/user.repository.interface';
+import { UpdateUserProfileRequest } from '../ui/request/update-user-profile.request';
+import { UpdateUserRequest } from '../ui/request/update-user.request';
+
+import { validate as isValidUUID } from 'uuid';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -66,43 +65,8 @@ export class UserRepositoryImpl implements IUserRepository {
   async findAll(
     fetchQuery: FetchUsersQuery
   ): Promise<{ data: User[]; pagination: PaginationResponse }> {
-    // const { page, limit, searchQuery } = fetchQuery;
-    // const knex = this.knexService.connection;
-
-    // let query = this.knexService
-    //   .connection(this.tableName)
-    //   .whereNull('deleted_at')
-    //   .leftJoin(buildUnitTypesJoin(knex))
-    //   .leftJoin(buildLifestylesJoin(knex))
-    //   .leftJoin(buildRoleJoin(knex))
-    //   .leftJoin(buildCompanyJoin(knex))
-    //   .leftJoin(buildBuyerJoin(knex));
-
-    // query.select('users.*', 'role', 'company', 'buyer', 'unitTypes');
-
-    // const paginatedQuery = await applyPagination(query, page, limit);
-
-    // const totalQuery = this.knexService
-    //   .connection(this.tableName)
-    //   .whereNull('deleted_at')
-    //   .count('* as total')
-    //   .first();
-
-    // const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
-
-    // return {
-    //   data: data,
-    //   pagination: {
-    //     total: totalResult ? Number(totalResult.total) : 0,
-    //     totalPages: Math.ceil((totalResult ? Number(totalResult.total) : 0) / limit),
-    //     page,
-    //     limit,
-    //   },
-    // };
-    const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
+    const { page, limit, sortBy, sortOrder, searchQuery, status, roleId } = fetchQuery;
     const knex = this.knexService.connection;
-
-    console.log(searchQuery);
 
     const allowedColumns = ['full_name', 'email', 'created_at', 'updated_at'];
 
@@ -115,6 +79,14 @@ export class UserRepositoryImpl implements IUserRepository {
       .leftJoin(buildCompanyJoin(knex))
       .leftJoin(buildBuyerJoin(knex))
       .select('users.*', 'role', 'company', 'buyer', 'unitTypes');
+
+    if (status) {
+      baseQuery.andWhere('status', status);
+    }
+
+    if (roleId && isValidUUID(roleId)) {
+      baseQuery.andWhere('role_id', roleId);
+    }
 
     // apply search
     const columnsToSearch = ['full_name', 'email'];
@@ -130,22 +102,15 @@ export class UserRepositoryImpl implements IUserRepository {
       searchableQuery.orderBy(sortBy, sortOrder);
     }
 
-    // total count
-    const countQuery = searchableQuery
-      .clone()
-      .clearSelect()
-      .clearOrder()
-      .count('* as total')
-      .first();
-
-    const totalCount = Number((await countQuery)?.['total'] ?? 0);
-    const totalPages = Math.ceil(totalCount / limit);
-
     // pagination
-    const paginated = await applyPagination(searchableQuery, page, limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      searchableQuery,
+      page,
+      limit
+    );
 
     return {
-      data: paginated,
+      data: paginatedQuery,
       pagination: {
         total: totalCount,
         totalPages,

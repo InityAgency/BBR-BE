@@ -63,17 +63,14 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       }
     }
 
-    const paginatedRankingCategories = await applyPagination(rankingCategoryQuery, page, limit);
-
-    const totalResult = (await rankingCategoryQuery.clone().clearSelect().clearOrder().count('* as total').first()) as
-      | { total: string }
-      | undefined;
-
-    const totalCount = totalResult ? Number(totalResult.total) : 0;
-    const totalPages = Math.ceil(totalCount / limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      rankingCategoryQuery,
+      page,
+      limit
+    );
 
     return {
-      data: paginatedRankingCategories,
+      data: paginatedQuery,
       pagination: {
         total: totalCount,
         totalPages,

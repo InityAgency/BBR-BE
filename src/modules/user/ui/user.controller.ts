@@ -46,6 +46,7 @@ import { UpdateUserRequest } from './request/update-user.request';
 import { UserResponse } from './response/user-response';
 import { OrderByDirection } from 'objection';
 import { FetchUsersQuery } from '../application/command/fetch-users.query';
+import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -62,7 +63,7 @@ export class UserController {
     private readonly verifyEmailCommandHandler: VerifyEmailCommandHandler,
     private readonly updateUserProfileCommandHandler: UpdateUserProfileCommandHandler,
     private readonly updateUserStatusCommandHandler: UpdateUserStatusCommandHandler,
-    private readonly userMapper : UserMapper
+    private readonly userMapper: UserMapper
   ) {}
 
   @Post()
@@ -98,13 +99,17 @@ export class UserController {
   @UseGuards(SessionAuthGuard, RBACGuard)
   @Permissions(PermissionsEnum.ADMIN)
   async findAll(
-      @Query('query') query?: string,
-      @Query('page') page?: number,
-      @Query('limit') limit?: number,
-      @Query('sortBy') sortBy?: string,
-      @Query('sortOrder') sortOrder?: OrderByDirection
+    @Query('query') query?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('status') status?: UserStatusEnum,
+    @Query('roleId') roleId?: string
   ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
-    const users = await this.fetchUsersHandler.handle(new FetchUsersQuery(query, page, limit, sortBy, sortOrder));
+    const users = await this.fetchUsersHandler.handle(
+      new FetchUsersQuery(query, page, limit, sortBy, sortOrder, status, roleId)
+    );
     return {
       data: users.data.map((user) => this.userMapper.toResponse(user)),
       pagination: users.pagination,
