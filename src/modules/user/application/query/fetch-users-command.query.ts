@@ -10,9 +10,12 @@ export class FetchUsersCommandHandler {
   constructor(private readonly userRepository: IUserRepository) {}
 
   @LogMethod()
-  async handle(
-    query: FetchUsersQuery
-  ): Promise<{ data: User[]; pagination: PaginationResponse }> {
-    return this.userRepository.findAll(query);
+  async handle(query: FetchUsersQuery): Promise<{ data: User[]; pagination: PaginationResponse }> {
+    const results = await this.userRepository.findAll(query);
+
+    return {
+      data: results.data,
+      pagination: results.pagination,
+    };
   }
 }

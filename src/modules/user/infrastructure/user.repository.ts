@@ -19,6 +19,7 @@ import { buildUpdatePayload } from 'src/shared/utils/build-update-payload';
 import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 import { UserMapper } from '../ui/mappers/user.mapper';
 import { FetchUsersQuery } from '../application/command/fetch-users.query';
+import { applySearchFilter } from 'src/shared/filter/query.filter';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -62,36 +63,92 @@ export class UserRepositoryImpl implements IUserRepository {
   }
 
   @LogMethod()
-  async findAll(fetchQuery: FetchUsersQuery): Promise<{ data: User[]; pagination: PaginationResponse }> {
-    const { page, limit, searchQuery } = fetchQuery;
+  async findAll(
+    fetchQuery: FetchUsersQuery
+  ): Promise<{ data: User[]; pagination: PaginationResponse }> {
+    // const { page, limit, searchQuery } = fetchQuery;
+    // const knex = this.knexService.connection;
+
+    // let query = this.knexService
+    //   .connection(this.tableName)
+    //   .whereNull('deleted_at')
+    //   .leftJoin(buildUnitTypesJoin(knex))
+    //   .leftJoin(buildLifestylesJoin(knex))
+    //   .leftJoin(buildRoleJoin(knex))
+    //   .leftJoin(buildCompanyJoin(knex))
+    //   .leftJoin(buildBuyerJoin(knex));
+
+    // query.select('users.*', 'role', 'company', 'buyer', 'unitTypes');
+
+    // const paginatedQuery = await applyPagination(query, page, limit);
+
+    // const totalQuery = this.knexService
+    //   .connection(this.tableName)
+    //   .whereNull('deleted_at')
+    //   .count('* as total')
+    //   .first();
+
+    // const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
+
+    // return {
+    //   data: data,
+    //   pagination: {
+    //     total: totalResult ? Number(totalResult.total) : 0,
+    //     totalPages: Math.ceil((totalResult ? Number(totalResult.total) : 0) / limit),
+    //     page,
+    //     limit,
+    //   },
+    // };
+    const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
     const knex = this.knexService.connection;
 
-    let query = this.knexService
-      .connection(this.tableName)
-      .whereNull('deleted_at')
+    console.log(searchQuery);
+
+    const allowedColumns = ['full_name', 'email', 'created_at', 'updated_at'];
+
+    // base query with joins
+    const baseQuery = User.query()
+      .whereNull('users.deleted_at')
       .leftJoin(buildUnitTypesJoin(knex))
       .leftJoin(buildLifestylesJoin(knex))
       .leftJoin(buildRoleJoin(knex))
       .leftJoin(buildCompanyJoin(knex))
-      .leftJoin(buildBuyerJoin(knex));
+      .leftJoin(buildBuyerJoin(knex))
+      .select('users.*', 'role', 'company', 'buyer', 'unitTypes');
 
-    query.select('users.*', 'role', 'company', 'buyer', 'unitTypes');
+    // apply search
+    const columnsToSearch = ['full_name', 'email'];
+    const searchableQuery = applySearchFilter(
+      baseQuery.clone(),
+      searchQuery,
+      columnsToSearch,
+      'users'
+    );
 
-    const paginatedQuery = await applyPagination(query, page, limit);
+    // apply sort
+    if (sortBy && sortOrder && allowedColumns.includes(sortBy)) {
+      searchableQuery.orderBy(sortBy, sortOrder);
+    }
 
-    const totalQuery = this.knexService
-      .connection(this.tableName)
-      .whereNull('deleted_at')
+    // total count
+    const countQuery = searchableQuery
+      .clone()
+      .clearSelect()
+      .clearOrder()
       .count('* as total')
       .first();
 
-    const [data, totalResult] = await Promise.all([paginatedQuery, totalQuery]);
+    const totalCount = Number((await countQuery)?.['total'] ?? 0);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // pagination
+    const paginated = await applyPagination(searchableQuery, page, limit);
 
     return {
-      data: data,
+      data: paginated,
       pagination: {
-        total: totalResult ? Number(totalResult.total) : 0,
-        totalPages: Math.ceil((totalResult ? Number(totalResult.total) : 0) / limit),
+        total: totalCount,
+        totalPages,
         page,
         limit,
       },
