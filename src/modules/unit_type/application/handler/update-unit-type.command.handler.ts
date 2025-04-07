@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { IUnitTypeRepository } from '../../domain/unit-type.repository.interface';
 import { UpdateUnitTypeCommand } from '../commands/update-unit-type.command';
 
@@ -11,6 +16,12 @@ export class UpdateUnitTypeCommandHandler {
 
     if (!existingUnitType) {
       throw new NotFoundException('Unit type not found');
+    }
+
+    const existingUnitTypeName = await this.unitTypeRepository.findByName(command.name ?? '');
+
+    if (existingUnitTypeName && existingUnitTypeName.id !== command.id) {
+      throw new ConflictException('Unit type with this name already exists');
     }
 
     const updatedUnitType = await this.unitTypeRepository.update(command.id, {

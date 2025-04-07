@@ -6,7 +6,7 @@ import { PaginationResponse } from '../../../../shared/ui/response/pagination.re
 import { applyPagination } from '../../../../shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class AmenityRepositoryImpl implements IAmenityRepository {
@@ -42,14 +42,13 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
 
     const baseQuery = Amenity.query().whereNull('deleted_at').withGraphFetched('[icon]');
 
-    const columnsToSearchAndSort = ['name', 'description'];
+    const columnsToSearchAndSort = ['amenities.name', 'amenities.description'];
 
     // search
     const searchableQuery = applySearchFilter(
       baseQuery.clone(),
       searchQuery,
-      columnsToSearchAndSort,
-      Amenity.tableName
+      columnsToSearchAndSort
     );
 
     // sort

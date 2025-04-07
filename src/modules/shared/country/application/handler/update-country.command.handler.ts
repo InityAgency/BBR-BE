@@ -27,7 +27,7 @@ export class UpdateCountryCommandHandler {
       throw new NotFoundException('Country not found');
     }
 
-    const existingCountryByName = await this.countryRepository.findByName(command.name);
+    const existingCountryByName = await this.countryRepository.findByName(command.name ?? '');
     if (existingCountryByName && existingCountryByName.id !== command.id) {
       throw new ConflictException('Country with this name already exists');
     }

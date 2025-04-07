@@ -4,8 +4,8 @@ import { Continent } from '../domain/continent.entity';
 import { FetchContinentsQuery } from '../application/command/fetch-continents.query';
 import { applyPagination } from '../../../../shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { KnexService } from '../../../../shared/infrastructure/database/knex.service';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 export class ContinentRepositoryImpl implements IContinentRepository {
   constructor(private readonly knexService: KnexService) {}
@@ -26,8 +26,8 @@ export class ContinentRepositoryImpl implements IContinentRepository {
     const { page, limit, searchQuery: searchQuery } = fetchQuery;
     let query = Continent.query().whereNull('deleted_at');
 
-    const columnsToSearch = ['name', 'code'];
-    query = applySearchFilter(query, searchQuery, columnsToSearch, 'continents');
+    const columnsToSearch = ['continents.name', 'continents.code'];
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 
     return {

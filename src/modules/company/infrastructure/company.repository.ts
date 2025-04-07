@@ -5,7 +5,7 @@ import { applyPagination } from 'src/shared/utils/pagination.util';
 import { FetchCompaniesQuery } from '../application/commands/fetch-all-company.query';
 import { Company } from '../domain/company.entity';
 import { ICompanyRepository } from '../domain/company.repository.interface';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class CompanyRepository implements ICompanyRepository {
@@ -46,10 +46,10 @@ export class CompanyRepository implements ICompanyRepository {
       .whereNull('deleted_at')
       .withGraphFetched('[image, contactPersonAvatar]');
 
-    query = applySearchFilter(query, searchQuery, this.columnsToSearchAndSort, Company.tableName);
+    query = applySearchFilter(query, searchQuery, this.columnsToSearch);
 
     if (sortBy && sortOrder) {
-      if (this.columnsToSearchAndSort.includes(sortBy)) {
+      if (this.columnsToSort.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }
     }
@@ -66,7 +66,7 @@ export class CompanyRepository implements ICompanyRepository {
     };
   }
 
-  private readonly columnsToSearchAndSort: string[] = [
+  private readonly columnsToSort: string[] = [
     'name',
     'address',
     'phone_number',
@@ -77,5 +77,18 @@ export class CompanyRepository implements ICompanyRepository {
     'contact_person_email',
     'contact_person_phone_number',
     'contact_person_phone_number_country_code',
+  ];
+
+  private readonly columnsToSearch: string[] = [
+    'companies.name',
+    'companies.address',
+    'companies.phone_number',
+    'companies.phone_number_country_code',
+    'companies.website',
+    'companies.contact_person_full_name',
+    'companies.contact_person_job_title',
+    'companies.contact_person_email',
+    'companies.contact_person_phone_number',
+    'companies.contact_person_phone_number_country_code',
   ];
 }

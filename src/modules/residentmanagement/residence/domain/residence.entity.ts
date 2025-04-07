@@ -40,6 +40,7 @@ export class Residence extends Model {
   featuredImage?: Media;
   keyFeatures?: KeyFeature[];
   country!: Country;
+  cityId!: string;
   city!: City;
   brand?: Brand;
   videoTour?: Media;

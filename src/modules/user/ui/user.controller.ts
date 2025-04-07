@@ -104,12 +104,13 @@ export class UserController {
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
-    @Query('status') status?: UserStatusEnum,
-    @Query('roleId') roleId?: string
+    @Query('status') status?: UserStatusEnum[],
+    @Query('roleId') roleId?: string[]
   ): Promise<{ data: UserResponse[]; pagination: PaginationResponse }> {
     const users = await this.fetchUsersHandler.handle(
       new FetchUsersQuery(query, page, limit, sortBy, sortOrder, status, roleId)
     );
+
     return {
       data: users.data.map((user) => this.userMapper.toResponse(user)),
       pagination: users.pagination,

@@ -1,19 +1,20 @@
-import { Controller, Get, Param, Query, Post, Body, Put, Delete, Patch } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { RankingCategoryResponse } from './response/ranking-category.response';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OrderByDirection } from 'objection';
+import { FetchRankingCategoriesQuery } from '../application/command/fetch-ranking.categories.query';
 import { CreateRankingCategoryCommandHandler } from '../application/handler/create-ranking-category.command.handler';
+import { DeleteRankingCategoryCommandHandler } from '../application/handler/delete-ranking-category.command.handler';
 import { UpdateRankingCategoryStatusCommandHandler } from '../application/handler/update-ranking-category-status.command.handler';
-import { CreateRankingCategoryRequest } from './request/create-ranking-category.request';
-import { UpdateRankingCategoryStatusRequest } from './request/update-ranking-category-status.request';
-import { RankingCategoryMapper } from './mapper/ranking-category.mapper';
-import { RankingCategory } from '../domain/ranking-category.entity';
+import { UpdateRankingCategoryCommandHandler } from '../application/handler/update-ranking-category.command.handler';
 import { FetchRankingCategoriesCommandQuery } from '../application/query/fetch-ranking-categories.query';
 import { FindRankingCategoryByIdCommandQuery } from '../application/query/find-by-id-ranking-category.query';
-import { DeleteRankingCategoryCommandHandler } from '../application/handler/delete-ranking-category.command.handler';
-import { FetchRankingCategoriesQuery } from '../application/command/fetch-ranking.categories.query';
-import { OrderByDirection } from 'objection';
-import { UpdateRankingCategoryCommandHandler } from '../application/handler/update-ranking-category.command.handler';
+import { RankingCategoryStatus } from '../domain/ranking-category-status.enum';
+import { RankingCategory } from '../domain/ranking-category.entity';
+import { RankingCategoryMapper } from './mapper/ranking-category.mapper';
+import { CreateRankingCategoryRequest } from './request/create-ranking-category.request';
+import { UpdateRankingCategoryStatusRequest } from './request/update-ranking-category-status.request';
 import { UpdateRankingCategoryRequest } from './request/update-ranking-category.request';
+import { RankingCategoryResponse } from './response/ranking-category.response';
 
 @ApiTags('Ranking Categories')
 @Controller('ranking-categories')
@@ -35,10 +36,12 @@ export class RankingCategoryController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: OrderByDirection
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('status') status?: RankingCategoryStatus[],
+    @Query('categoryTypeId') categoryTypeId?: string[]
   ) {
     const { data, pagination } = await this.fetchRankingCategoriesCommandQuery.handle(
-      new FetchRankingCategoriesQuery(query, page, limit, sortBy, sortOrder)
+      new FetchRankingCategoriesQuery(query, page, limit, sortBy, sortOrder, status, categoryTypeId)
     );
 
     const mappedRankingCategories = data.map((category: RankingCategory) =>

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { applyPagination } from 'src/shared/utils/pagination.util';
@@ -7,6 +6,7 @@ import { KnexService } from '../../../shared/infrastructure/database/knex.servic
 import { FetchBrandTypesQuery } from '../application/command/fetch-brand-types.query';
 import { BrandType } from '../domain/brand-type.entity';
 import { IBrandTypesRepository } from '../domain/brand-type.repository.interface';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class BrandTypesRepository implements IBrandTypesRepository {
@@ -26,8 +26,8 @@ export class BrandTypesRepository implements IBrandTypesRepository {
       }
     }
 
-    const columnsToSearch = ['name', 'description'];
-    query = applySearchFilter(query, searchQuery, columnsToSearch, 'brand_types');
+    const columnsToSearch = ['brand_types.name', 'brand_types.description'];
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 

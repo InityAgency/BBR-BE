@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
+import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
@@ -8,7 +9,6 @@ import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
 import { BrandStatus } from '../domain/brand-status.enum';
 import { Brand } from '../domain/brand.entity';
 import { IBrandRepository } from '../domain/brand.repository.interface';
-import { validate as isValidUUID } from 'uuid';
 
 @Injectable()
 export class BrandRepositoryImpl implements IBrandRepository {
@@ -44,17 +44,16 @@ export class BrandRepositoryImpl implements IBrandRepository {
   ): Promise<{ data: Brand[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
 
-    let baseQuery = Brand.query().whereNull('deleted_at').withGraphFetched('[brandType, logo]');
-
-    // check if brandTypeId is valid
-    if (fetchQuery.brandTypeId && isValidUUID(fetchQuery.brandTypeId)) {
-      baseQuery = baseQuery.where('brand_type_id', fetchQuery.brandTypeId);
-    }
-
-    // filter by status
-    if (fetchQuery.status) {
-      baseQuery = baseQuery.where('status', fetchQuery.status);
-    }
+    let baseQuery = Brand.query()
+      .whereNull('deleted_at')
+      .modify((qb) =>
+        applyFilters(
+          qb,
+          { status: fetchQuery.status, brandTypeId: fetchQuery.brandTypeId },
+          Brand.tableName
+        )
+      )
+      .withGraphFetched('[brandType, logo]');
 
     // sort
     if (sortBy && sortOrder) {
@@ -65,8 +64,8 @@ export class BrandRepositoryImpl implements IBrandRepository {
     }
 
     // search
-    const columnsToSearch = ['name', 'description', 'status'];
-    baseQuery = applySearchFilter(baseQuery, searchQuery, columnsToSearch, 'brands');
+    const columnsToSearch = ['brands.name', 'brands.description', 'brands.status'];
+    baseQuery = applySearchFilter(baseQuery, searchQuery, columnsToSearch);
 
     // now paginate
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(

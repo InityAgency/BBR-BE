@@ -4,8 +4,9 @@ import { Injectable } from '@nestjs/common';
 import { KnexService } from '../../../../../shared/infrastructure/database/knex.service';
 import { FetchRankingCategoriesQuery } from '../application/command/fetch-ranking.categories.query';
 import { PaginationResponse } from '../../../../../shared/ui/response/pagination.response';
-import { applySearchFilter } from '../../../../../shared/filter/query.filter';
 import { applyPagination } from '../../../../../shared/utils/pagination.util';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 
 @Injectable()
 export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository {
@@ -47,18 +48,22 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
     let rankingCategoryQuery = RankingCategory.query()
       .whereNull('deletedAt')
+      .modify((qb) =>
+        applyFilters(
+          qb,
+          { status: query.status, rankingCategoryTypeId: query.categoryTypeId },
+          RankingCategory.tableName
+        )
+      )
       .withGraphFetched('[rankingCategoryType, featuredImage]');
 
-    const columnsToSearchAndSort = ['name', 'description', 'residence_limitation', 'ranking_price'];
-    rankingCategoryQuery = applySearchFilter(
-      rankingCategoryQuery,
-      searchQuery,
-      columnsToSearchAndSort,
-      RankingCategory.tableName
-    );
+    const columnsToSearch = ['ranking_categories.name', 'ranking_categories.description'];
+
+    rankingCategoryQuery = applySearchFilter(rankingCategoryQuery, searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
-      if (columnsToSearchAndSort.includes(sortBy)) {
+      const columnsToSort = ['name', 'description', 'residence_limitation', 'ranking_price'];
+      if (columnsToSort.includes(sortBy)) {
         rankingCategoryQuery = rankingCategoryQuery.orderBy(sortBy, sortOrder);
       }
     }

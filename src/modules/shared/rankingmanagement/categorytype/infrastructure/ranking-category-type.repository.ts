@@ -3,11 +3,11 @@ import { RankingCategoryType } from '../domain/ranking-category-type.entity';
 import { IRankingCategoryTypeRepository } from '../domain/ranking-category-type.repository.interface';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { FetchRankingCategoryTypesQuery } from '../application/command/fetch-ranking-category-type.query';
 import { PaginationResponse } from '../../../../../shared/ui/response/pagination.response';
 import { applyPagination } from '../../../../../shared/utils/pagination.util';
 import { Amenity } from '../../../../residentmanagement/amenity/domain/amenity.entity';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class RankingCategoryTypeRepositoryImpl implements IRankingCategoryTypeRepository {
@@ -43,16 +43,12 @@ export class RankingCategoryTypeRepositoryImpl implements IRankingCategoryTypeRe
 
     let query = RankingCategoryType.query().whereNull('deleted_at');
 
-    const columnsToSearchAndSort = ['name'];
-    query = applySearchFilter(
-      query,
-      searchQuery,
-      columnsToSearchAndSort,
-      RankingCategoryType.tableName
-    );
+    const columnsToSearch = ['ranking_category_types.name'];
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
-      if (columnsToSearchAndSort.includes(sortBy)) {
+      const columnsToSort = ['name', 'created_at', 'updated_at'];
+      if (columnsToSort.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }
     }

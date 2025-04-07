@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UnitType } from '../domain/unit_type.entity';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { FetchUnitTypeQuery } from '../application/commands/fetch-unit-type.query';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class UnitTypeRepository {
@@ -23,8 +23,8 @@ export class UnitTypeRepository {
       }
     }
 
-    const columnsToSearch = ['name'];
-    query = applySearchFilter(query, searchQuery, columnsToSearch, 'unit_types');
+    const columnsToSearch = ['unit_types.name'];
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 

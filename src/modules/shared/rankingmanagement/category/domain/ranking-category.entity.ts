@@ -16,6 +16,8 @@ export class RankingCategory extends Model {
   updatedAt!: Date;
   deletedAt?: Date;
 
+  rankingCategoryTypeId!: string;
+
   static tableName = 'ranking_categories';
 
   static relationMappings = {

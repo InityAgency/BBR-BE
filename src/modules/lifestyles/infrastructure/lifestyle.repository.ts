@@ -3,9 +3,9 @@ import { ILifestyleRepository } from '../domain/lifestyle.repository.interface';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { Lifestyle } from '../domain/lifestyle.entity';
 import { FetchLifestyleQuery } from '../application/command/fetch-lifestyle.query';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class LifestyleRepositoryIml implements ILifestyleRepository {
@@ -25,8 +25,8 @@ export class LifestyleRepositoryIml implements ILifestyleRepository {
       }
     }
 
-    const columnsToSearch = ['name'];
-    query = applySearchFilter(query, searchQuery, columnsToSearch, 'lifestyles');
+    const columnsToSearch = ['lifestyles.name'];
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 

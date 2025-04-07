@@ -6,7 +6,7 @@ import { PaginationResponse } from '../../../../shared/ui/response/pagination.re
 import { applyPagination } from '../../../../shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class CountryRepositoryImpl implements ICountryRepository {
@@ -52,7 +52,18 @@ export class CountryRepositoryImpl implements ICountryRepository {
 
     let query = Country.query().whereNull('deleted_at').withGraphFetched('[continent, phoneCodes]');
 
-    const columnsToSearchAndSort = [
+    const columnsToSearch = [
+      'countries.name',
+      'countries.code',
+      'countries.capital',
+      'countries.currency_code',
+      'countries.currency_name',
+      'countries.currency_symbol',
+      'countries.subregion',
+      'countries.tld',
+    ];
+
+    const columnsToSort = [
       'name',
       'code',
       'capital',
@@ -62,10 +73,10 @@ export class CountryRepositoryImpl implements ICountryRepository {
       'subregion',
       'tld',
     ];
-    query = applySearchFilter(query, searchQuery, columnsToSearchAndSort, 'countries');
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
-      if (columnsToSearchAndSort.includes(sortBy)) {
+      if (columnsToSort.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }
     }

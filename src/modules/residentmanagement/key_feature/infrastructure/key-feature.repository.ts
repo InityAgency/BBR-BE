@@ -1,10 +1,10 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { IKeyFeatureRepository } from '../domain/key-feature.repository.interface';
 import { KeyFeature } from '../domain/key-feature.entity';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { FetchKeyFeaturesQuery } from '../application/commands/fetch-key-features.query';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class KeyFeatureRepository implements IKeyFeatureRepository {
@@ -50,8 +50,8 @@ export class KeyFeatureRepository implements IKeyFeatureRepository {
       }
     }
 
-    const columnsToSearch = ['name'];
-    query = applySearchFilter(query, searchQuery, columnsToSearch, 'key_features');
+    const columnsToSearch = ['key_features.name'];
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 

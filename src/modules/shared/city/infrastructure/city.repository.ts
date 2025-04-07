@@ -4,9 +4,9 @@ import { PaginationResponse } from '../../../../shared/ui/response/pagination.re
 import { applyPagination } from '../../../../shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { ICityRepository } from '../domain/city.repository.interface';
 import { FetchCitiesQuery } from '../application/commands/fetch-cities.query';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class CityRepositoryImpl implements ICityRepository {
@@ -46,7 +46,15 @@ export class CityRepositoryImpl implements ICityRepository {
 
     let query = City.query().whereNull('deleted_at').withGraphFetched('[country]'); // Assuming "country" is a relation to be fetched
 
-    const columnsToSearchAndSort = [
+    const columnsToSearch = [
+      'cities.name',
+      'cities.asciiName',
+      'cities.population',
+      'cities.timezone',
+      'cities.xCoordinate',
+      'cities.yCoordinate',
+    ];
+    const columnsToSort = [
       'name',
       'asciiName',
       'population',
@@ -54,10 +62,10 @@ export class CityRepositoryImpl implements ICityRepository {
       'xCoordinate',
       'yCoordinate',
     ];
-    query = applySearchFilter(query, searchQuery, columnsToSearchAndSort, 'cities');
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
-      if (columnsToSearchAndSort.includes(sortBy)) {
+      if (columnsToSort.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }
     }

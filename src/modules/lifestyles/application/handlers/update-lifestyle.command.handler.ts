@@ -14,6 +14,12 @@ export class UpdateLifestyleCommandHandler {
       throw new NotFoundException('Lifestyle not found');
     }
 
+    const existingLifestyleByName = await this.lifestyleRepository.findByName(command.name ?? '');
+
+    if (existingLifestyleByName && existingLifestyleByName.id !== command.id) {
+      throw new NotFoundException('Lifestyle with this name already exists');
+    }
+
     const updateData = {
       name: command.name,
       order: command.order,

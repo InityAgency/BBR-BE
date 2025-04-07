@@ -3,8 +3,8 @@ import { BaseFetchQuery } from 'src/shared/query/base-fetch.query';
 import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 
 export class FetchUsersQuery extends BaseFetchQuery {
-  roleId?: string;
-  status?: UserStatusEnum;
+  roleId?: string[];
+  status?: UserStatusEnum[];
 
   constructor(
     query?: string,
@@ -12,8 +12,8 @@ export class FetchUsersQuery extends BaseFetchQuery {
     limit?: number,
     sortBy?: string,
     sortOrder?: OrderByDirection,
-    status?: UserStatusEnum,
-    roleId?: string
+    status?: UserStatusEnum[],
+    roleId?: string[]
   ) {
     super(query, page, limit, sortBy, sortOrder);
 

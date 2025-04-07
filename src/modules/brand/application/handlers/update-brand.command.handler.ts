@@ -25,7 +25,7 @@ export class UpdateBrandCommandHandler {
       throw new NotFoundException('Brand not found');
     }
 
-    const existingBrandByName = await this.brandRepository.findByName(command.name);
+    const existingBrandByName = await this.brandRepository.findByName(command.name ?? '');
     if (existingBrandByName && existingBrandByName.id !== command.id) {
       throw new ConflictException('Brand with this name already exists');
     }

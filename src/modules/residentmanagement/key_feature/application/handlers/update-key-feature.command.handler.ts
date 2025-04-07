@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { IKeyFeatureRepository } from '../../domain/key-feature.repository.interface';
 import { UpdateKeyFeatureCommand } from '../commands/update-key-feature.command';
 import { KeyFeature } from '../../domain/key-feature.entity';
@@ -12,6 +17,12 @@ export class UpdateKeyFeatureCommandHandler {
 
     if (!existingKeyFeature) {
       throw new NotFoundException(`Key feature not found`);
+    }
+
+    const existingKeyFeatureByName = await this.keyFeatureRepository.findByName(command.name ?? '');
+
+    if (existingKeyFeatureByName && existingKeyFeatureByName.id !== command.id) {
+      throw new ConflictException(`Key feature with this name already exists`);
     }
 
     const updatedKeyFeature = await this.keyFeatureRepository.update(command.id, {

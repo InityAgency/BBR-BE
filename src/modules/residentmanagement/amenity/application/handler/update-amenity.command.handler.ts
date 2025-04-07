@@ -24,21 +24,27 @@ export class UpdateAmenityCommandHandler {
       throw new NotFoundException('Amenity not found');
     }
 
-    const existingAmenityByName = await this.amenityRepository.findByName(command.name);
+    const updatePayload = {
+      name: command.name,
+      description: command.description,
+      iconId: command.iconId,
+    };
+
+    const existingAmenityByName = await this.amenityRepository.findByName(command.name ?? '');
     if (existingAmenityByName && existingAmenityByName.id !== command.id) {
       throw new ConflictException('Amenity with this name already exists');
     }
 
-    const icon = await this.mediaRepository.findById(command.iconId);
-    if (!icon) {
-      throw new NotFoundException('Icon not found');
+    if (command.iconId) {
+      const icon = await this.mediaRepository.findById(command.iconId);
+      if (!icon) {
+        throw new NotFoundException('Icon not found');
+      }
+
+      updatePayload.iconId = command.iconId;
     }
 
-    const updatedAmenity = await this.amenityRepository.update(command.id, {
-      name: command.name,
-      description: command.description,
-      icon: icon,
-    });
+    const updatedAmenity = await this.amenityRepository.update(command.id, updatePayload);
 
     if (!updatedAmenity) {
       throw new InternalServerErrorException('Amenity not updated');

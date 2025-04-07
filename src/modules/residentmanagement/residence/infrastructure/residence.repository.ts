@@ -1,13 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { IResidenceRepository } from '../domain/residence.repository.interface';
 import { Residence } from '../domain/residence.entity';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
 import { ResidenceStatusEnum } from '../domain/residence-status.enum';
-import { applyAdvancedSearchFilter } from 'src/shared/filter/advanced-query.filter';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 
 @Injectable()
 export class ResidenceRepository implements IResidenceRepository {
@@ -59,15 +59,7 @@ export class ResidenceRepository implements IResidenceRepository {
 
     const baseQuery = Residence.query()
       .whereNull('residences.deleted_at')
-      .modify((qb) => {
-        if (status) {
-          qb.where('residences.status', status);
-        }
-
-        if (cityId) {
-          qb.where('residences.city_id', cityId);
-        }
-      })
+      .modify((qb) => applyFilters(qb, { status, cityId }, Residence.tableName))
       .joinRelated('city')
       .leftJoinRelated('company')
       .withGraphFetched(
@@ -81,18 +73,7 @@ export class ResidenceRepository implements IResidenceRepository {
       'company.contact_person_full_name',
       'company.contact_person_email',
     ];
-    const searchableQuery = applyAdvancedSearchFilter(
-      baseQuery.clone(),
-      searchQuery,
-      columnsToSearch
-    );
-    // const columnsToSearch = ['name'];
-    // const searchableQuery = applySearchFilter(
-    //   baseQuery.clone(),
-    //   searchQuery,
-    //   columnsToSearch,
-    //   Residence.tableName
-    // );
+    const searchableQuery = applySearchFilter(baseQuery.clone(), searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
       const allowedColumns = ['name', 'created_at', 'updated_at'];
@@ -123,6 +104,17 @@ export class ResidenceRepository implements IResidenceRepository {
     gallery: { id: string; order: number }[],
     type: 'mainGallery' | 'secondaryGallery'
   ) {
+    const mediaIds = gallery.map((item) => item.id);
+    const existingMediaIds = await this.knexService
+      .connection('media')
+      .whereIn('id', mediaIds)
+      .pluck('id');
+
+    const invalidIds = mediaIds.filter((id) => !existingMediaIds.includes(id));
+    if (invalidIds.length) {
+      throw new NotFoundException(`Media not found`);
+    }
+
     await this.knexService
       .connection('residence_media')
       .where({ residence_id: residenceId, media_type: type })
@@ -135,8 +127,6 @@ export class ResidenceRepository implements IResidenceRepository {
         media_type: type,
         order: item.order,
       }));
-
-      console.log('rows', rows);
 
       await this.knexService.connection('residence_media').insert(rows);
     }

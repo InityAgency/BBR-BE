@@ -24,7 +24,7 @@ export class UpdateCityCommandHandler {
       throw new NotFoundException('City not found');
     }
 
-    const existingCityByName = await this.cityRepository.findByName(command.name);
+    const existingCityByName = await this.cityRepository.findByName(command.name ?? '');
     if (existingCityByName && existingCityByName.id !== command.id) {
       throw new ConflictException('City with this name already exists');
     }

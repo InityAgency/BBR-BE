@@ -26,7 +26,9 @@ export class UpdateRankingCategoryCommandHandler {
       throw new NotFoundException('Ranking Category not found');
     }
 
-    const existingCategoryByName = await this.rankingCategoryRepository.findByName(command.name);
+    const existingCategoryByName = await this.rankingCategoryRepository.findByName(
+      command.name ?? ''
+    );
     if (existingCategoryByName && existingCategoryByName.id !== command.id) {
       throw new ConflictException('Ranking Category with this name already exists');
     }

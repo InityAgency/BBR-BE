@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { applySearchFilter } from 'src/shared/filter/query.filter';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
@@ -19,6 +18,8 @@ import { UpdateUserProfileRequest } from '../ui/request/update-user-profile.requ
 import { UpdateUserRequest } from '../ui/request/update-user.request';
 
 import { validate as isValidUUID } from 'uuid';
+import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -73,6 +74,16 @@ export class UserRepositoryImpl implements IUserRepository {
     // base query with joins
     const baseQuery = User.query()
       .whereNull('users.deleted_at')
+      .modify((qb) => {
+        applyFilters(
+          qb,
+          {
+            status,
+            roleId,
+          },
+          User.tableName
+        );
+      })
       .leftJoin(buildUnitTypesJoin(knex))
       .leftJoin(buildLifestylesJoin(knex))
       .leftJoin(buildRoleJoin(knex))
@@ -80,22 +91,9 @@ export class UserRepositoryImpl implements IUserRepository {
       .leftJoin(buildBuyerJoin(knex))
       .select('users.*', 'role', 'company', 'buyer', 'unitTypes');
 
-    if (status) {
-      baseQuery.andWhere('status', status);
-    }
-
-    if (roleId && isValidUUID(roleId)) {
-      baseQuery.andWhere('role_id', roleId);
-    }
-
     // apply search
-    const columnsToSearch = ['full_name', 'email'];
-    const searchableQuery = applySearchFilter(
-      baseQuery.clone(),
-      searchQuery,
-      columnsToSearch,
-      'users'
-    );
+    const columnsToSearch = ['users.full_name', 'users.email'];
+    const searchableQuery = applySearchFilter(baseQuery.clone(), searchQuery, columnsToSearch);
 
     // apply sort
     if (sortBy && sortOrder && allowedColumns.includes(sortBy)) {

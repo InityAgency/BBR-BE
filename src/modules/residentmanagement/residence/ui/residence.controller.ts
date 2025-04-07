@@ -29,6 +29,7 @@ import { FindByIdResidenceCommandQuery } from '../application/query/find-by-id-r
 import { UpdateResidenceStatusCommand } from '../application/commands/update-residence-status.command';
 import { UpdateResidenceStatusCommandHandler } from '../application/handlers/update-status-residence.command.handler';
 import { DeleteResidenceCommandHandler } from '../application/handlers/delete-residence.command.handler';
+import { Transform } from 'class-transformer';
 
 ApiTags('Residence');
 @Controller('residences')
@@ -56,8 +57,8 @@ export class ResidenceController {
     @Query('limit') limit: number = 10,
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
-    @Query('status') status?: ResidenceStatusEnum,
-    @Query('cityId') cityId?: string
+    @Query('status') status?: ResidenceStatusEnum[],
+    @Query('cityId') cityId?: string[]
   ): Promise<{ data: ResidenceResponse[]; pagination: PaginationResponse }> {
     const fetchQuery = new FetchResidencesQuery(
       query,

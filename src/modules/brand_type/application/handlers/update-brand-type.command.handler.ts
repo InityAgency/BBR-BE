@@ -13,7 +13,9 @@ export class UpdateBrandTypeCommandHandler {
       throw new Error('Brand type not found');
     }
 
-    const existingBrandTypeByName = await this.brandTypesRepository.findByName(command.name);
+    const existingBrandTypeByName = await this.brandTypesRepository.findByName(
+      command.name ? command.name : ''
+    );
 
     if (existingBrandTypeByName && existingBrandTypeByName.id !== command.id) {
       throw new Error('Brand type with this name already exists');
