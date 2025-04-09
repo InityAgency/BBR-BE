@@ -52,7 +52,6 @@ export class UnitMapper {
   }
 
   static toResponse(unit: Unit): UnitResponse {
-console.log(unit);
 
     return new UnitResponse(
       unit.id,

@@ -5,7 +5,7 @@ import { FetchUnitsQuery } from '../application/command/fetch-units.query';
 import { KnexService } from '../../../../shared/infrastructure/database/knex.service';
 import { PaginationResponse } from '../../../../shared/ui/response/pagination.response';
 import { applyPagination } from '../../../../shared/utils/pagination.util';
-import { applySearchFilter } from '../../../../shared/filter/query.filter';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 
 @Injectable()
@@ -68,7 +68,7 @@ export class UnitRepositoryImpl implements IUnitRepository {
       .withGraphFetched('[residence, gallery, featureImage]'); 
 
     const columnsToSearchAndSort = ['name', 'description', 'roomType', 'status'];
-    unitQuery = applySearchFilter(unitQuery, searchQuery, columnsToSearchAndSort, Unit.tableName);
+    unitQuery = applySearchFilter(unitQuery, searchQuery, columnsToSearchAndSort);
 
     if (sortBy && sortOrder) {
       if (columnsToSearchAndSort.includes(sortBy)) {
