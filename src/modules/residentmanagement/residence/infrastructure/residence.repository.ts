@@ -29,7 +29,7 @@ export class ResidenceRepository implements IResidenceRepository {
     return await Residence.query()
       .patchAndFetchById(id, data)
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country,  mainGallery, secondaryGallery]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country,  mainGallery, secondaryGallery, units]'
       );
   }
 
@@ -44,7 +44,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .findById(id)
       .whereNull('deleted_at')
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, units, units.featureImage]'
       );
   }
 

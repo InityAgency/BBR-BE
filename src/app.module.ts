@@ -21,7 +21,6 @@ import { CountryModule } from './modules/shared/country/country.module';
 import { LifestyleModule } from './modules/lifestyles/lifestyle.module';
 import { CityModule } from './modules/shared/city/city.module';
 import { AmenityModule } from './modules/residentmanagement/amenity/amenity.module';
-import { UnitTypeModule } from './modules/unit_type/unit-type.module';
 import { BullModule } from '@nestjs/bullmq';
 import { getBullConfig } from './shared/config/bull.config';
 import { QueuesEnum } from './shared/types/queues.enum';
@@ -29,6 +28,8 @@ import { KeyFeatureModule } from './modules/residentmanagement/key_feature/key-f
 import { ResidenceModule } from './modules/residentmanagement/residence/residence.module';
 import { RankingCategoryTypeModule } from './modules/shared/rankingmanagement/categorytype/ranking-category-type.module';
 import { RankingCategoryModule } from './modules/shared/rankingmanagement/category/ranking-category.module';
+import { UnitModule } from './modules/residentmanagement/unit/unit.module';
+import { UnitTypeModule } from './modules/residentmanagement/unit_type/unit-type.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { RankingCategoryModule } from './modules/shared/rankingmanagement/catego
     KeyFeatureModule,
     RankingCategoryTypeModule,
     RankingCategoryModule,
+    UnitModule,
   ],
   providers: [],
 })

@@ -8,6 +8,7 @@ import { CountryResponse } from 'src/modules/shared/country/ui/response/country.
 import { DevelompentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
+import { UnitResponse } from './unit.response';
 
 export class ResidenceResponse {
   constructor(
@@ -40,6 +41,7 @@ export class ResidenceResponse {
     public readonly featuredImage?: MediaResponse | null,
     public readonly keyFeatures?: KeyFeatureResponse[] | [],
     public readonly brand?: BrandResponse | null,
+    public readonly units?: UnitResponse[] | [],
     public readonly amenities?: AmenityResponse[] | [],
     public readonly company?: CompanyResponse | null,
     public readonly mainGallery?: MediaResponse[] | [],

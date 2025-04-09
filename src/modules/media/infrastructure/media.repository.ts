@@ -13,6 +13,10 @@ export class MediaRepositoryImpl implements IMediaRepository {
     return await Media.query().findById(id);
   }
 
+  async findByIds(ids: string[]): Promise<Media[]> {
+    return await Media.query().whereIn('id', ids);
+  }
+
   async findActiveById(id: string): Promise<Media | null> {
     const media = await Media.query().where('id', id).whereNull('deletedAt').first();
     return media || null;

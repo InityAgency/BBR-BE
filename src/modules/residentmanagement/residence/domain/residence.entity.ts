@@ -9,6 +9,7 @@ import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { Amenity } from '../../amenity/domain/amenity.entity';
 import { KeyFeature } from '../../key_feature/domain/key-feature.entity';
 import { ResidenceStatusEnum } from './residence-status.enum';
+import { Unit } from './unit.entity';
 
 export class Residence extends Model {
   id!: string;
@@ -32,6 +33,7 @@ export class Residence extends Model {
   petFriendly!: boolean;
   disabledFriendly!: boolean;
   videoTourUrl?: string;
+  units: Unit[]
 
   createdAt!: Date;
   updatedAt!: Date;
@@ -151,6 +153,14 @@ export class Residence extends Model {
           filter: (builder) => builder.where('media_type', 'secondaryGallery'),
         },
         to: 'media.id',
+      },
+    },
+    units: {
+      relation: Model.HasManyRelation,
+      modelClass: () => Unit,
+      join: {
+        from: 'residences.id',
+        to: 'units.residenceId',
       },
     },
   };

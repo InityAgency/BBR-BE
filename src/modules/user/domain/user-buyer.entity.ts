@@ -1,7 +1,7 @@
 import { Model, RelationMappings } from 'objection';
 import { Lifestyle } from 'src/modules/lifestyles/domain/lifestyle.entity';
+import { UnitType } from 'src/modules/residentmanagement/unit_type/domain/unit_type.entity';
 import { Country } from 'src/modules/shared/country/domain/country.entity';
-import { UnitType } from 'src/modules/unit_type/domain/unit_type.entity';
 
 export class UserBuyer extends Model {
   userId!: string;

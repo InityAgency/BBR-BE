@@ -35,6 +35,12 @@ import { RankingCategoryStorageConfig } from '../shared/rankingmanagement/catego
 import { RankingCategoryMediaStorageService } from '../shared/rankingmanagement/category/infrastructure/media/ranking-category-media-storage.service';
 import { ResidenceMediaStorageService } from '../residentmanagement/residence/infrastructure/media/residence-media-storage.service';
 import { ResidenceStorageConfig } from '../residentmanagement/residence/infrastructure/media/residence-storage.config';
+import {
+  ResidenceUnitStorageConfig
+} from '../residentmanagement/unit/infrastructure/media/residence-unit-storage-config.service';
+import {
+  ResidenceUnitMediaStorageService
+} from '../residentmanagement/unit/infrastructure/media/residence-unit-media-storage.service';
 @Global()
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
@@ -77,7 +83,8 @@ import { ResidenceStorageConfig } from '../residentmanagement/residence/infrastr
         lifestyleStorage: LifestyleMediaStorageService,
         amenityStorage: AmenityMediaStorageService,
         rankingCategoryStorage: RankingCategoryMediaStorageService,
-        residenceStorage: ResidenceMediaStorageService
+        residenceStorage: ResidenceMediaStorageService,
+        residenceUnitStorage: ResidenceUnitMediaStorageService,
       ) => [
         brandStorage,
         companyStorage,
@@ -86,6 +93,7 @@ import { ResidenceStorageConfig } from '../residentmanagement/residence/infrastr
         amenityStorage,
         rankingCategoryStorage,
         residenceStorage,
+        residenceUnitStorage
       ],
       inject: [
         BrandMediaStorageService,
@@ -94,6 +102,7 @@ import { ResidenceStorageConfig } from '../residentmanagement/residence/infrastr
         AmenityMediaStorageService,
         RankingCategoryMediaStorageService,
         ResidenceMediaStorageService,
+        ResidenceUnitMediaStorageService
       ],
     },
     BrandStorageConfig,
@@ -110,6 +119,8 @@ import { ResidenceStorageConfig } from '../residentmanagement/residence/infrastr
     RankingCategoryMediaStorageService,
     ResidenceStorageConfig,
     ResidenceMediaStorageService,
+    ResidenceUnitStorageConfig,
+    ResidenceUnitMediaStorageService,
   ],
 
   exports: [
@@ -133,6 +144,8 @@ import { ResidenceStorageConfig } from '../residentmanagement/residence/infrastr
     RankingCategoryMediaStorageService,
     ResidenceStorageConfig,
     ResidenceMediaStorageService,
+    ResidenceUnitStorageConfig,
+    ResidenceUnitMediaStorageService,
   ],
 })
 export class MediaModule {}

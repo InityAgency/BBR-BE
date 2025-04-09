@@ -5,6 +5,7 @@ import { AmenityMapper } from 'src/modules/residentmanagement/amenity/ui/mapper/
 import { KeyFeatureMapper } from 'src/modules/residentmanagement/key_feature/ui/mappers/key-feature.mapper';
 import { Residence } from '../../domain/residence.entity';
 import { ResidenceResponse } from '../response/residence.response';
+import { UnitMapper } from './unit.mapper';
 
 export class ResidenceMapper {
   static toResponse(residence: Residence): ResidenceResponse {
@@ -58,6 +59,7 @@ export class ResidenceMapper {
         ? residence.keyFeatures.map((data) => KeyFeatureMapper.toResponse(data))
         : [],
       residence.brand ? BrandMapper.toResponse(residence.brand) : null,
+      residence.units?.map((unit) => UnitMapper.toResponse(unit)) || [],
       residence.amenities ? residence.amenities.map((data) => AmenityMapper.toResponse(data)) : [],
       residence.company ? CompanyMapper.toResponse(residence.company) : null,
       residence.mainGallery
@@ -72,7 +74,7 @@ export class ResidenceMapper {
                 media.securedUrl
               )
           )
-        : []
+        : [],
     );
   }
 }

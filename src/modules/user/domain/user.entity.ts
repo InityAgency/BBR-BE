@@ -5,8 +5,6 @@ import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 import { UserBuyer } from './user-buyer.entity';
 import { Company } from 'src/modules/company/domain/company.entity';
 import { Role } from 'src/modules/role/domain/role.entity';
-import { Lifestyle } from 'src/modules/lifestyles/domain/lifestyle.entity';
-import { UnitType } from 'src/modules/unit_type/domain/unit_type.entity';
 
 export class User extends Model {
   id!: string;
