@@ -150,9 +150,15 @@ export class UnitRepositoryImpl implements IUnitRepository {
   }
 
   async softDelete(id: string): Promise<void> {
+    const knex = this.knexService.connection;
+
     await Unit.query()
       .patch({ deletedAt: new Date() })
       .where('id', id)
       .whereNull('deletedAt');
+
+    await knex('unit_gallery')
+      .where('unit_id', id)
+      .delete();
   }
 }
