@@ -13,10 +13,11 @@ import { BrandController } from './ui/brand.controller';
 import { BrandMapper } from './ui/mappers/brand.mapper';
 import { FindByIdBrandQueryHandler } from './application/query/find-by-id-brand.query.handler';
 import { FetchAllBrandQueryHandler } from './application/query/fetch-all-brands.query.handler';
+import { BrandPublicController } from './ui/brand.public.controller';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
-  controllers: [BrandController],
+  controllers: [BrandController, BrandPublicController],
   providers: [
     {
       provide: IBrandRepository,

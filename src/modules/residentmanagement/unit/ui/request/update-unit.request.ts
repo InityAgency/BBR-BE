@@ -58,8 +58,8 @@ export class UpdateUnitRequest {
   roomAmount: number;
 
   @IsNotEmpty()
-  @IsString()
-  unitType: string;
+  @IsUUID()
+  unitTypeId: string;
 
   @IsNotEmpty()
   @IsString()

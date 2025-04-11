@@ -10,13 +10,15 @@ import { IMediaRepository } from 'src/modules/media/domain/media.repository.inte
 import { UpdateUnitCommand } from '../command/update-unit.command';
 import { Unit } from '../../domain/unit.entity';
 import { IResidenceRepository } from '../../domain/residence.repository.interface';
+import { IUnitTypeRepository } from '../../../unit_type/domain/unit-type.repository.interface';
 
 @Injectable()
 export class UpdateUnitCommandHandler {
   constructor(
     private readonly unitRepository: IUnitRepository,
     private readonly residenceRepository: IResidenceRepository,
-    private readonly mediaRepository: IMediaRepository
+    private readonly mediaRepository: IMediaRepository,
+    private readonly unitTypeRepository: IUnitTypeRepository,
   ) {}
 
   @LogMethod()
@@ -29,6 +31,11 @@ export class UpdateUnitCommandHandler {
     const residence = await this.residenceRepository.findById(command.residenceId);
     if (!residence) {
       throw new NotFoundException('Residence not found');
+    }
+
+    const unitType = await this.unitTypeRepository.findById(command.unitTypeId);
+    if (!unitType) {
+      throw new NotFoundException('Unit type not found');
     }
 
     const featureImage = await this.mediaRepository.findById(command.featureImageId);
@@ -55,7 +62,7 @@ export class UpdateUnitCommandHandler {
       exclusiveOfferEndDate: command.exclusiveOfferEndDate,
       roomType: command.roomType,
       roomAmount: command.roomAmount,
-      type: command.type,
+      unitType: unitType,
       serviceType: command.serviceType,
       serviceAmount: command.serviceAmount,
       featureImage: featureImage,

@@ -6,6 +6,8 @@ import { KnexService } from '../../../../shared/infrastructure/database/knex.ser
 import { PaginationResponse } from '../../../../shared/ui/response/pagination.response';
 import { applyPagination } from '../../../../shared/utils/pagination.util';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { applyFilters } from '../../../../shared/filters/query.dynamic-filters';
+import { Residence } from '../../residence/domain/residence.entity';
 
 
 @Injectable()
@@ -24,7 +26,7 @@ export class UnitRepositoryImpl implements IUnitRepository {
       exclusiveOfferEndDate: unit.exclusiveOfferEndDate,
       roomType: unit.roomType,
       roomAmount: unit.roomAmount,
-      type: unit.type,
+      unit_type_id: unit.unitType?.id,
       serviceType: unit.serviceType,
       serviceAmount: unit.serviceAmount,
       featureImageId: unit.featureImage?.id,
@@ -57,15 +59,19 @@ export class UnitRepositoryImpl implements IUnitRepository {
     return Unit.query()
       .findById(id)
       .whereNull('deletedAt')
-      .withGraphFetched('[residence, gallery, featureImage]');
+      .withGraphFetched('[residence, gallery, featureImage, unitType]');
   }
 
   async findAll(query: FetchUnitsQuery): Promise<{ data: Unit[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery } = query;
+    const { page, limit, sortBy, sortOrder, searchQuery, unitTypeId } = query;
 
     let unitQuery = Unit.query()
+      .modify((qb) => applyFilters(qb, { unitTypeId }, Unit.tableName))
+      .joinRelated('unitType')
       .whereNull('deletedAt')
-      .withGraphFetched('[residence, gallery, featureImage]'); 
+      .withGraphFetched('[residence, gallery, featureImage, unitType]');
+
+
 
     const columnsToSearchAndSort = ['name', 'description', 'roomType', 'status'];
     unitQuery = applySearchFilter(unitQuery, searchQuery, columnsToSearchAndSort);
@@ -104,7 +110,7 @@ export class UnitRepositoryImpl implements IUnitRepository {
         exclusiveOfferEndDate: data.exclusiveOfferEndDate,
         roomType: data.roomType,
         roomAmount: data.roomAmount,
-        type: data.type,
+        unit_type_id: data.unitType?.id,
         serviceType: data.serviceType,
         serviceAmount: data.serviceAmount,
         featureImageId: data.featureImage?.id,
@@ -123,7 +129,7 @@ export class UnitRepositoryImpl implements IUnitRepository {
 
       const imagesToRemove = currentImageIds.filter(id => !newImageIds.includes(id));
 
-      console.log('imagesToRemove:', imagesToRemove);
+    
       if (Array.isArray(imagesToRemove)) {
         const validImagesToRemove = imagesToRemove.filter((id) => !!id);
         if (validImagesToRemove.length > 0) {

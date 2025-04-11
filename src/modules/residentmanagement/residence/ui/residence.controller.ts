@@ -11,7 +11,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderByDirection } from 'objection';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { CreateResidenceCommand } from '../application/commands/create-residence.command';
@@ -33,6 +33,7 @@ import { Transform } from 'class-transformer';
 
 ApiTags('Residence');
 @Controller('residences')
+@ApiBearerAuth()
 export class ResidenceController {
   constructor(
     private readonly createResidenceCommandHandler: CreateResidenceCommandHandler,

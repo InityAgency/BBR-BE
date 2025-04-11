@@ -2,7 +2,7 @@ import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 import { ResidenceResponse } from './residence.response';
 import { UnitTypeResponse } from '../../../unit_type/ui/response/unit-type.response';
 
-export class UnitResponse {
+export class UnitPublicResponse {
   constructor(
     public readonly id: string,
     public readonly name: string,

@@ -12,7 +12,7 @@ export class CreateUnitCommand {
     public readonly exclusiveOfferEndDate: Date,
     public readonly roomType: string,
     public readonly roomAmount: number,
-    public readonly type: string,
+    public readonly unitTypeId: string,
     public readonly serviceType: string,
     public readonly serviceAmount: number,
     public readonly featureImageId: string,

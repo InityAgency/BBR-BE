@@ -1,0 +1,73 @@
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+} from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OrderByDirection } from 'objection';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { ResidenceStatusEnum } from '../domain/residence-status.enum';
+import { ResidenceMapper } from './mappers/residence.mapper';
+import { ResidenceResponse } from './response/residence.response';
+import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
+import { FindAllResidencesCommandQuery } from '../application/query/find-all-residences.query';
+import { FindByIdResidenceCommandQuery } from '../application/query/find-by-id-residence.query';
+import { ResidencePublicResponse } from './response/residence.public.response';
+
+ApiTags('Residence');
+@Controller('public/residences')
+export class ResidencePublicController {
+  constructor(
+    private readonly findAllResidencesCommandQuery: FindAllResidencesCommandQuery,
+    private readonly findByIdResidenceCommandQuery: FindByIdResidenceCommandQuery
+  ) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Get all residences' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of residences',
+    type: ResidenceResponse,
+    isArray: true,
+  })
+  async findAll(
+    @Query('query') query?: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('status') status?: ResidenceStatusEnum[],
+    @Query('cityId') cityId?: string[],
+    @Query('brandId') brandId?: string[],
+    @Query('address') address?: string[]
+  ): Promise<{ data: ResidencePublicResponse[]; pagination: PaginationResponse }> {
+    const fetchQuery = new FetchResidencesQuery(
+      query,
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      status,
+      cityId,
+      brandId,
+      address
+    );
+
+    const { data, pagination } = await this.findAllResidencesCommandQuery.handle(fetchQuery);
+
+    return {
+      data: data.map((residence) => ResidenceMapper.toPublicResponse(residence)),
+      pagination,
+    };
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a residence by id' })
+  @ApiResponse({ status: 200, description: 'Residence found', type: ResidenceResponse })
+  async findById(@Param('id') id: string): Promise<ResidencePublicResponse> {
+    const residence = await this.findByIdResidenceCommandQuery.handle(id);
+    return ResidenceMapper.toPublicResponse(residence);
+  }
+
+}

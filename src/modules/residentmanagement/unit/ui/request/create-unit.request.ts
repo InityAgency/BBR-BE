@@ -58,8 +58,8 @@ export class CreateUnitRequest {
   roomAmount: number;
 
   @IsNotEmpty()
-  @IsString()
-  unitType: string;
+  @IsUUID()
+  unitTypeId: string;
 
   @IsNotEmpty()
   @IsString()

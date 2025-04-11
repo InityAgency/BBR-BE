@@ -14,14 +14,11 @@ import { OrderByDirection } from 'objection';
 import { FetchUnitsQuery } from '../application/command/fetch-units.query';
 
 @ApiTags('Units')
-@Controller('units')
-export class UnitController {
+@Controller('public/units')
+export class UnitPublicController {
   constructor(
     private readonly fetchUnitsCommandQuery: FetchUnitsCommandQuery,
     private readonly findUnitByIdCommandQuery: FindUnitByIdCommandQuery,
-    private readonly createUnitCommandHandler: CreateUnitCommandHandler,
-    private readonly updateUnitCommandHandler: UpdateUnitCommandHandler,
-    private readonly deleteUnitCommandHandler: DeleteUnitCommandHandler
   ) {}
 
   @Get()
@@ -39,7 +36,7 @@ export class UnitController {
       new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, unitTypeId)
     );
 
-    const mappedUnits = data.map((unit: Unit) => UnitMapper.toResponse(unit));
+    const mappedUnits = data.map((unit: Unit) => UnitMapper.toPublicResponse(unit));
 
     return {
       data: mappedUnits,
@@ -53,35 +50,6 @@ export class UnitController {
   async findById(@Param('id') id: string) {
     const unit = await this.findUnitByIdCommandQuery.handle(id);
 
-    return UnitMapper.toResponse(unit);
-  }
-
-  @Post()
-  @ApiOperation({ summary: 'Create a unit' })
-  @ApiResponse({ type: UnitResponse })
-  async create(@Body() createUnitRequest: CreateUnitRequest) {
-    const command = UnitMapper.toCreateCommand(createUnitRequest);
-    const createdUnit = await this.createUnitCommandHandler.handle(command);
-
-    return UnitMapper.toResponse(createdUnit);
-  }
-
-  @Put(':id')
-  @ApiOperation({ summary: 'Update a unit' })
-  @ApiResponse({ type: UnitResponse })
-  async update(
-    @Param('id') id: string,
-    @Body() updateUnitRequest: UpdateUnitRequest
-  ) {
-    const command = UnitMapper.toUpdateCommand(id, updateUnitRequest);
-    const updatedUnit = await this.updateUnitCommandHandler.handle(command);
-
-    return UnitMapper.toResponse(updatedUnit);
-  }
-
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete a unit' })
-  async delete(@Param('id') id: string) {
-    return this.deleteUnitCommandHandler.handle(id);
+    return UnitMapper.toPublicResponse(unit);
   }
 }

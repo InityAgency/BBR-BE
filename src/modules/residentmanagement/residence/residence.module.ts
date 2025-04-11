@@ -22,9 +22,10 @@ import { ResidenceRepository } from './infrastructure/residence.repository';
 import { ResidenceController } from './ui/residence.controller';
 import { UpdateResidenceStatusCommandHandler } from './application/handlers/update-status-residence.command.handler';
 import { DeleteResidenceCommandHandler } from './application/handlers/delete-residence.command.handler';
+import { ResidencePublicController } from './ui/residence.public.controller';
 
 @Module({
-  controllers: [ResidenceController],
+  controllers: [ResidenceController, ResidencePublicController],
   providers: [
     {
       provide: IResidenceRepository,

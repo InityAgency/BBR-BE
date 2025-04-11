@@ -14,10 +14,13 @@ import { UnitController } from './ui/unit.controller';
 import { UnitMapper } from './ui/mapper/unit.mapper';
 import { IResidenceRepository } from './domain/residence.repository.interface';
 import { DeleteUnitCommandHandler } from './application/handler/delete-unit.command.handler';
+import { UnitPublicController } from './ui/unit.public.controller';
+import { IUnitTypeRepository } from '../unit_type/domain/unit-type.repository.interface';
+import { UnitTypeRepositoryImpl } from '../unit_type/infrastructure/unit-type.repository';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
-  controllers: [UnitController],
+  controllers: [UnitController, UnitPublicController],
   providers: [
     {
       provide: IUnitRepository,
@@ -30,6 +33,10 @@ import { DeleteUnitCommandHandler } from './application/handler/delete-unit.comm
     {
       provide: IMediaRepository,
       useClass: MediaRepositoryImpl,
+    },
+    {
+      provide: IUnitTypeRepository,
+      useClass: UnitTypeRepositoryImpl,
     },
     CreateUnitCommandHandler,
     UpdateUnitCommandHandler,

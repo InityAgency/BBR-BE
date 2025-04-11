@@ -1,6 +1,6 @@
 import { IsBoolean, IsEnum, IsNumber, IsOptional, isUUID, IsUUID } from 'class-validator';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
-import { DevelompentStatusEnum } from 'src/shared/types/development-status.enum';
+import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { Type } from 'class-transformer';
 
@@ -13,8 +13,8 @@ export class UpdateResidenceRequest {
   status: ResidenceStatusEnum;
 
   @IsOptional()
-  @IsEnum(DevelompentStatusEnum)
-  developmentStatus: DevelompentStatusEnum;
+  @IsEnum(DevelopmentStatusEnum)
+  developmentStatus: DevelopmentStatusEnum;
 
   @IsOptional()
   websiteUrl: string;

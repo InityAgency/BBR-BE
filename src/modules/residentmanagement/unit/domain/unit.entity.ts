@@ -2,6 +2,7 @@ import { Model, RelationMappings } from 'objection';
 import { Media } from '../../../media/domain/media.entity';
 import { Residence } from './residence.entity';
 import { UnitStatusEnum } from './unit-status.enum';
+import { UnitType } from '../../unit_type/domain/unit_type.entity';
 
 export class Unit extends Model {
   id!: string;
@@ -15,7 +16,8 @@ export class Unit extends Model {
   exclusiveOfferEndDate: Date;
   roomType: string;
   roomAmount: number;
-  type: string;
+  unitTypeId!:string;
+  unitType: UnitType;
   serviceType: string;
   serviceAmount: number;
   gallery: Media[];
@@ -35,6 +37,14 @@ export class Unit extends Model {
       join: {
         from: 'units.residenceId',
         to: 'residences.id',
+      },
+    },
+    unitType: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => UnitType,
+      join: {
+        from: 'units.unitTypeId',
+        to: 'unit_types.id',
       },
     },
     gallery: {
