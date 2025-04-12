@@ -12,6 +12,7 @@ export class City extends Model {
   createdAt!: Date;
   updatedAt!: Date;
 
+  countryId?: string;
   country: Country;
 
   static tableName = 'cities';

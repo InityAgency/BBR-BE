@@ -56,9 +56,10 @@ export class CityController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: OrderByDirection
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('countryId') countryId?: string
   ): Promise<{ data: CityResponse[]; pagination: PaginationResponse }> {
-    const fetchQuery = new FetchCitiesQuery(query, page, limit, sortBy, sortOrder);
+    const fetchQuery = new FetchCitiesQuery(query, page, limit, sortBy, sortOrder, countryId);
     const cities = await this.fetchCitiesCommandQuery.handler(fetchQuery);
     return {
       data: cities.data.map((city) => this.mapToCityResponse(city)),

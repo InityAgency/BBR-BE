@@ -7,6 +7,7 @@ import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { ICityRepository } from '../domain/city.repository.interface';
 import { FetchCitiesQuery } from '../application/commands/fetch-cities.query';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 
 @Injectable()
 export class CityRepositoryImpl implements ICityRepository {
@@ -42,9 +43,12 @@ export class CityRepositoryImpl implements ICityRepository {
   async findAll(
     fetchQuery: FetchCitiesQuery
   ): Promise<{ data: City[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
+    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery, countryId } = fetchQuery;
 
-    let query = City.query().whereNull('deleted_at').withGraphFetched('[country]'); // Assuming "country" is a relation to be fetched
+    let query = City.query()
+      .modify((qb) => applyFilters(qb, { countryId }, City.tableName))
+      .whereNull('deleted_at')
+      .withGraphFetched('[country]'); // Assuming "country" is a relation to be fetched
 
     const columnsToSearch = [
       'cities.name',
