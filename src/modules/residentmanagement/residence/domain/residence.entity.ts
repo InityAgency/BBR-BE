@@ -4,7 +4,7 @@ import { Company } from 'src/modules/company/domain/company.entity';
 import { Media } from 'src/modules/media/domain/media.entity';
 import { City } from 'src/modules/shared/city/domain/city.entity';
 import { Country } from 'src/modules/shared/country/domain/country.entity';
-import { DevelompentStatusEnum } from 'src/shared/types/development-status.enum';
+import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { Amenity } from '../../amenity/domain/amenity.entity';
 import { KeyFeature } from '../../key_feature/domain/key-feature.entity';
@@ -15,7 +15,7 @@ export class Residence extends Model {
   id!: string;
   name!: string;
   status!: ResidenceStatusEnum;
-  developmentStatus!: DevelompentStatusEnum;
+  developmentStatus!: DevelopmentStatusEnum;
   subtitle!: string;
   description!: string;
   budgetStartRange!: number;
@@ -44,6 +44,7 @@ export class Residence extends Model {
   country!: Country;
   cityId!: string;
   city!: City;
+  brandId!: string;
   brand?: Brand;
   videoTour?: Media;
   amenities?: Amenity[];

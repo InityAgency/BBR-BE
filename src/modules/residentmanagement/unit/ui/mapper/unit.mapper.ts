@@ -6,6 +6,8 @@ import { CreateUnitRequest } from '../request/create-unit.request';
 import { CreateUnitCommand } from '../../application/command/create-unit.command';
 import { UpdateUnitRequest } from '../request/update-unit.request';
 import { UpdateUnitCommand } from '../../application/command/update-unit.command';
+import { UnitTypeResponse } from '../../../unit_type/ui/response/unit-type.response';
+import { UnitPublicResponse } from '../response/unit.public.response';
 
 export class UnitMapper {
   static toCreateCommand(request: CreateUnitRequest): CreateUnitCommand {
@@ -20,12 +22,18 @@ export class UnitMapper {
       request.exclusiveOfferEndDate,
       request.roomType,
       request.roomAmount,
-      request.unitType,
+      request.unitTypeId,
       request.serviceType,
       request.serviceAmount,
       request.featureImageId,
       request.residenceId,
-      request.galleryMediaIds
+      request.galleryMediaIds,
+      request.about,
+      request.bathrooms,
+      request.bedroom,
+      request.floor,
+      request.transactionType,
+      request.characteristics,
     );
   }
 
@@ -42,12 +50,18 @@ export class UnitMapper {
       request.exclusiveOfferEndDate,
       request.roomType,
       request.roomAmount,
-      request.unitType,
+      request.unitTypeId,
       request.serviceType,
       request.serviceAmount,
       request.featureImageId,
       request.residenceId,
       request.galleryMediaIds,
+      request.about,
+      request.bathrooms,
+      request.bedroom,
+      request.floor,
+      request.transactionType,
+      request.characteristics,
     );
   }
 
@@ -65,7 +79,7 @@ export class UnitMapper {
       unit.exclusiveOfferEndDate,
       unit.roomType,
       unit.roomAmount,
-      unit.type,
+      new UnitTypeResponse(unit.unitType.id, unit.unitType.name, unit.unitType.createdAt, unit.unitType.updatedAt),
       unit.serviceType,
       unit.serviceAmount,
       unit.gallery
@@ -106,6 +120,78 @@ export class UnitMapper {
         unit.residence.longitude,
         unit.residence.latitude
       ) : null,
+      unit.about,
+      unit.bathrooms,
+      unit.bedroom,
+      unit.floor,
+      unit.transactionType,
+      unit.characteristics,
+      unit.createdAt,
+      unit.updatedAt
+    );
+  }
+
+  static toPublicResponse(unit: Unit): UnitPublicResponse {
+
+    return new UnitPublicResponse(
+      unit.id,
+      unit.name,
+      unit.description,
+      unit.surface,
+      unit.status,
+      unit.regularPrice,
+      unit.exclusivePrice,
+      unit.exclusiveOfferStartDate,
+      unit.exclusiveOfferEndDate,
+      unit.roomType,
+      unit.roomAmount,
+      new UnitTypeResponse(unit.unitType.id, unit.unitType.name, unit.unitType.createdAt, unit.unitType.updatedAt),
+      unit.serviceType,
+      unit.serviceAmount,
+      unit.gallery
+        ? unit.gallery.map(
+          (media) =>
+            new MediaResponse(
+              media.id,
+              media.originalFileName,
+              media.mimeType,
+              media.uploadStatus,
+              media.size,
+              media.securedUrl
+            )
+        )
+        : [],
+      unit.featureImage
+        ? new MediaResponse(
+          unit.featureImage.id,
+          unit.featureImage.originalFileName,
+          unit.featureImage.mimeType,
+          unit.featureImage.uploadStatus,
+          unit.featureImage.size,
+          unit.featureImage.securedUrl
+        )
+        : null,
+      unit.residence
+        ?
+        new ResidenceResponse(
+          unit.residence.id,
+          unit.residence.name,
+          unit.residence.status,
+          unit.residence.developmentStatus,
+          unit.residence.subtitle,
+          unit.residence.description,
+          unit.residence.budgetStartRange,
+          unit.residence.budgetEndRange,
+          unit.residence.address,
+          unit.residence.longitude,
+          unit.residence.latitude
+        ) : null,
+      unit.about,
+      unit.bathrooms,
+      unit.bedroom,
+      unit.floor,
+      unit.transactionType,
+      unit.characteristics,
       unit.createdAt,
       unit.updatedAt
     );

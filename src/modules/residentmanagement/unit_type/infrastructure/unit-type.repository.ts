@@ -6,7 +6,7 @@ import { FetchUnitTypeQuery } from '../application/commands/fetch-unit-type.quer
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
-export class UnitTypeRepository {
+export class UnitTypeRepositoryImpl {
   constructor() {}
 
   async findAll(

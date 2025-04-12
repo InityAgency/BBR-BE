@@ -1,12 +1,12 @@
 import { Model, RelationMappings } from 'objection';
-import { DevelompentStatusEnum } from 'src/shared/types/development-status.enum';
+import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { ResidenceStatusEnum } from '../../residence/domain/residence-status.enum';
 
 export class Residence extends Model {
   id!: string;
   name!: string;
   status!: ResidenceStatusEnum
-  developmentStatus!: DevelompentStatusEnum;
+  developmentStatus!: DevelopmentStatusEnum;
   subtitle!: string;
   description!: string;
   budgetStartRange!: number;

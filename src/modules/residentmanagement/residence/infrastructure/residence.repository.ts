@@ -55,13 +55,16 @@ export class ResidenceRepository implements IResidenceRepository {
   async findAll(
     fetchQuery: FetchResidencesQuery
   ): Promise<{ data: Residence[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery, status, cityId } = fetchQuery;
+    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery, status, cityId, brandId, address } = fetchQuery;
+
+    console.log(fetchQuery);
 
     const baseQuery = Residence.query()
       .whereNull('residences.deleted_at')
-      .modify((qb) => applyFilters(qb, { status, cityId }, Residence.tableName))
+      .modify((qb) => applyFilters(qb, { status, cityId, brandId, address }, Residence.tableName))
       .joinRelated('city')
       .leftJoinRelated('company')
+      .leftJoinRelated('brand')
       .withGraphFetched(
         '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery]'
       );
@@ -76,7 +79,7 @@ export class ResidenceRepository implements IResidenceRepository {
     const searchableQuery = applySearchFilter(baseQuery.clone(), searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
-      const allowedColumns = ['name', 'created_at', 'updated_at'];
+      const allowedColumns = ['name', 'brand.name','created_at', 'updated_at'];
       if (allowedColumns.includes(sortBy)) {
         searchableQuery.orderBy(sortBy, sortOrder);
       }

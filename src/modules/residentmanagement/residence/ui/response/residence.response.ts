@@ -5,7 +5,7 @@ import { AmenityResponse } from 'src/modules/residentmanagement/amenity/ui/respo
 import { KeyFeatureResponse } from 'src/modules/residentmanagement/key_feature/ui/response/key-feature.response';
 import { CityResponse } from 'src/modules/shared/city/ui/response/city.response';
 import { CountryResponse } from 'src/modules/shared/country/ui/response/country.response';
-import { DevelompentStatusEnum } from 'src/shared/types/development-status.enum';
+import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
 import { UnitResponse } from './unit.response';
@@ -15,7 +15,7 @@ export class ResidenceResponse {
     public readonly id: string,
     public readonly name: string,
     public readonly status: ResidenceStatusEnum,
-    public readonly developmentStatus: DevelompentStatusEnum,
+    public readonly developmentStatus: DevelopmentStatusEnum,
     public readonly subtitle: string,
     public readonly description: string,
     public readonly budgetStartRange: number,

@@ -3,6 +3,8 @@ import { BrandTypeResponse } from '../response/brand-type.response';
 import { BrandType } from '../../domain/brand-type.entity';
 import { BrandResponse } from 'src/modules/brand/ui/response/brand-response';
 import { Brand } from 'src/modules/brand/domain/brand.entity';
+import { BrandTypePublicResponse } from '../response/brand-type.public.response';
+import { BrandPublicResponse } from '../../../brand/ui/response/brand.public.response';
 
 export class BrandTypeMapper {
   static toResponse(brandType: BrandType): BrandTypeResponse {
@@ -35,6 +37,40 @@ export class BrandTypeMapper {
                   : null
               )
           )
+        : []
+    );
+  }
+
+  static toPublicResponse(brandType: BrandType): BrandTypePublicResponse {
+    return new BrandTypePublicResponse(
+      brandType.id,
+      brandType.name,
+      brandType.description,
+      brandType.createdAt,
+      brandType.updatedAt,
+      brandType.brands
+        ? brandType.brands.map(
+          (brand: Brand) =>
+            new BrandPublicResponse(
+              brand.id,
+              brand.name,
+              brand.description,
+              brand.status,
+              brand.createdAt,
+              brand.updatedAt,
+              brand.brandType,
+              brand.logo
+                ? new MediaResponse(
+                  brand.logo.id,
+                  brand.logo.originalFileName,
+                  brand.logo.mimeType,
+                  brand.logo.uploadStatus,
+                  brand.logo.size,
+                  brand.logo.securedUrl
+                )
+                : null
+            )
+        )
         : []
     );
   }

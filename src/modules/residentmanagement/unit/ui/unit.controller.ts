@@ -32,10 +32,11 @@ export class UnitController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: OrderByDirection
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('unitTypeId') unitTypeId?: string[],
   ) {
     const { data, pagination } = await this.fetchUnitsCommandQuery.handle(
-      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder)
+      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, unitTypeId)
     );
 
     const mappedUnits = data.map((unit: Unit) => UnitMapper.toResponse(unit));

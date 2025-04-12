@@ -1,5 +1,7 @@
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 import { ResidenceResponse } from './residence.response';
+import { UnitTypeResponse } from '../../../unit_type/ui/response/unit-type.response';
+import { UnitTransactionTypeEnum } from '../../domain/unit-transaction-type.enum';
 
 export class UnitResponse {
   constructor(
@@ -14,12 +16,18 @@ export class UnitResponse {
     public readonly exclusiveOfferEndDate: Date,
     public readonly roomType: string,
     public readonly roomAmount: number,
-    public readonly unitType: string,
+    public readonly unitType: UnitTypeResponse,
     public readonly serviceType: string,
     public readonly serviceAmount: number,
     public readonly gallery: MediaResponse[],
     public readonly featureImage: MediaResponse | null,
     public readonly residence: ResidenceResponse | null,
+    public readonly about: string,
+    public readonly bathrooms: string,
+    public readonly bedroom: string,
+    public readonly floor: string,
+    public readonly transactionType: string,
+    public readonly characteristics: string[],
     public readonly createdAt: Date,
     public readonly updatedAt: Date
   ) {}

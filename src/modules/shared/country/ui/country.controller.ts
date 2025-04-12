@@ -17,6 +17,7 @@ import { CreateCountryRequest } from './request/create-country.request';
 import { UpdateCountryRequest } from './request/update-country.request';
 import { CountryResponse } from './response/country.response';
 import { OrderByDirection } from 'objection';
+import { CountryMapper } from './mapper/coutry.mapper';
 
 @ApiTags('Countries')
 @Controller('countries')
@@ -46,7 +47,7 @@ export class CountryController {
       request.continentId
     );
     const result = await this.createCountryHandler.handle(command);
-    return this.mapToCountryResponse(result);
+    return CountryMapper.mapToResponse(result);
   }
 
   @ApiOperation({ summary: 'Update a country' })
@@ -71,7 +72,7 @@ export class CountryController {
     );
 
     const result = await this.updateCountryHandler.handle(command);
-    return this.mapToCountryResponse(result);
+    return CountryMapper.mapToResponse(result);
   }
 
   @Get()
@@ -88,7 +89,7 @@ export class CountryController {
     const result = await this.fetchCountriesCommandQuery.handler(fetchQuery);
 
     return {
-      data: result.data.map((country) => this.mapToCountryResponse(country)),
+      data: result.data.map((country) => CountryMapper.mapToResponse(country)),
       pagination: result.pagination,
     };
   }
@@ -102,45 +103,8 @@ export class CountryController {
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<CountryResponse> {
     const country = await this.findCountryByIdCommandQuery.handle(id);
-    return this.mapToCountryResponse(country);
+    return CountryMapper.mapToResponse(country);
   }
 
-  private mapToCountryResponse(country: Country): CountryResponse {
-    return new CountryResponse(
-      country.id,
-      country.name,
-      country.code,
-      country.tld,
-      country.currencyCode,
-      country.currencyName,
-      country.currencySymbol,
-      country.capital,
-      country.phoneCodes !== null
-        ? country.phoneCodes.map((phoneCode) => this.mapToPhoneCodeResponse(phoneCode))
-        : [],
-      country.subregion,
-      country.flag,
-      country.continent !== null
-        ? new ContinentResponse(
-            country.continent.id,
-            country.continent.name,
-            country.continent.code,
-            country.continent.createdAt,
-            country.continent.updatedAt
-          )
-        : null,
-      country.createdAt,
-      country.updatedAt
-    );
-  }
 
-  private mapToPhoneCodeResponse(phoneCode: PhoneCode): PhoneCodeResponse {
-    return new PhoneCodeResponse(
-      phoneCode.id,
-      phoneCode.code,
-      phoneCode.countryId,
-      phoneCode.createdAt,
-      phoneCode.updatedAt
-    );
-  }
 }

@@ -30,6 +30,7 @@ import { RankingCategoryTypeModule } from './modules/shared/rankingmanagement/ca
 import { RankingCategoryModule } from './modules/shared/rankingmanagement/category/ranking-category.module';
 import { UnitModule } from './modules/residentmanagement/unit/unit.module';
 import { UnitTypeModule } from './modules/residentmanagement/unit_type/unit-type.module';
+import { CareerContactFormModule } from './modules/contactform/career/career-contact-form.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { UnitTypeModule } from './modules/residentmanagement/unit_type/unit-type
     RankingCategoryTypeModule,
     RankingCategoryModule,
     UnitModule,
+    CareerContactFormModule
   ],
   providers: [],
 })

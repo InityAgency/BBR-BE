@@ -11,10 +11,11 @@ import { FindCityByIdCommandQuery } from './application/query/find-city-by-id.co
 import { FetchCitiesCommandQuery } from './application/query/fetch-cities.command.query';
 import { UpdateCityCommandHandler } from './application/handler/update-city.command.handler';
 import { DeleteCityCommandHandler } from './application/handler/delete-city.command.handler';
+import { CityPublicController } from './ui/city.public.controller';
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [CityController],
+  controllers: [CityController, CityPublicController],
   providers: [
     {
       provide: ICountryRepository,

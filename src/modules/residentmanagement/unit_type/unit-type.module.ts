@@ -6,7 +6,7 @@ import { UpdateUnitTypeCommandHandler } from './application/handler/update-unit-
 import { FetchUnitTypesQueryHandler } from './application/query/fetch-unit-types.query.handler';
 import { FindByIdUnitTypeQueryHandler } from './application/query/find-by-id-unit-type.query.handler';
 import { IUnitTypeRepository } from './domain/unit-type.repository.interface';
-import { UnitTypeRepository } from './infrastructure/unit-type.repository';
+import { UnitTypeRepositoryImpl } from './infrastructure/unit-type.repository';
 
 @Module({
   imports: [],
@@ -14,7 +14,7 @@ import { UnitTypeRepository } from './infrastructure/unit-type.repository';
   providers: [
     {
       provide: IUnitTypeRepository,
-      useClass: UnitTypeRepository,
+      useClass: UnitTypeRepositoryImpl,
     },
     FetchUnitTypesQueryHandler,
     FindByIdUnitTypeQueryHandler,

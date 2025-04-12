@@ -1,4 +1,4 @@
-export enum DevelompentStatusEnum {
+export enum DevelopmentStatusEnum {
   COMPLETED = 'COMPLETED',
   UNDER_CONSTRUCTION = 'UNDER_CONSTRUCTION',
   PLANNED = 'PLANNED',

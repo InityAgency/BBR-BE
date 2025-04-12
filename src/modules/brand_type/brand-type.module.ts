@@ -8,10 +8,11 @@ import { FetchAllBrandTypesQueryHandler } from './application/query/fetch-all-br
 import { CreateBrandTypesCommandHandler } from './application/handlers/create-brand-type.command.handler';
 import { UpdateBrandTypeCommandHandler } from './application/handlers/update-brand-type.command.handler';
 import { DeleteBrandTypeCommandHandler } from './application/handlers/delete-brand-type.command.handler';
+import { BrandTypesPublicController } from './ui/brand-type.public.controller';
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [BrandTypesController],
+  controllers: [BrandTypesController, BrandTypesPublicController],
   providers: [
     {
       provide: IBrandTypesRepository,

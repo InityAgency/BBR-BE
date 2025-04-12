@@ -1,4 +1,4 @@
-import { DevelompentStatusEnum } from 'src/shared/types/development-status.enum';
+import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 
 export class UpdateResidenceCommand {
@@ -17,7 +17,7 @@ export class UpdateResidenceCommand {
     public readonly countryId?: string,
     public readonly cityId?: string,
     public readonly rentalPotential?: RentalPotentialEnum,
-    public readonly developmentStatus?: DevelompentStatusEnum,
+    public readonly developmentStatus?: DevelopmentStatusEnum,
     public readonly yearBuilt?: string,
     public readonly floorSqft?: number,
     public readonly staffRatio?: number,

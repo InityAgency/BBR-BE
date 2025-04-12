@@ -9,6 +9,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { UnitStatusEnum } from '../../domain/unit-status.enum';
+import { UnitTransactionTypeEnum } from '../../domain/unit-transaction-type.enum';
 
 export class CreateUnitRequest {
   @IsNotEmpty()
@@ -58,8 +59,8 @@ export class CreateUnitRequest {
   roomAmount: number;
 
   @IsNotEmpty()
-  @IsString()
-  unitType: string;
+  @IsUUID()
+  unitTypeId: string;
 
   @IsNotEmpty()
   @IsString()
@@ -82,4 +83,28 @@ export class CreateUnitRequest {
   @IsNotEmpty()
   @IsUUID()
   residenceId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  about: string ="test";
+
+  @IsNotEmpty()
+  @IsString()
+  bathrooms: string ="test";
+
+  @IsNotEmpty()
+  @IsString()
+  bedroom: string ="test";
+
+  @IsNotEmpty()
+  @IsString()
+  floor: string ="test";
+
+  @IsNotEmpty()
+  @IsEnum(UnitTransactionTypeEnum)
+  transactionType: UnitTransactionTypeEnum = UnitTransactionTypeEnum.RENT;
+
+  @IsArray()
+  @IsString({ each: true })
+  characteristics: string[] = [];
 }

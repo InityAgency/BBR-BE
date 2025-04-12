@@ -6,6 +6,9 @@ import { KeyFeatureMapper } from 'src/modules/residentmanagement/key_feature/ui/
 import { Residence } from '../../domain/residence.entity';
 import { ResidenceResponse } from '../response/residence.response';
 import { UnitMapper } from './unit.mapper';
+import { ResidencePublicResponse } from '../response/residence.public.response';
+import { CityResponse } from '../response/city.response';
+import { CountryResponse } from '../response/country.response';
 
 export class ResidenceMapper {
   static toResponse(residence: Residence): ResidenceResponse {
@@ -77,4 +80,20 @@ export class ResidenceMapper {
         : [],
     );
   }
+
+  static toPublicResponse(residence: Residence): ResidencePublicResponse {
+    return new ResidencePublicResponse(
+      residence.id,
+      residence.name,
+      residence.status,
+      residence.developmentStatus,
+      residence.address,
+      residence.country ? new CountryResponse(residence.country.id, residence.country.name) : null,
+      residence.city ? new CityResponse(residence.city.id, residence.city.name, residence.city.asciiName) : null,
+      residence.createdAt,
+      residence.updatedAt,
+      residence.brand ? BrandMapper.toResponse(residence.brand) : null,
+    );
+  }
+
 }
