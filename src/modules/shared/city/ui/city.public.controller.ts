@@ -1,12 +1,11 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { CityResponse } from './response/city.response';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationResponse } from '../../../../shared/ui/response/pagination.response';
 
-import { FindCityByIdCommandQuery } from '../application/query/find-city-by-id.command.query';
-import { FetchCitiesCommandQuery } from '../application/query/fetch-cities.command.query';
-import { FetchCitiesQuery } from '../application/commands/fetch-cities.query';
 import { OrderByDirection } from 'objection';
+import { FetchCitiesQuery } from '../application/commands/fetch-cities.query';
+import { FetchCitiesCommandQuery } from '../application/query/fetch-cities.command.query';
+import { FindCityByIdCommandQuery } from '../application/query/find-city-by-id.command.query';
 import { CityMapper } from './mapper/city.mapper';
 import { CityPublicResponse } from './response/city.public.response';
 
@@ -15,7 +14,7 @@ import { CityPublicResponse } from './response/city.public.response';
 export class CityPublicController {
   constructor(
     private readonly findCityByIdCommandQuery: FindCityByIdCommandQuery,
-    private readonly fetchCitiesCommandQuery: FetchCitiesCommandQuery,
+    private readonly fetchCitiesCommandQuery: FetchCitiesCommandQuery
   ) {}
 
   @Get()

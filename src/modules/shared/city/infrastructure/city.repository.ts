@@ -52,11 +52,10 @@ export class CityRepositoryImpl implements ICityRepository {
 
     const columnsToSearch = [
       'cities.name',
-      'cities.asciiName',
+      'cities.ascii_name',
       'cities.population',
-      'cities.timezone',
-      'cities.xCoordinate',
-      'cities.yCoordinate',
+      'cities.x_coordinate',
+      'cities.y_coordinate',
     ];
     const columnsToSort = [
       'name',
