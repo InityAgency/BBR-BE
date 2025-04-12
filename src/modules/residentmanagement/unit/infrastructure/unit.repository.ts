@@ -31,6 +31,12 @@ export class UnitRepositoryImpl implements IUnitRepository {
       serviceAmount: unit.serviceAmount,
       featureImageId: unit.featureImage?.id,
       residenceId: unit.residence?.id,
+      about: unit.about,
+      bathrooms: unit.bathrooms,
+      bedroom: unit.bedroom,
+      floor: unit.floor,
+      transactionType: unit.transactionType,
+      characteristics: JSON.stringify(unit.characteristics ?? []),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -70,7 +76,6 @@ export class UnitRepositoryImpl implements IUnitRepository {
       .joinRelated('unitType')
       .whereNull('deletedAt')
       .withGraphFetched('[residence, gallery, featureImage, unitType]');
-
 
 
     const columnsToSearchAndSort = ['name', 'description', 'roomType', 'status'];
@@ -115,6 +120,12 @@ export class UnitRepositoryImpl implements IUnitRepository {
         serviceAmount: data.serviceAmount,
         featureImageId: data.featureImage?.id,
         residenceId: data.residence?.id,
+        about: data.about,
+        bathrooms: data.bathrooms,
+        bedroom: data.bedroom,
+        floor: data.floor,
+        transactionType: data.transactionType,
+        characteristics: JSON.stringify(data.characteristics ?? []),
         updatedAt: new Date(),
       })
       .where('id', id);

@@ -3,11 +3,18 @@ import { Media } from '../../../media/domain/media.entity';
 import { Residence } from './residence.entity';
 import { UnitStatusEnum } from './unit-status.enum';
 import { UnitType } from '../../unit_type/domain/unit_type.entity';
+import { UnitTransactionTypeEnum } from './unit-transaction-type.enum';
 
 export class Unit extends Model {
   id!: string;
   name!: string;
   description: string;
+  about: string;
+  bathrooms: string;
+  bedroom: string;
+  floor: string;
+  transactionType: UnitTransactionTypeEnum;
+  characteristics: string[];
   surface: number;
   status: UnitStatusEnum;
   regularPrice: number;

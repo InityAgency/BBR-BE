@@ -1,14 +1,7 @@
 import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  IsUUID,
-  MaxLength,
-} from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, MaxLength } from 'class-validator';
 import { UnitStatusEnum } from '../../domain/unit-status.enum';
+import { UnitTransactionTypeEnum } from '../../domain/unit-transaction-type.enum';
 
 export class UpdateUnitRequest {
   @IsNotEmpty()
@@ -82,4 +75,28 @@ export class UpdateUnitRequest {
   @IsNotEmpty()
   @IsUUID()
   residenceId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  about: string="test";
+
+  @IsNotEmpty()
+  @IsString()
+  bathrooms: string="test";
+
+  @IsNotEmpty()
+  @IsString()
+  bedroom: string="test";
+
+  @IsNotEmpty()
+  @IsString()
+  floor: string="test";
+
+  @IsNotEmpty()
+  @IsEnum(UnitTransactionTypeEnum)
+  transactionType: UnitTransactionTypeEnum = UnitTransactionTypeEnum.SALE;
+
+  @IsArray()
+  @IsString({ each: true })
+  characteristics: string[] = [];
 }

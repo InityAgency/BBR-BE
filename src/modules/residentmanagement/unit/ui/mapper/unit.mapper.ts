@@ -27,7 +27,13 @@ export class UnitMapper {
       request.serviceAmount,
       request.featureImageId,
       request.residenceId,
-      request.galleryMediaIds
+      request.galleryMediaIds,
+      request.about,
+      request.bathrooms,
+      request.bedroom,
+      request.floor,
+      request.transactionType,
+      request.characteristics,
     );
   }
 
@@ -50,6 +56,12 @@ export class UnitMapper {
       request.featureImageId,
       request.residenceId,
       request.galleryMediaIds,
+      request.about,
+      request.bathrooms,
+      request.bedroom,
+      request.floor,
+      request.transactionType,
+      request.characteristics,
     );
   }
 
@@ -108,6 +120,12 @@ export class UnitMapper {
         unit.residence.longitude,
         unit.residence.latitude
       ) : null,
+      unit.about,
+      unit.bathrooms,
+      unit.bedroom,
+      unit.floor,
+      unit.transactionType,
+      unit.characteristics,
       unit.createdAt,
       unit.updatedAt
     );
@@ -168,6 +186,12 @@ export class UnitMapper {
           unit.residence.longitude,
           unit.residence.latitude
         ) : null,
+      unit.about,
+      unit.bathrooms,
+      unit.bedroom,
+      unit.floor,
+      unit.transactionType,
+      unit.characteristics,
       unit.createdAt,
       unit.updatedAt
     );

@@ -14,10 +14,11 @@ import { IMediaRepository } from 'src/modules/media/domain/media.repository.inte
 import { MediaRepositoryImpl } from 'src/modules/media/infrastructure/media.repository';
 import { IPhoneCodeRepository } from '../phone_code/domain/phone-code.repository.interface';
 import { PhoneCodeRepositoryImpl } from '../phone_code/infrastructure/phone-code.repository';
+import { CountryPublicController } from './ui/country.public.controller';
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [CountryController],
+  controllers: [CountryController, CountryPublicController],
   providers: [
     {
       provide: ICountryRepository,

@@ -64,6 +64,12 @@ export class CreateUnitCommandHandler {
       featureImage: featureImage,
       residence: residence,
       gallery: galleryMedia,
+      about: command.about,
+      bathrooms: command.bathrooms,
+      bedroom: command.bedroom,
+      floor: command.floor,
+      transactionType: command.transactionType,
+      characteristics: command.characteristics,
     };
 
     const createdUnit = await this.unitRepository.create(unitData);

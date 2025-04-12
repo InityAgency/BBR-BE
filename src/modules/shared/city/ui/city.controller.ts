@@ -18,6 +18,7 @@ import { CreateCityRequest } from './request/create-city.request';
 import { UpdateCityRequest } from './request/update-city.request';
 import { UpdateCityCommand } from '../application/commands/update-city.command';
 import { OrderByDirection } from 'objection';
+import { CityMapper } from './mapper/city.mapper';
 
 @ApiTags('Cities')
 @Controller('cities')
@@ -61,7 +62,7 @@ export class CityController {
     const fetchQuery = new FetchCitiesQuery(query, page, limit, sortBy, sortOrder);
     const cities = await this.fetchCitiesCommandQuery.handler(fetchQuery);
     return {
-      data: cities.data.map((city) => this.mapToCityResponse(city)),
+      data: cities.data.map((city) => CityMapper.mapToResponse(city)),
       pagination: cities.pagination,
     };
   }
@@ -71,7 +72,7 @@ export class CityController {
   @ApiResponse({ status: 200, description: 'City details', type: CityResponse })
   async findOne(@Param('id') id: string): Promise<CityResponse> {
     const city = await this.findCityByIdCommandQuery.handle(id);
-    return this.mapToCityResponse(city);
+    return CityMapper.mapToResponse(city);
   }
 
   @Post()
@@ -89,7 +90,7 @@ export class CityController {
     );
 
     const city = await this.createCityCommandHandler.handle(command);
-    return this.mapToCityResponse(city);
+    return CityMapper.mapToResponse(city);
   }
 
   @Put(':id')
@@ -108,7 +109,7 @@ export class CityController {
     );
 
     const city = await this.updateCityCommandHandler.handle(command);
-    return this.mapToCityResponse(city);
+    return CityMapper.mapToResponse(city);
   }
 
   @Delete(':id')
@@ -118,22 +119,5 @@ export class CityController {
     await this.deleteCityCommandHandler.handle(id);
   }
 
-  private mapToCityResponse(city: City): CityResponse {
-    return new CityResponse(
-      city.id,
-      city.name,
-      city.asciiName,
-      this.mapToCountryResponse(city.country),
-      city.population,
-      city.timezone,
-      city.yCoordinate,
-      city.xCoordinate,
-      city.createdAt,
-      city.updatedAt
-    );
-  }
 
-  private mapToCountryResponse(country: Country): CountryResponse {
-    return new CountryResponse(country.id, country.name, country.code);
-  }
 }

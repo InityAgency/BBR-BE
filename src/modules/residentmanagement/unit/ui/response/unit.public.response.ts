@@ -21,6 +21,12 @@ export class UnitPublicResponse {
     public readonly gallery: MediaResponse[],
     public readonly featureImage: MediaResponse | null,
     public readonly residence: ResidenceResponse | null,
+    public readonly about: string,
+    public readonly bathrooms: string,
+    public readonly bedroom: string,
+    public readonly floor: string,
+    public readonly transactionType: string,
+    public readonly characteristics: string[],
     public readonly createdAt: Date,
     public readonly updatedAt: Date
   ) {}
