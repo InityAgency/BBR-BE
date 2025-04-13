@@ -8,11 +8,22 @@ import { MediaResponse } from '../../../../media/ui/response/media.response';
 
 export class AmenityMapper {
   static toCreateCommand(request: CreateAmenityRequest): CreateAmenityCommand {
-    return new CreateAmenityCommand(request.name, request.description, request.iconId);
+    return new CreateAmenityCommand(
+      request.name,
+      request.description,
+      request.iconId,
+      request.featuredImageId
+    );
   }
 
   static toUpdateCommand(id: string, request: UpdateAmenityRequest): UpdateAmenityCommand {
-    return new UpdateAmenityCommand(id, request.name, request.description, request.iconId);
+    return new UpdateAmenityCommand(
+      id,
+      request.name,
+      request.description,
+      request.iconId,
+      request.featuredImageId
+    );
   }
 
   static toResponse(amenity: Amenity): AmenityResponse {
@@ -28,6 +39,16 @@ export class AmenityMapper {
             amenity.icon.uploadStatus,
             amenity.icon.size,
             amenity.icon.securedUrl
+          )
+        : null,
+      amenity.featuredImage
+        ? new MediaResponse(
+            amenity.featuredImage.id,
+            amenity.featuredImage.originalFileName,
+            amenity.featuredImage.mimeType,
+            amenity.featuredImage.uploadStatus,
+            amenity.featuredImage.size,
+            amenity.featuredImage.securedUrl
           )
         : null,
       amenity.createdAt,

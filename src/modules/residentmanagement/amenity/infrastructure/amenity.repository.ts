@@ -18,6 +18,7 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
       name: amenity.name,
       description: amenity.description,
       iconId: amenity.icon?.id,
+      featuredImageId: amenity.featuredImage?.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -31,7 +32,10 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
 
   @LogMethod()
   async findById(id: string): Promise<Amenity | undefined> {
-    return Amenity.query().findById(id).whereNull('deleted_at').withGraphFetched('[icon]');
+    return Amenity.query()
+      .findById(id)
+      .whereNull('deleted_at')
+      .withGraphFetched('[icon, featuredImage]');
   }
 
   @LogMethod()
@@ -40,7 +44,9 @@ export class AmenityRepositoryImpl implements IAmenityRepository {
   ): Promise<{ data: Amenity[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
 
-    const baseQuery = Amenity.query().whereNull('deleted_at').withGraphFetched('[icon]');
+    const baseQuery = Amenity.query()
+      .whereNull('deleted_at')
+      .withGraphFetched('[icon, featuredImage]');
 
     const columnsToSearchAndSort = ['amenities.name', 'amenities.description'];
 

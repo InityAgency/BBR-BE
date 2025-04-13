@@ -28,6 +28,7 @@ export class UpdateAmenityCommandHandler {
       name: command.name,
       description: command.description,
       iconId: command.iconId,
+      featuredImageId: command.featuredImageId,
     };
 
     const existingAmenityByName = await this.amenityRepository.findByName(command.name ?? '');
@@ -42,6 +43,15 @@ export class UpdateAmenityCommandHandler {
       }
 
       updatePayload.iconId = command.iconId;
+    }
+
+    if (command.featuredImageId) {
+      const featuredImage = await this.mediaRepository.findById(command.featuredImageId);
+      if (!featuredImage) {
+        throw new NotFoundException('Featured image not found');
+      }
+
+      updatePayload.featuredImageId = command.featuredImageId;
     }
 
     const updatedAmenity = await this.amenityRepository.update(command.id, updatePayload);

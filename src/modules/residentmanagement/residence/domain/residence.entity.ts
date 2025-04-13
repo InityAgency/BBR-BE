@@ -10,6 +10,9 @@ import { Amenity } from '../../amenity/domain/amenity.entity';
 import { KeyFeature } from '../../key_feature/domain/key-feature.entity';
 import { ResidenceStatusEnum } from './residence-status.enum';
 import { Unit } from './unit.entity';
+import { RankingCategory } from 'src/modules/shared/rankingmanagement/category/domain/ranking-category.entity';
+import { ResidenceRankingScore } from '../../ranking_score/domain/residence-ranking-score.entity';
+import { ResidenceHighlightedAmenity } from './residence-highlighted-amenities.entity';
 
 export class Residence extends Model {
   id!: string;
@@ -33,7 +36,7 @@ export class Residence extends Model {
   petFriendly!: boolean;
   disabledFriendly!: boolean;
   videoTourUrl?: string;
-  units: Unit[]
+  units: Unit[];
 
   createdAt!: Date;
   updatedAt!: Date;
@@ -52,6 +55,8 @@ export class Residence extends Model {
 
   mainGallery?: Media[];
   secondaryGallery?: Media[];
+  rankingCategories?: RankingCategory[];
+  highlightedAmenities?: ResidenceHighlightedAmenity[];
 
   static tableName = 'residences';
 
@@ -162,6 +167,34 @@ export class Residence extends Model {
       join: {
         from: 'residences.id',
         to: 'units.residenceId',
+      },
+    },
+    highlightedAmenities: {
+      relation: Model.HasManyRelation,
+      modelClass: ResidenceHighlightedAmenity,
+      join: {
+        from: 'residences.id',
+        to: 'residence_highlighted_amenities.residenceId',
+      },
+    },
+    rankingCategories: {
+      relation: Model.ManyToManyRelation,
+      modelClass: () => RankingCategory,
+      join: {
+        from: 'residences.id',
+        through: {
+          from: 'residence_ranking_categories.residence_id',
+          to: 'residence_ranking_categories.ranking_category_id',
+        },
+        to: 'ranking_categories.id',
+      },
+    },
+    rankingScores: {
+      relation: Model.HasManyRelation,
+      modelClass: () => ResidenceRankingScore,
+      join: {
+        from: 'residences.id',
+        to: 'residence_ranking_score.residence_id',
       },
     },
   };

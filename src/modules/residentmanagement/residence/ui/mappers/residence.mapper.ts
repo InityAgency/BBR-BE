@@ -4,11 +4,12 @@ import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 import { AmenityMapper } from 'src/modules/residentmanagement/amenity/ui/mapper/amenity.ui.mapper';
 import { KeyFeatureMapper } from 'src/modules/residentmanagement/key_feature/ui/mappers/key-feature.mapper';
 import { Residence } from '../../domain/residence.entity';
-import { ResidenceResponse } from '../response/residence.response';
-import { UnitMapper } from './unit.mapper';
-import { ResidencePublicResponse } from '../response/residence.public.response';
 import { CityResponse } from '../response/city.response';
 import { CountryResponse } from '../response/country.response';
+import { ResidencePublicResponse } from '../response/residence.public.response';
+import { ResidenceResponse } from '../response/residence.response';
+import { HighlightedAmenityMapper } from './highlighted-amenity.mapper';
+import { UnitMapper } from './unit.mapper';
 
 export class ResidenceMapper {
   static toResponse(residence: Residence): ResidenceResponse {
@@ -78,6 +79,22 @@ export class ResidenceMapper {
               )
           )
         : [],
+      residence.secondaryGallery
+        ? residence.secondaryGallery.map(
+            (media) =>
+              new MediaResponse(
+                media.id,
+                media.originalFileName,
+                media.mimeType,
+                media.uploadStatus,
+                media.size,
+                media.securedUrl
+              )
+          )
+        : [],
+      residence.highlightedAmenities
+        ? residence.highlightedAmenities.map((data) => HighlightedAmenityMapper.toResponse(data))
+        : []
     );
   }
 
@@ -89,11 +106,12 @@ export class ResidenceMapper {
       residence.developmentStatus,
       residence.address,
       residence.country ? new CountryResponse(residence.country.id, residence.country.name) : null,
-      residence.city ? new CityResponse(residence.city.id, residence.city.name, residence.city.asciiName) : null,
+      residence.city
+        ? new CityResponse(residence.city.id, residence.city.name, residence.city.asciiName)
+        : null,
       residence.createdAt,
       residence.updatedAt,
-      residence.brand ? BrandMapper.toResponse(residence.brand) : null,
+      residence.brand ? BrandMapper.toResponse(residence.brand) : null
     );
   }
-
 }

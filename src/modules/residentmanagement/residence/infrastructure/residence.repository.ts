@@ -8,6 +8,7 @@ import { FetchResidencesQuery } from '../application/commands/fetch-residences.q
 import { ResidenceStatusEnum } from '../domain/residence-status.enum';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
+import { ResidenceHighlightedAmenity } from '../domain/residence-highlighted-amenities.entity';
 
 @Injectable()
 export class ResidenceRepository implements IResidenceRepository {
@@ -44,7 +45,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .findById(id)
       .whereNull('deleted_at')
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, units, units.featureImage]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, units.featureImage]'
       );
   }
 
@@ -55,9 +56,17 @@ export class ResidenceRepository implements IResidenceRepository {
   async findAll(
     fetchQuery: FetchResidencesQuery
   ): Promise<{ data: Residence[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery, status, cityId, brandId, address } = fetchQuery;
-
-    console.log(fetchQuery);
+    const {
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      searchQuery: searchQuery,
+      status,
+      cityId,
+      brandId,
+      address,
+    } = fetchQuery;
 
     const baseQuery = Residence.query()
       .whereNull('residences.deleted_at')
@@ -66,7 +75,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .leftJoinRelated('company')
       .leftJoinRelated('brand')
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity]'
       );
 
     const columnsToSearch = [
@@ -79,7 +88,7 @@ export class ResidenceRepository implements IResidenceRepository {
     const searchableQuery = applySearchFilter(baseQuery.clone(), searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
-      const allowedColumns = ['name', 'brand.name','created_at', 'updated_at'];
+      const allowedColumns = ['name', 'brand.name', 'created_at', 'updated_at'];
       if (allowedColumns.includes(sortBy)) {
         searchableQuery.orderBy(sortBy, sortOrder);
       }
@@ -133,5 +142,23 @@ export class ResidenceRepository implements IResidenceRepository {
 
       await this.knexService.connection('residence_media').insert(rows);
     }
+  }
+
+  async addHighlightedAmenity(data: {
+    residenceId: string;
+    amenityId: string;
+    description?: string;
+    featuredImageId?: string;
+    order?: number;
+  }) {
+    await ResidenceHighlightedAmenity.query().insert({
+      residenceId: data.residenceId,
+      amenityId: data.amenityId,
+      order: data.order,
+    });
+  }
+
+  async clearHighlightedAmenities(residenceId: string): Promise<void> {
+    await ResidenceHighlightedAmenity.query().where('residence_id', residenceId).delete();
   }
 }

@@ -14,4 +14,8 @@ export class CreateAmenityRequest {
   @IsOptional()
   @IsUUID()
   iconId: string;
+
+  @IsOptional()
+  @IsUUID()
+  featuredImageId: string;
 }

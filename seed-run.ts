@@ -10,6 +10,7 @@ const env = process.env.NODE_ENV || 'development';
 const knex = Knex(knexConfig[env]);
 const seedsDir = knexConfig[env].seeds?.directory;
 
+const startTime = Date.now();
 if (!seedsDir || typeof seedsDir !== 'string') {
   console.error('Seeds directory is not defined in knex configuration.');
   process.exit(1);
@@ -33,7 +34,9 @@ fs.readdir(seedsDir, (err, files) => {
           }
           seed(knex)
             .then(() => {
-              console.log('Seed run complete');
+              const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+              console.log(`✅ Seed run complete in ${duration} seconds! 🎉`);
+
               process.exit(0);
             })
             .catch((e) => {

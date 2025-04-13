@@ -24,12 +24,10 @@ export async function seed(knex: Knex): Promise<void> {
   const filePath = `${__dirname}/../csv/Brands Management_Data.csv`;
   const brands = await parseCSV(filePath);
 
-
   await knex('brands').del(); // Delete all existing records
 
   const brandTypes = await knex('brand_types').select('id', 'name');
   const brandTypeMap = Object.fromEntries(brandTypes.map((bt) => [bt.name, bt.id]));
-
 
   const formattedBrands = brands
     .map((brand) => {
@@ -50,8 +48,6 @@ export async function seed(knex: Knex): Promise<void> {
 
   const batchSize = 1000;
   const brandChunks = chunk(formattedBrands, batchSize);
-
-  console.log(formattedBrands);
 
   for (const batch of brandChunks) {
     await knex('brands').insert(batch);

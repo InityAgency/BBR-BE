@@ -1,54 +1,138 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+  IsUUID,
+} from 'class-validator';
+import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
+import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
+import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
+import { HighlightedAmenityRequest } from './highlighted-amenity.request';
 
 export class CreateResidenceRequest {
   @IsNotEmpty()
   @IsString()
   name: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
+  @IsEnum(ResidenceStatusEnum)
+  status: ResidenceStatusEnum;
+
+  @IsOptional()
+  @IsEnum(DevelopmentStatusEnum)
+  developmentStatus: DevelopmentStatusEnum;
+
+  @IsOptional()
+  websiteUrl: string;
+
+  @IsOptional()
   subtitle: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   description: string;
 
   @IsOptional()
-  @IsUrl()
-  websiteUrl: string;
-
-  @IsNotEmpty()
   @IsNumber()
   @Type(() => Number)
   budgetStartRange: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   budgetEndRange: number;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   address: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   latitude: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   longitude: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsUUID()
   brandId: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsUUID()
   countryId: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsUUID()
   cityId: string;
+
+  @IsOptional()
+  @IsEnum(RentalPotentialEnum)
+  rentalPotential: RentalPotentialEnum;
+
+  @IsOptional()
+  yearBuilt: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  floorSqft: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  staffRatio: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  avgPricePerUnit: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  avgPricePerSqft: number;
+
+  @IsOptional()
+  @IsBoolean()
+  petFriendly: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  disabledFriendly: boolean;
+
+  @IsOptional()
+  videoTourUrl: string;
+
+  @IsOptional()
+  @IsUUID()
+  videoTourId: string;
+
+  @IsOptional()
+  @IsUUID()
+  featuredImageId: string;
+
+  @IsOptional()
+  @IsUUID('all', { each: true })
+  keyFeatures: string[];
+
+  @IsOptional()
+  @IsUUID('all', { each: true })
+  amenities: string[];
+
+  @IsOptional()
+  @IsUUID()
+  companyId: string;
+
+  @IsOptional()
+  mainGallery: { id: string; order: number }[];
+
+  @IsOptional()
+  secondaryGallery: { id: string; order: number }[];
+
+  @IsOptional()
+  highlightedAmenities: HighlightedAmenityRequest[];
 }

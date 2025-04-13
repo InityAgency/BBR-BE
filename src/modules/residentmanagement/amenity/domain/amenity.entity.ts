@@ -5,10 +5,13 @@ export class Amenity extends Model {
   id!: string;
   name!: string;
   description!: string;
+  featuredImageId?: string;
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;
+
   icon!: Media;
+  featuredImage?: Media;
 
   static tableName = 'amenities';
 
@@ -18,6 +21,14 @@ export class Amenity extends Model {
       modelClass: Media,
       join: {
         from: 'amenities.iconId',
+        to: 'media.id',
+      },
+    },
+    featuredImage: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: Media,
+      join: {
+        from: 'amenities.featuredImageId',
         to: 'media.id',
       },
     },

@@ -9,10 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
     table.timestamp('deleted_at').nullable();
 
-    table.uuid('icon_id')
-      .nullable()
-      .references('id')
-      .inTable('media');
+    table.uuid('icon_id').nullable().references('id').inTable('media');
   });
 }
 

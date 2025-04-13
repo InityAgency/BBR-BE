@@ -42,6 +42,7 @@ export class CreateRankingCategoryCommandHandler {
 
     const categoryData: Partial<RankingCategory> = {
       name: command.name,
+      title: command.title,
       description: command.description,
       rankingCategoryType: categoryType,
       residenceLimitation: command.residenceLimitation,

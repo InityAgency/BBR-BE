@@ -13,6 +13,7 @@ export class RankingCategoryMapper {
   static toCreateCommand(request: CreateRankingCategoryRequest): CreateRankingCategoryCommand {
     return new CreateRankingCategoryCommand(
       request.name,
+      request.title,
       request.description,
       request.rankingCategoryTypeId,
       request.residenceLimitation,
@@ -29,6 +30,7 @@ export class RankingCategoryMapper {
     return new UpdateRankingCategoryCommand(
       id,
       request.name,
+      request.title,
       request.description,
       request.rankingCategoryTypeId,
       request.residenceLimitation,
@@ -48,6 +50,7 @@ export class RankingCategoryMapper {
     return new RankingCategoryResponse(
       rankingCategory.id,
       rankingCategory.name,
+      rankingCategory.title,
       rankingCategory.description,
       new RankingCategoryTypeResponse(
         rankingCategory.rankingCategoryType.id,

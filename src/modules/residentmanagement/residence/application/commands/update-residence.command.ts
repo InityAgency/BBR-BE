@@ -1,5 +1,6 @@
 import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
+import { HighlightedAmenityType } from '../../ui/types/highlighted-amenities.type';
 
 export class UpdateResidenceCommand {
   constructor(
@@ -32,6 +33,7 @@ export class UpdateResidenceCommand {
     public readonly amenities?: string[],
     public readonly companyId?: string,
     public readonly mainGallery?: { id: string; order: number }[],
-    public readonly secondaryGallery?: { id: string; order: number }[]
+    public readonly secondaryGallery?: { id: string; order: number }[],
+    public readonly highlightedAmenities?: HighlightedAmenityType[]
   ) {}
 }

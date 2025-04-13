@@ -3,6 +3,7 @@ import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
 import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { Type } from 'class-transformer';
+import { HighlightedAmenityRequest } from './highlighted-amenity.request';
 
 export class UpdateResidenceRequest {
   @IsOptional()
@@ -115,4 +116,7 @@ export class UpdateResidenceRequest {
 
   @IsOptional()
   secondaryGallery: { id: string; order: number }[];
+
+  @IsOptional()
+  highlightedAmenities: HighlightedAmenityRequest[];
 }

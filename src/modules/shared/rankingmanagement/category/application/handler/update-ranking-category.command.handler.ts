@@ -47,6 +47,7 @@ export class UpdateRankingCategoryCommandHandler {
 
     const updateData: Partial<RankingCategory> = {
       name: command.name,
+      title: command.title,
       description: command.description,
       rankingCategoryType: categoryType,
       residenceLimitation: command.residenceLimitation,

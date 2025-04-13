@@ -29,10 +29,16 @@ export class CreateAmenityCommandHandler {
       throw new NotFoundException('Icon (media) not found');
     }
 
+    const featuredImage = await this.mediaRepository.findById(command.featuredImageId);
+    if (!featuredImage) {
+      throw new NotFoundException('Featured image (media) not found');
+    }
+
     const result = await this.amenityRepository.create({
       name: command.name,
       description: command.description,
       icon: icon,
+      featuredImage: featuredImage,
     });
 
     if (!result) {

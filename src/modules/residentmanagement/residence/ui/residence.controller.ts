@@ -95,7 +95,25 @@ export class ResidenceController {
       request.longitude,
       request.brandId,
       request.countryId,
-      request.cityId
+      request.cityId,
+      request.rentalPotential,
+      request.developmentStatus,
+      request.yearBuilt,
+      request.floorSqft,
+      request.staffRatio,
+      request.avgPricePerUnit,
+      request.avgPricePerSqft,
+      request.petFriendly,
+      request.disabledFriendly,
+      request.videoTourUrl,
+      request.videoTourId,
+      request.featuredImageId,
+      request.keyFeatures,
+      request.amenities,
+      request.companyId,
+      request.mainGallery,
+      request.secondaryGallery,
+      request.highlightedAmenities
     );
 
     const created = await this.createResidenceCommandHandler.handle(command);
@@ -152,7 +170,8 @@ export class ResidenceController {
       request.amenities,
       request.companyId,
       request.mainGallery,
-      request.secondaryGallery
+      request.secondaryGallery,
+      request.highlightedAmenities
     );
 
     const created = await this.updateResidenceCommandHandler.handle(command);

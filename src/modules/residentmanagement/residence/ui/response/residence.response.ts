@@ -9,6 +9,7 @@ import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum'
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
 import { UnitResponse } from './unit.response';
+import { HighlightedAmenityResponse } from './highlighted-amenities.response';
 
 export class ResidenceResponse {
   constructor(
@@ -45,6 +46,7 @@ export class ResidenceResponse {
     public readonly amenities?: AmenityResponse[] | [],
     public readonly company?: CompanyResponse | null,
     public readonly mainGallery?: MediaResponse[] | [],
-    public readonly secondaryGallery?: MediaResponse[] | []
+    public readonly secondaryGallery?: MediaResponse[] | [],
+    public readonly highlightedAmenities?: HighlightedAmenityResponse[] | []
   ) {}
 }

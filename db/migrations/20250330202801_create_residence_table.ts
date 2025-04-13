@@ -9,13 +9,13 @@ export async function up(knex: Knex): Promise<void> {
       .defaultTo('DRAFT');
     table.string('name').notNullable();
     table.string('website_url').nullable();
-    table.string('subtitle').notNullable();
-    table.text('description').notNullable();
-    table.integer('budget_start_range').notNullable();
-    table.integer('budget_end_range').notNullable();
-    table.string('address').notNullable();
-    table.string('latitude').notNullable();
-    table.string('longitude').notNullable();
+    table.string('subtitle').nullable();
+    table.text('description').nullable();
+    table.bigInteger('budget_start_range').nullable();
+    table.bigInteger('budget_end_range').nullable();
+    table.string('address').nullable();
+    table.double('latitude').nullable();
+    table.double('longitude').nullable();
     table.string('year_built').nullable();
     table
       .enum('development_status', ['COMPLETED', 'UNDER_CONSTRUCTION', 'PLANNED'])

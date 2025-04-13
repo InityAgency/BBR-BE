@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { IBrandRepository } from 'src/modules/brand/domain/brand.repository.interface';
 import { ICompanyRepository } from 'src/modules/company/domain/company.repository.interface';
 import { IMediaRepository } from 'src/modules/media/domain/media.repository.interface';
@@ -100,6 +105,33 @@ export class UpdateResidenceCommandHandler {
         command.secondaryGallery,
         'secondaryGallery'
       );
+    }
+
+    if (command.highlightedAmenities) {
+      await this.residenceRepository.clearHighlightedAmenities(residence.id);
+
+      const amenityIdSet = new Set<string>();
+      for (const highlighted of command.highlightedAmenities) {
+        if (amenityIdSet.has(highlighted.id)) {
+          throw new ConflictException(`Duplicate amenityId in highlighted amenities`);
+        }
+        amenityIdSet.add(highlighted.id);
+      }
+
+      for (const highlighted of command.highlightedAmenities) {
+        const { id, order } = highlighted;
+
+        const exists = await this.amenityRepository.findById(id);
+        if (!exists) {
+          throw new NotFoundException(`Highlighted amenity not found`);
+        }
+
+        await this.residenceRepository.addHighlightedAmenity({
+          residenceId: residence.id,
+          amenityId: id,
+          order,
+        });
+      }
     }
 
     const updateResidence = {

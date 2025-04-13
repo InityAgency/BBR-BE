@@ -17,4 +17,12 @@ export abstract class IResidenceRepository {
     gallery: { id: string; order: number }[],
     type: 'mainGallery' | 'secondaryGallery'
   ): Promise<void>;
+  abstract addHighlightedAmenity(data: {
+    residenceId: string;
+    amenityId: string;
+    description?: string;
+    featuredImageId?: string;
+    order?: number;
+  }): Promise<void>;
+  abstract clearHighlightedAmenities(residenceId: string): Promise<void>;
 }
