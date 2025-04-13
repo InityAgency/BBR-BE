@@ -117,7 +117,7 @@ export class Residence extends Model {
       relation: Model.ManyToManyRelation,
       modelClass: () => Amenity,
       join: {
-        from: 'residences.amenityId',
+        from: 'residences.id',
         through: {
           from: 'residence_amenity_relations.residence_id',
           to: 'residence_amenity_relations.amenity_id',
@@ -209,6 +209,6 @@ export class Residence extends Model {
   }
 
   static async create(data: Partial<Residence>): Promise<Residence> {
-    return await Residence.query().insert(data).returning('*');
+    return await Residence.query().insertAndFetch(data).returning('*');
   }
 }

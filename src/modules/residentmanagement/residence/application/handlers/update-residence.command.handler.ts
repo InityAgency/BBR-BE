@@ -78,7 +78,7 @@ export class UpdateResidenceCommandHandler {
     if (command.amenities?.length) {
       const amenities = await this.amenityRepository.validateAndFetchByIds(command.amenities);
       await residence.$relatedQuery('amenities').unrelate();
-      await residence.$relatedQuery('amenities').relate(amenities.map((amenityId) => amenityId));
+      await residence.$relatedQuery('amenities').relate(amenities.map((amenityId) => amenityId.id));
     }
 
     if (command.keyFeatures?.length) {
@@ -88,7 +88,7 @@ export class UpdateResidenceCommandHandler {
       await residence.$relatedQuery('keyFeatures').unrelate();
       await residence
         .$relatedQuery('keyFeatures')
-        .relate(keyFeatures.map((keyFeatureId) => keyFeatureId));
+        .relate(keyFeatures.map((keyFeatureId) => keyFeatureId.id));
     }
 
     if (command.mainGallery?.length) {

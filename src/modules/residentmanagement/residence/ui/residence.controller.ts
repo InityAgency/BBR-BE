@@ -15,21 +15,20 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { OrderByDirection } from 'objection';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { CreateResidenceCommand } from '../application/commands/create-residence.command';
+import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
+import { UpdateResidenceStatusCommand } from '../application/commands/update-residence-status.command';
 import { UpdateResidenceCommand } from '../application/commands/update-residence.command';
 import { CreateResidenceCommandHandler } from '../application/handlers/create-residence.command.handler';
+import { DeleteResidenceCommandHandler } from '../application/handlers/delete-residence.command.handler';
 import { UpdateResidenceCommandHandler } from '../application/handlers/update-residence.command.handler';
+import { UpdateResidenceStatusCommandHandler } from '../application/handlers/update-status-residence.command.handler';
+import { FindAllResidencesCommandQuery } from '../application/query/find-all-residences.query';
+import { FindByIdResidenceCommandQuery } from '../application/query/find-by-id-residence.query';
 import { ResidenceStatusEnum } from '../domain/residence-status.enum';
 import { ResidenceMapper } from './mappers/residence.mapper';
 import { CreateResidenceRequest } from './request/create-residence.request';
 import { UpdateResidenceRequest } from './request/update-residence.request';
 import { ResidenceResponse } from './response/residence.response';
-import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
-import { FindAllResidencesCommandQuery } from '../application/query/find-all-residences.query';
-import { FindByIdResidenceCommandQuery } from '../application/query/find-by-id-residence.query';
-import { UpdateResidenceStatusCommand } from '../application/commands/update-residence-status.command';
-import { UpdateResidenceStatusCommandHandler } from '../application/handlers/update-status-residence.command.handler';
-import { DeleteResidenceCommandHandler } from '../application/handlers/delete-residence.command.handler';
-import { Transform } from 'class-transformer';
 
 ApiTags('Residence');
 @Controller('residences')

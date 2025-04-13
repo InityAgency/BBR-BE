@@ -101,15 +101,15 @@ export class CreateResidenceCommandHandler {
     };
 
     const residence = await this.residenceRepository.create(createResidence);
-
     if (!residence) {
       throw new InternalServerErrorException('Residence not created');
     }
 
     if (command.amenities?.length) {
       const amenities = await this.amenityRepository.validateAndFetchByIds(command.amenities);
+
       await residence.$relatedQuery('amenities').unrelate();
-      await residence.$relatedQuery('amenities').relate(amenities.map((amenityId) => amenityId));
+      await residence.$relatedQuery('amenities').relate(amenities.map((amenityId) => amenityId.id));
     }
 
     if (command.keyFeatures?.length) {
@@ -119,7 +119,7 @@ export class CreateResidenceCommandHandler {
       await residence.$relatedQuery('keyFeatures').unrelate();
       await residence
         .$relatedQuery('keyFeatures')
-        .relate(keyFeatures.map((keyFeatureId) => keyFeatureId));
+        .relate(keyFeatures.map((keyFeatureId) => keyFeatureId.id));
     }
 
     if (command.mainGallery?.length) {

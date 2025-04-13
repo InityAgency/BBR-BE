@@ -25,4 +25,8 @@ export abstract class IResidenceRepository {
     order?: number;
   }): Promise<void>;
   abstract clearHighlightedAmenities(residenceId: string): Promise<void>;
+  abstract findCriteriaForResidenceCategory(
+    residenceId: string,
+    rankingCategoryId: string
+  ): Promise<any>;
 }

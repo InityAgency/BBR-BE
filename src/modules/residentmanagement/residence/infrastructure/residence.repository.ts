@@ -117,6 +117,7 @@ export class ResidenceRepository implements IResidenceRepository {
     type: 'mainGallery' | 'secondaryGallery'
   ) {
     const mediaIds = gallery.map((item) => item.id);
+
     const existingMediaIds = await this.knexService
       .connection('media')
       .whereIn('id', mediaIds)
@@ -160,5 +161,22 @@ export class ResidenceRepository implements IResidenceRepository {
 
   async clearHighlightedAmenities(residenceId: string): Promise<void> {
     await ResidenceHighlightedAmenity.query().where('residence_id', residenceId).delete();
+  }
+
+  async findCriteriaForResidenceCategory(residenceId: string, rankingCategoryId: string) {
+    const knex = this.knexService.connection;
+
+    const results = await knex('ranking_category_criteria as rcc')
+      .select(['rc.id', 'rc.name', 'rcc.weight', 'rrcs.score'])
+      .join('ranking_criteria as rc', 'rc.id', 'rcc.ranking_criteria_id')
+      .leftJoin('residence_ranking_criteria_scores as rrcs', function () {
+        this.on('rrcs.ranking_criteria_id', '=', 'rcc.ranking_criteria_id')
+          .andOn('rrcs.ranking_category_id', '=', 'rcc.ranking_category_id')
+          .andOn('rrcs.residence_id', '=', knex.raw('?', [residenceId]));
+      })
+      .where('rcc.ranking_category_id', rankingCategoryId)
+      .orderBy('rc.name', 'asc');
+
+    return results;
   }
 }

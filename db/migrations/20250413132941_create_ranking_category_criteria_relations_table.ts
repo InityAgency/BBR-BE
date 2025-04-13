@@ -15,8 +15,10 @@ export async function up(knex: Knex): Promise<void> {
       .references('id')
       .inTable('ranking_criteria')
       .onDelete('CASCADE');
-    table.integer('weight').notNullable(); // mora biti zbir 100 za sve u toj kategoriji
+    table.integer('weight').notNullable();
+    table.boolean('is_default').notNullable().defaultTo(false);
     table.timestamps(true, true);
+    table.unique(['ranking_category_id', 'ranking_criteria_id']);
   });
 }
 
