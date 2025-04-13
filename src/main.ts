@@ -36,6 +36,7 @@ async function bootstrap() {
       'http://bbr.local:3000',
       'https://bbradmin.inity.space',
       'https://bbr-admin.vercel.app',
+      'https://bbrweb.inity.space',
     ],
     credentials: true,
   });
