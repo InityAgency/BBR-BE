@@ -30,7 +30,7 @@ export class ResidenceRepository implements IResidenceRepository {
     return await Residence.query()
       .patchAndFetchById(id, data)
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country,  mainGallery, secondaryGallery, units]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country,  mainGallery,  amenities, secondaryGallery, units]'
       );
   }
 
@@ -45,7 +45,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .findById(id)
       .whereNull('deleted_at')
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, units.featureImage]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage]'
       );
   }
 

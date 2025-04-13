@@ -1,45 +1,20 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Put,
-  Query,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
-import { CreateBrandCommand } from '../application/command/create-brand.command';
-import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
-import { UpdateBrandStatusCommand } from '../application/command/update-brand-status.command';
-import { UpdateBrandCommand } from '../application/command/update-brand.command';
-import { CreateBrandCommandHandler } from '../application/handlers/create-brand.command.handler';
-import { DeleteBrandCommandHandler } from '../application/handlers/delete-brand.command.handler';
-import { UpdateBrandStatusCommandHandler } from '../application/handlers/update-brand-status.command.handler';
-import { UpdateBrandCommandHandler } from '../application/handlers/update-brand.command.handler';
-import { Brand } from '../domain/brand.entity';
-import { BrandMapper } from './mappers/brand.mapper';
-import { CreateBrandRequest } from './request/create-brand.request';
-import { UpdateBrandStatusRequest } from './request/update-brand-status.request';
-import { UpdateBrandRequest } from './request/update-brand.request';
-import { BrandResponse } from './response/brand-response';
-import { FindByIdBrandQueryHandler } from '../application/query/find-by-id-brand.query.handler';
-import { FetchAllBrandQueryHandler } from '../application/query/fetch-all-brands.query.handler';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderByDirection } from 'objection';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
+import { FetchAllBrandQueryHandler } from '../application/query/fetch-all-brands.query.handler';
+import { FindByIdBrandQueryHandler } from '../application/query/find-by-id-brand.query.handler';
 import { BrandStatus } from '../domain/brand-status.enum';
+import { BrandMapper } from './mappers/brand.mapper';
+import { BrandResponse } from './response/brand-response';
 
 @ApiTags('brands')
 @Controller('public/brands')
 export class BrandPublicController {
   constructor(
     private readonly findByIdBrandHandler: FindByIdBrandQueryHandler,
-    private readonly fetchAllBrandHandler: FetchAllBrandQueryHandler,
+    private readonly fetchAllBrandHandler: FetchAllBrandQueryHandler
   ) {}
 
   @Get()
