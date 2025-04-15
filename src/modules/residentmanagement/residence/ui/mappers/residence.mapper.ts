@@ -102,12 +102,23 @@ export class ResidenceMapper {
     return new ResidencePublicResponse(
       residence.id,
       residence.name,
+      residence.description,
       residence.status,
       residence.developmentStatus,
       residence.address,
       residence.country ? new CountryResponse(residence.country.id, residence.country.name) : null,
       residence.city
         ? new CityResponse(residence.city.id, residence.city.name, residence.city.asciiName)
+        : null,
+      residence.featuredImage
+        ? new MediaResponse(
+            residence.featuredImage.id,
+            residence.featuredImage.originalFileName,
+            residence.featuredImage.mimeType,
+            residence.featuredImage.uploadStatus,
+            residence.featuredImage.size,
+            residence.featuredImage.securedUrl
+          )
         : null,
       residence.createdAt,
       residence.updatedAt,

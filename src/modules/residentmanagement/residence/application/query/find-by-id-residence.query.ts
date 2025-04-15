@@ -9,8 +9,6 @@ export class FindByIdResidenceCommandQuery {
   async handle(id: string): Promise<Residence> {
     const residence = await this.residenceRepository.findById(id);
 
-    console.log(residence?.rankingScores);
-
     if (!residence) {
       throw new NotFoundException('Residence not found');
     }
