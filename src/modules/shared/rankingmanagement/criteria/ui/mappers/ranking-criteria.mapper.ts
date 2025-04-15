@@ -1,13 +1,16 @@
+import { RankingCriteria } from '../../domain/ranking-criteria.entity';
+import { RankingCriteriaResponse } from '../response/ranking-criteria.response';
+
 export class RankingCriteriaMapper {
-  static toResponse(rankingCriteria: any): any {
-    return {
-      id: rankingCriteria.id,
-      name: rankingCriteria.name,
-      description: rankingCriteria.description,
-      weight: rankingCriteria.weight,
-      is_default: rankingCriteria.is_default,
-      created_at: rankingCriteria.created_at,
-      updated_at: rankingCriteria.updated_at,
-    };
+  static toResponse(rankingCriteria: RankingCriteria): RankingCriteriaResponse {
+    return new RankingCriteriaResponse(
+      rankingCriteria.id,
+      rankingCriteria.name,
+      rankingCriteria.description,
+      rankingCriteria.weight,
+      rankingCriteria.isDefault,
+      rankingCriteria.updatedAt,
+      rankingCriteria.createdAt
+    );
   }
 }

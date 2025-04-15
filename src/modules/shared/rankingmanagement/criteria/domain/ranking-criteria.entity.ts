@@ -8,7 +8,10 @@ export class RankingCriteria extends Model {
   createdAt!: Date;
   updatedAt!: Date;
 
-  static tabelName = 'ranking_criteria';
+  weight?: number;
+  isDefault?: boolean;
+
+  static tableName = 'ranking_criteria';
 
   static relationMappings = {
     categoryWeights: {

@@ -1,6 +1,7 @@
 import { RankingCategory } from './ranking-category.entity';
 import { PaginationResponse } from '../../../../../shared/ui/response/pagination.response';
 import { FetchRankingCategoriesQuery } from '../application/command/fetch-ranking.categories.query';
+import { CriteriaWeightRequest } from '../ui/request/assign-weights.request';
 
 export abstract class IRankingCategoryRepository {
   abstract create(rankingCategory: Partial<RankingCategory>): Promise<RankingCategory | undefined>;
@@ -11,4 +12,8 @@ export abstract class IRankingCategoryRepository {
   abstract findByName(name: string): Promise<RankingCategory | undefined>;
   abstract update(id: string, data: Partial<RankingCategory>): Promise<RankingCategory | undefined>;
   abstract softDelete(id: string): Promise<void>;
+  abstract assignWeights(
+    id: string,
+    data: { rankingCriteriaId: string; weight: number; isDefault: boolean }[]
+  ): Promise<void>;
 }

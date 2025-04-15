@@ -31,6 +31,8 @@ import { RankingCategoryModule } from './modules/shared/rankingmanagement/catego
 import { UnitModule } from './modules/residentmanagement/unit/unit.module';
 import { UnitTypeModule } from './modules/residentmanagement/unit_type/unit-type.module';
 import { CareerContactFormModule } from './modules/contactform/career/career-contact-form.module';
+import { RankingCriteriaModule } from './modules/shared/rankingmanagement/criteria/ranking-criteria.module';
+import { ResidenceRankingScoreModule } from './modules/residentmanagement/ranking_score/residence-ranking-score.module';
 
 @Module({
   imports: [
@@ -68,7 +70,9 @@ import { CareerContactFormModule } from './modules/contactform/career/career-con
     RankingCategoryTypeModule,
     RankingCategoryModule,
     UnitModule,
-    CareerContactFormModule
+    CareerContactFormModule,
+    RankingCriteriaModule,
+    ResidenceRankingScoreModule,
   ],
   providers: [],
 })

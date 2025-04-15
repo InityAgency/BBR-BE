@@ -5,8 +5,10 @@ import { FetchRankingCriteriaQuery } from '../application/commands/fetch-ranking
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
+import { Injectable } from '@nestjs/common';
 
-export class RankingCriteriaRepository implements IRankingCriteriaRepository {
+@Injectable()
+export class RankingCriteriaRepositoryImpl implements IRankingCriteriaRepository {
   constructor(private readonly knexService: KnexService) {}
 
   async findAll(
@@ -62,6 +64,11 @@ export class RankingCriteriaRepository implements IRankingCriteriaRepository {
     await RankingCriteria.query().deleteById(id);
   }
 
+  async findByIds(ids: string[]): Promise<RankingCriteria[]> {
+    if (!ids.length) return [];
+    return await RankingCriteria.query().whereIn('id', ids);
+  }
+
   async findAllByResidenceAndCategory(
     residenceId: string,
     categoryId: string
@@ -69,7 +76,7 @@ export class RankingCriteriaRepository implements IRankingCriteriaRepository {
     const knex = this.knexService.connection;
 
     const rows = await knex('ranking_category_criteria as rcc')
-      .select(['rc.id', 'rc.name', 'rc.description', 'rcc.weight', 'rrcs.score'])
+      .select(['rc.id', 'rc.name', 'rc.description', 'rcc.weight', 'rcc.is_default', 'rrcs.score'])
       .leftJoin('ranking_criteria as rc', 'rc.id', 'rcc.ranking_criteria_id')
       .leftJoin('residence_ranking_criteria_scores as rrcs', function () {
         this.on('rrcs.ranking_criteria_id', '=', 'rc.id')

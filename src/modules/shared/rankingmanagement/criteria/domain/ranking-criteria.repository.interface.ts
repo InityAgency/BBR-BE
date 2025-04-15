@@ -7,6 +7,7 @@ export abstract class IRankingCriteriaRepository {
   abstract update(id: string, data: Partial<RankingCriteria>): Promise<RankingCriteria | undefined>;
   abstract delete(id: string): Promise<void>;
   abstract findById(id: string): Promise<RankingCriteria | undefined>;
+  abstract findByIds(ids: string[]): Promise<RankingCriteria[]>;
   abstract findByName(name: string): Promise<RankingCriteria | undefined>;
   abstract findAll(
     query: FetchRankingCriteriaQuery
@@ -14,5 +15,5 @@ export abstract class IRankingCriteriaRepository {
   abstract findAllByResidenceAndCategory(
     residenceId: string,
     rankingCategoryId: string
-  ): Promise<any[]>;
+  ): Promise<RankingCriteria[]>;
 }

@@ -13,6 +13,12 @@ import { RankingCategoryMapper } from './ui/mapper/ranking-category.mapper';
 import { MediaModule } from '../../../media/media.module';
 import { IRankingCategoryTypeRepository } from '../categorytype/domain/ranking-category-type.repository.interface';
 import { RankingCategoryTypeRepositoryImpl } from '../categorytype/infrastructure/ranking-category-type.repository';
+import { AssignWeightsToRankingCategoryCommandHandler } from './application/handler/assign-weights-to-ranking-category.command.handler';
+import { IRankingCriteriaRepository } from '../criteria/domain/ranking-criteria.repository.interface';
+import { RankingCriteriaRepositoryImpl } from '../criteria/infrastructure/ranking-criteria.repository';
+import { AssignResidencesToRankingCategoryCommandHandler } from './application/handler/assign-residences-to-ranking-category.command.handler';
+import { IRankingScoreRepository } from 'src/modules/residentmanagement/ranking_score/domain/residence-ranking-score.repository.interface';
+import { ResidenceRankingScoreRepositoryImpl } from 'src/modules/residentmanagement/ranking_score/infrastructure/residence-ranking-score.repository';
 @Module({
   imports: [DatabaseModule, MediaModule],
   controllers: [RankingCategoryController],
@@ -25,6 +31,14 @@ import { RankingCategoryTypeRepositoryImpl } from '../categorytype/infrastructur
       provide: IRankingCategoryTypeRepository,
       useClass: RankingCategoryTypeRepositoryImpl,
     },
+    {
+      provide: IRankingCriteriaRepository,
+      useClass: RankingCriteriaRepositoryImpl,
+    },
+    {
+      provide: IRankingScoreRepository,
+      useClass: ResidenceRankingScoreRepositoryImpl,
+    },
     CreateRankingCategoryCommandHandler,
     FindRankingCategoryByIdCommandQuery,
     FetchRankingCategoriesCommandQuery,
@@ -32,6 +46,8 @@ import { RankingCategoryTypeRepositoryImpl } from '../categorytype/infrastructur
     UpdateRankingCategoryStatusCommandHandler,
     DeleteRankingCategoryCommandHandler,
     RankingCategoryMapper,
+    AssignWeightsToRankingCategoryCommandHandler,
+    AssignResidencesToRankingCategoryCommandHandler,
   ],
 })
 export class RankingCategoryModule {}

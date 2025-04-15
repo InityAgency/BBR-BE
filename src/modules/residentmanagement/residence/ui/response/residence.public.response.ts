@@ -16,5 +16,6 @@ export class ResidencePublicResponse {
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
     public readonly brand?: BrandResponse | null,
+    public readonly rankingCategories?: any[]
   ) {}
 }

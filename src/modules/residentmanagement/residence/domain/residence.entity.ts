@@ -13,6 +13,8 @@ import { Unit } from './unit.entity';
 import { RankingCategory } from 'src/modules/shared/rankingmanagement/category/domain/ranking-category.entity';
 import { ResidenceRankingScore } from '../../ranking_score/domain/residence-ranking-score.entity';
 import { ResidenceHighlightedAmenity } from './residence-highlighted-amenities.entity';
+import { RankingCriteria } from 'src/modules/shared/rankingmanagement/criteria/domain/ranking-criteria.entity';
+import { ResidenceTotalScore } from '../../ranking_score/domain/residence-total-score.entity';
 
 export class Residence extends Model {
   id!: string;
@@ -183,8 +185,8 @@ export class Residence extends Model {
       join: {
         from: 'residences.id',
         through: {
-          from: 'residence_ranking_categories.residence_id',
-          to: 'residence_ranking_categories.ranking_category_id',
+          from: 'residence_ranking_categories.residenceId',
+          to: 'residence_ranking_categories.rankingCategoryId',
         },
         to: 'ranking_categories.id',
       },
@@ -194,7 +196,15 @@ export class Residence extends Model {
       modelClass: () => ResidenceRankingScore,
       join: {
         from: 'residences.id',
-        to: 'residence_ranking_score.residence_id',
+        to: 'residence_ranking_criteria_scores.residenceId',
+      },
+    },
+    totalScores: {
+      relation: Model.HasManyRelation,
+      modelClass: () => ResidenceTotalScore,
+      join: {
+        from: 'residences.id',
+        to: 'residence_total_scores.residenceId',
       },
     },
   };

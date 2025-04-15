@@ -111,7 +111,8 @@ export class ResidenceMapper {
         : null,
       residence.createdAt,
       residence.updatedAt,
-      residence.brand ? BrandMapper.toResponse(residence.brand) : null
+      residence.brand ? BrandMapper.toResponse(residence.brand) : null,
+      residence.rankingCategories
     );
   }
 }
