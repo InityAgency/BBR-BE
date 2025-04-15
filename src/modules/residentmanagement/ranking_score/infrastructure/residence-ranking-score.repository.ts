@@ -6,19 +6,41 @@ import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreRepository {
   constructor(private readonly knexService: KnexService) {}
 
+  // async score(
+  //   residenceId: string,
+  //   rankingCategoryId: string,
+  //   scores: { rankingCriteriaId: string; score: number }[]
+  // ): Promise<void> {
+  //   await this.knexService.connection.transaction(async (trx) => {
+  //     await trx('residence_ranking_criteria_scores')
+  //       .where({ residence_id: residenceId, ranking_category_id: rankingCategoryId })
+  //       .delete();
+
+  //     const insertData = scores.map((s) => ({
+  //       residence_id: residenceId,
+  //       ranking_category_id: rankingCategoryId,
+  //       ranking_criteria_id: s.rankingCriteriaId,
+  //       score: s.score,
+  //     }));
+
+  //     await trx('residence_ranking_criteria_scores').insert(insertData);
+  //   });
+  // }
   async score(
     residenceId: string,
-    rankingCategoryId: string,
     scores: { rankingCriteriaId: string; score: number }[]
   ): Promise<void> {
     await this.knexService.connection.transaction(async (trx) => {
+      // Brišemo prethodne ocene samo za te kriterijume
+      const criteriaIds = scores.map((s) => s.rankingCriteriaId);
+
       await trx('residence_ranking_criteria_scores')
-        .where({ residence_id: residenceId, ranking_category_id: rankingCategoryId })
+        .where('residence_id', residenceId)
+        .whereIn('ranking_criteria_id', criteriaIds)
         .delete();
 
       const insertData = scores.map((s) => ({
         residence_id: residenceId,
-        ranking_category_id: rankingCategoryId,
         ranking_criteria_id: s.rankingCriteriaId,
         score: s.score,
       }));
@@ -31,14 +53,10 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
     const scores = await this.knexService
       .connection('residence_ranking_criteria_scores as scores')
       .join('ranking_category_criteria as weights', function () {
-        this.on('scores.ranking_criteria_id', '=', 'weights.ranking_criteria_id').andOn(
-          'scores.ranking_category_id',
-          '=',
-          'weights.ranking_category_id'
-        );
+        this.on('scores.ranking_criteria_id', '=', 'weights.ranking_criteria_id');
       })
       .where('scores.residence_id', residenceId)
-      .andWhere('scores.ranking_category_id', rankingCategoryId)
+      .andWhere('weights.ranking_category_id', rankingCategoryId)
       .select('scores.score', 'weights.weight');
 
     if (!scores.length) return;
@@ -78,10 +96,17 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
   }
 
   async updateAllTotalScoresForResidence(residenceId: string): Promise<void> {
-    const categoryIds = await this.knexService
-      .connection('residence_ranking_score')
-      .distinct('ranking_category_id')
+    const criteriaIds = await this.knexService
+      .connection('residence_ranking_criteria_scores')
       .where({ residence_id: residenceId })
+      .pluck('ranking_criteria_id');
+
+    if (!criteriaIds.length) return;
+
+    const categoryIds = await this.knexService
+      .connection('ranking_category_criteria')
+      .distinct('ranking_category_id')
+      .whereIn('ranking_criteria_id', criteriaIds)
       .pluck('ranking_category_id');
 
     for (const categoryId of categoryIds) {

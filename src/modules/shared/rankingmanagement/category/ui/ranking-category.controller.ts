@@ -84,9 +84,9 @@ export class RankingCategoryController {
   @ApiOperation({ summary: 'Assign residences to a ranking category' })
   async assignResidencesToCategory(
     @Param('id') categoryId: string,
-    @Body() body: AssignResidencesToRankingCategoryRequest
+    @Body() request: AssignResidencesToRankingCategoryRequest
   ) {
-    const command = new AssignResidencesToRankingCategoryCommand(categoryId, body.residenceIds);
+    const command = new AssignResidencesToRankingCategoryCommand(categoryId, request.residenceIds);
 
     await this.assignResidencesToRankingCategoryCommandHandler.handle(command);
   }

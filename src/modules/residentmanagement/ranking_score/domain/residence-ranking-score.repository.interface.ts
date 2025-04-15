@@ -1,7 +1,6 @@
 export abstract class IRankingScoreRepository {
   abstract score(
     residenceId: string,
-    rankingCategoryId: string,
     scores: {
       rankingCriteriaId: string;
       score: number;

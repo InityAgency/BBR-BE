@@ -13,6 +13,8 @@ export class ResidenceRankingScore extends Model {
   createdAt?: Date;
   updatedAt?: Date;
 
+  criteria?: RankingCriteria;
+
   static tableName = 'residence_ranking_criteria_scores';
 
   static relationMappings = {
@@ -24,14 +26,14 @@ export class ResidenceRankingScore extends Model {
         to: 'residences.id',
       },
     },
-    rankingCategory: {
-      relation: Model.BelongsToOneRelation,
-      modelClass: () => RankingCategory,
-      join: {
-        from: 'residence_ranking_criteria_scores.rankingCategoryId',
-        to: 'ranking_categories.id',
-      },
-    },
+    // rankingCategory: {
+    //   relation: Model.BelongsToOneRelation,
+    //   modelClass: () => RankingCategory,
+    //   join: {
+    //     from: 'residence_ranking_criteria_scores.rankingCategoryId',
+    //     to: 'ranking_categories.id',
+    //   },
+    // },
     criteria: {
       relation: Model.BelongsToOneRelation,
       modelClass: RankingCriteria,

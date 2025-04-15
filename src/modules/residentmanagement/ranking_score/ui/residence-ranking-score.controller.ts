@@ -9,14 +9,10 @@ import { ScoreResidenceRequest } from './request/score-residence.request';
 export class ResidenceRankingScoreController {
   constructor(private readonly scoreResidenceCommandHandler: ScoreResidenceCommandHandler) {}
 
-  @Post(':rankingCategoryId')
+  @Post('')
   @ApiOperation({ summary: 'Score residence' })
-  async scoreResidence(
-    @Param('id') residenceId: string,
-    @Param('rankingCategoryId') categoryId: string,
-    @Body() request: ScoreResidenceRequest
-  ) {
-    const command = new ScoreResidenceCommand(residenceId, categoryId, request.scores);
+  async scoreResidence(@Param('id') residenceId: string, @Body() request: ScoreResidenceRequest) {
+    const command = new ScoreResidenceCommand(residenceId, request.scores);
 
     await this.scoreResidenceCommandHandler.handle(command);
   }

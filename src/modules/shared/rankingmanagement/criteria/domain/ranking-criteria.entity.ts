@@ -19,7 +19,7 @@ export class RankingCriteria extends Model {
       modelClass: () => RankingCategoryCriteria,
       join: {
         from: 'ranking_criteria.id',
-        to: 'ranking_category_criteria.criteria_id',
+        to: 'ranking_category_criteria.rankingCriteriaId',
       },
     },
   };

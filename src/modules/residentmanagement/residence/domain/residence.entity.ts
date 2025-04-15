@@ -60,6 +60,9 @@ export class Residence extends Model {
   rankingCategories?: RankingCategory[];
   highlightedAmenities?: ResidenceHighlightedAmenity[];
 
+  rankingScores?: ResidenceRankingScore[];
+  totalScores?: ResidenceTotalScore[];
+
   static tableName = 'residences';
 
   static relationMappings: RelationMappings = {
