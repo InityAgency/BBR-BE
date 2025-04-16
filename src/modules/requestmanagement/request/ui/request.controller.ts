@@ -24,7 +24,7 @@ export class RequestController {
     private readonly createRequestCommandHandler: CreateRequestCommandHandler,
     private readonly updateRequestStatusCommandHandler: UpdateRequestStatusCommandHandler,
     private readonly updateRequestCommandHandler: UpdateRequestCommandHandler,
-    private readonly deleteRequestCommandHandler: DeleteRequestCommandHandler,
+    private readonly deleteRequestCommandHandler: DeleteRequestCommandHandler
   ) {}
 
   @Get()
@@ -38,7 +38,7 @@ export class RequestController {
     @Query('sortOrder') sortOrder?: OrderByDirection,
     @Query('leadId') leadId?: string[],
     @Query('type') type?: string[],
-    @Query('status') status?: string[],
+    @Query('status') status?: string[]
   ) {
     const { data, pagination } = await this.fetchRequestsCommandQuery.handle(
       new FetchRequestsQuery(query, page, limit, sortBy, sortOrder, leadId, type, status)
@@ -74,10 +74,7 @@ export class RequestController {
   @Patch(':id/status')
   @ApiOperation({ summary: 'Update a request status' })
   @ApiResponse({ type: RequestResponse })
-  async updateStatus(
-    @Param('id') id: string,
-    @Body() request: UpdateRequestStatusRequest
-  ) {
+  async updateStatus(@Param('id') id: string, @Body() request: UpdateRequestStatusRequest) {
     const command = RequestMapper.toUpdateStatusCommand(id, request);
     const updatedRequest = await this.updateRequestStatusCommandHandler.handle(command);
 
@@ -87,10 +84,7 @@ export class RequestController {
   @Put(':id')
   @ApiOperation({ summary: 'Update a request' })
   @ApiResponse({ type: RequestResponse })
-  async update(
-    @Param('id') id: string,
-    @Body() request: UpdateRequestRequest
-  ) {
+  async update(@Param('id') id: string, @Body() request: UpdateRequestRequest) {
     const command = RequestMapper.toUpdateCommand(id, request);
     const updatedRequest = await this.updateRequestCommandHandler.handle(command);
 

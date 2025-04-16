@@ -14,10 +14,11 @@ import { UpdateRequestCommandHandler } from './application/handler/update-reques
 import { CreateLeadCommandHandler } from '../lead/application/handler/create-lead-command.handler';
 import { FindRequestByIdCommandQuery } from './application/query/find-request-by-id.command.query';
 import { FetchRequestsCommandQuery } from './application/query/fetch-requests.command.query';
+import { RequestPublicController } from './ui/request.public.controller';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
-  controllers: [RequestController],
+  controllers: [RequestController, RequestPublicController],
   providers: [
     {
       provide: IRequestRepository,

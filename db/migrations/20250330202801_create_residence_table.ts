@@ -40,8 +40,6 @@ export async function up(knex: Knex): Promise<void> {
 
     table.uuid('video_tour_id').references('id').inTable('media').onDelete('SET NULL');
 
-    table.uuid('amenity_id').references('id').inTable('amenities').onDelete('SET NULL');
-
     table.uuid('company_id').references('id').inTable('companies').onDelete('SET NULL');
 
     table.timestamps(true, true);
