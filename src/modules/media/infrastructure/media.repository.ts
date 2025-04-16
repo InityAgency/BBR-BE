@@ -68,7 +68,8 @@ export class MediaRepositoryImpl implements IMediaRepository {
     .whereNull('residence_media.media_id')
     .whereNull('unit_gallery.media_id')
     .whereNull('units.feature_image_id')
-    .whereNull('user_buyers.image_id');
+    .whereNull('user_buyers.image_id')
+    .andWhere('createdAt', '>', date);
 
     const mediaList = rawMediaList.map(data => Media.fromJson(data));
 

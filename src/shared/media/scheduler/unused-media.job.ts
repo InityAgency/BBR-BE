@@ -9,7 +9,7 @@ export class UnusedMediaJob {
 
   constructor(private readonly mediaService: IMediaService) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_30_MINUTES)
   @LogMethod()
   async deleteUnusedMedia() {
     if (this.isRunning) {
