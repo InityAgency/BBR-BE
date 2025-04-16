@@ -7,6 +7,7 @@ export class RankingCategoryCriteria extends Model {
   rankingCategoryId!: string;
   rankingCriteriaId!: string;
   weight!: number;
+  isDefault!: boolean;
 
   static tableName = 'ranking_category_criteria';
 
@@ -15,7 +16,7 @@ export class RankingCategoryCriteria extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: () => RankingCriteria,
       join: {
-        from: 'ranking_category_criteria.ranking_criteria_id',
+        from: 'ranking_category_criteria.rankingCriteriaId',
         to: 'ranking_criteria.id',
       },
     },
@@ -23,7 +24,7 @@ export class RankingCategoryCriteria extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: () => RankingCategory,
       join: {
-        from: 'ranking_category_criteria.ranking_category_id',
+        from: 'ranking_category_criteria.rankingCategoryId',
         to: 'ranking_categories.id',
       },
     },

@@ -15,6 +15,11 @@ import { CreateRankingCategoryRequest } from './request/create-ranking-category.
 import { UpdateRankingCategoryStatusRequest } from './request/update-ranking-category-status.request';
 import { UpdateRankingCategoryRequest } from './request/update-ranking-category.request';
 import { RankingCategoryResponse } from './response/ranking-category.response';
+import { AssignWeightsRequest } from './request/assign-weights.request';
+import { AssignWeightsToRankingCategoryCommandHandler } from '../application/handler/assign-weights-to-ranking-category.command.handler';
+import { AssignResidencesToRankingCategoryCommand } from '../application/command/assign-residences-to-ranking-category.command';
+import { AssignResidencesToRankingCategoryRequest } from './request/assign-residences-to-ranking-category.request';
+import { AssignResidencesToRankingCategoryCommandHandler } from '../application/handler/assign-residences-to-ranking-category.command.handler';
 
 @ApiTags('Ranking Categories')
 @Controller('ranking-categories')
@@ -25,7 +30,9 @@ export class RankingCategoryController {
     private readonly createRankingCategoryCommandHandler: CreateRankingCategoryCommandHandler,
     private readonly updateRankingCategoryCommandHandler: UpdateRankingCategoryCommandHandler,
     private readonly updateRankingCategoryStatusCommandHandler: UpdateRankingCategoryStatusCommandHandler,
-    private readonly deleteRankingCategoryCommandHandler: DeleteRankingCategoryCommandHandler
+    private readonly deleteRankingCategoryCommandHandler: DeleteRankingCategoryCommandHandler,
+    private readonly assignWeightsToRankingCategoryCommandHandler: AssignWeightsToRankingCategoryCommandHandler,
+    private readonly assignResidencesToRankingCategoryCommandHandler: AssignResidencesToRankingCategoryCommandHandler
   ) {}
 
   @Get()
@@ -71,6 +78,25 @@ export class RankingCategoryController {
     const createdRankingCategory = await this.createRankingCategoryCommandHandler.handle(command);
 
     return RankingCategoryMapper.toResponse(createdRankingCategory);
+  }
+
+  @Post(':id/residences')
+  @ApiOperation({ summary: 'Assign residences to a ranking category' })
+  async assignResidencesToCategory(
+    @Param('id') categoryId: string,
+    @Body() request: AssignResidencesToRankingCategoryRequest
+  ) {
+    const command = new AssignResidencesToRankingCategoryCommand(categoryId, request.residenceIds);
+
+    await this.assignResidencesToRankingCategoryCommandHandler.handle(command);
+  }
+
+  @Post(':id/criteria-weights')
+  @ApiOperation({ summary: 'Assign ranking category criteria weights' })
+  async assignCriteriaWeights(@Param('id') id: string, @Body() request: AssignWeightsRequest) {
+    const command = RankingCategoryMapper.toAssignWeightsCommand(id, request.criteria);
+
+    await this.assignWeightsToRankingCategoryCommandHandler.handle(command);
   }
 
   @Put(':id')

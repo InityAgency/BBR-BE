@@ -1,12 +1,13 @@
 import { IRankingCategoryRepository } from '../domain/ranking-category.repository.interface';
 import { RankingCategory } from '../domain/ranking-category.entity';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { KnexService } from '../../../../../shared/infrastructure/database/knex.service';
 import { FetchRankingCategoriesQuery } from '../application/command/fetch-ranking.categories.query';
 import { PaginationResponse } from '../../../../../shared/ui/response/pagination.response';
 import { applyPagination } from '../../../../../shared/utils/pagination.util';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository {
@@ -91,6 +92,37 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
   async update(id: string, data: Partial<RankingCategory>): Promise<RankingCategory | undefined> {
     return RankingCategory.query().patchAndFetchById(id, data).whereNull('deletedAt');
+  }
+
+  async assignWeights(
+    id: string,
+    data: { rankingCriteriaId: string; weight: number; isDefault: boolean }[]
+  ): Promise<void> {
+    const trx = await this.knexService.connection.transaction();
+
+    try {
+      const totalWeight = data.reduce((sum, c) => sum + c.weight, 0);
+      if (totalWeight !== 100) {
+        throw new BadRequestException('Total weight must be exactly 100%');
+      }
+
+      await trx('ranking_category_criteria').where('ranking_category_id', id).delete();
+
+      await trx('ranking_category_criteria').insert(
+        data.map((c) => ({
+          id: randomUUID(),
+          ranking_category_id: id,
+          ranking_criteria_id: c.rankingCriteriaId,
+          weight: c.weight,
+          is_default: c.isDefault,
+        }))
+      );
+
+      await trx.commit();
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
   }
 
   async softDelete(id: string): Promise<void> {

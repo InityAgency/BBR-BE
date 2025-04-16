@@ -8,6 +8,8 @@ import { UpdateRankingCategoryRequest } from '../request/update-ranking-category
 import { UpdateRankingCategoryCommand } from '../../application/command/update-ranking-category.command';
 import { UpdateRankingCategoryStatusCommand } from '../../application/command/update-ranking-category-status.command';
 import { UpdateRankingCategoryStatusRequest } from '../request/update-ranking-category-status.request';
+import { AssignWeightsRequest, CriteriaWeightRequest } from '../request/assign-weights.request';
+import { AssignWeightsToRankingCategoryCommand } from '../../application/command/assign-weights-to-ranking-category.command';
 
 export class RankingCategoryMapper {
   static toCreateCommand(request: CreateRankingCategoryRequest): CreateRankingCategoryCommand {
@@ -45,6 +47,13 @@ export class RankingCategoryMapper {
     request: UpdateRankingCategoryStatusRequest
   ): UpdateRankingCategoryStatusCommand {
     return new UpdateRankingCategoryStatusCommand(id, request.status);
+  }
+
+  static toAssignWeightsCommand(
+    id: string,
+    criteriaWeights: CriteriaWeightRequest[]
+  ): AssignWeightsToRankingCategoryCommand {
+    return new AssignWeightsToRankingCategoryCommand(id, criteriaWeights);
   }
   static toResponse(rankingCategory: RankingCategory): RankingCategoryResponse {
     return new RankingCategoryResponse(

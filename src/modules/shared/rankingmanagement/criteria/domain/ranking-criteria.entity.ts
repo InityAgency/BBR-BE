@@ -8,7 +8,10 @@ export class RankingCriteria extends Model {
   createdAt!: Date;
   updatedAt!: Date;
 
-  static tabelName = 'ranking_criteria';
+  weight?: number;
+  isDefault?: boolean;
+
+  static tableName = 'ranking_criteria';
 
   static relationMappings = {
     categoryWeights: {
@@ -16,7 +19,7 @@ export class RankingCriteria extends Model {
       modelClass: () => RankingCategoryCriteria,
       join: {
         from: 'ranking_criteria.id',
-        to: 'ranking_category_criteria.criteria_id',
+        to: 'ranking_category_criteria.rankingCriteriaId',
       },
     },
   };
