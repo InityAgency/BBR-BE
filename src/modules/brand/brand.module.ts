@@ -14,6 +14,7 @@ import { BrandMapper } from './ui/mappers/brand.mapper';
 import { FindByIdBrandQueryHandler } from './application/query/find-by-id-brand.query.handler';
 import { FetchAllBrandQueryHandler } from './application/query/fetch-all-brands.query.handler';
 import { BrandPublicController } from './ui/brand.public.controller';
+import { FindBySlugBrandQueryHandler } from './application/query/find-by-slug-brand.query.handler';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
@@ -29,6 +30,7 @@ import { BrandPublicController } from './ui/brand.public.controller';
     },
     CreateBrandCommandHandler,
     FindByIdBrandQueryHandler,
+    FindBySlugBrandQueryHandler,
     FetchAllBrandQueryHandler,
     UpdateBrandCommandHandler,
     DeleteBrandCommandHandler,

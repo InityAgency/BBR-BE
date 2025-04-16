@@ -5,6 +5,7 @@ import { Brand } from './brand.entity';
 export abstract class IBrandRepository {
   abstract create(brand: Partial<Brand>): Promise<Brand | undefined>;
   abstract findById(id: string): Promise<Brand | undefined>;
+  abstract findBySlug(slug: string): Promise<Brand | undefined>;
   abstract findByName(name: string): Promise<Brand | undefined>;
   abstract findAll(
     query: FetchBrandsQuery

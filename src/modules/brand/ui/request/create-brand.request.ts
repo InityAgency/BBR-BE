@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 import { BrandStatus } from '../../domain/brand-status.enum';
 
 export class CreateBrandRequest {
@@ -7,6 +15,10 @@ export class CreateBrandRequest {
   @IsString()
   @MaxLength(126)
   name: string;
+
+  @IsOptional()
+  @IsString()
+  slug: string;
 
   @IsString()
   @MaxLength(1024)

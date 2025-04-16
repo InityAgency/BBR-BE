@@ -39,8 +39,17 @@ export class CreateBrandCommandHandler {
       throw new NotFoundException('Brand type not found');
     }
 
+    const rawSlug = command.slug?.trim() ?? command.name!;
+    const slug = Brand.slugify(rawSlug);
+
+    const existingSlug = await this.brandRepository.findBySlug(slug);
+    if (existingSlug) {
+      throw new ConflictException(`Brand with slug ${slug} already exists`);
+    }
+
     const brandData = {
       name: command.name,
+      slug: slug,
       description: command.description,
       brandTypeId: command.brandTypeId,
       status: command.status as BrandStatus,

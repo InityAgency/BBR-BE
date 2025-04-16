@@ -57,6 +57,7 @@ export class BrandController {
   async create(@Body() request: CreateBrandRequest): Promise<Brand> {
     const command = new CreateBrandCommand(
       request.name,
+      request.slug,
       request.description,
       request.brandTypeId,
       request.logoId,
@@ -130,6 +131,7 @@ export class BrandController {
     const command = new UpdateBrandCommand(
       id,
       request.name,
+      request.slug,
       request.description,
       request.brandTypeId,
       request.logoId,

@@ -30,6 +30,14 @@ export class BrandRepositoryImpl implements IBrandRepository {
   }
 
   @LogMethod()
+  async findBySlug(slug: string): Promise<Brand | undefined> {
+    return await Brand.query()
+      .whereNull('deleted_at')
+      .findOne({ slug })
+      .withGraphFetched('[brandType, logo]');
+  }
+
+  @LogMethod()
   async findByName(name: string): Promise<Brand | undefined> {
     return await Brand.query()
       .where({ name })

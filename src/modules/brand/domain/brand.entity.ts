@@ -6,6 +6,7 @@ import { BrandType } from 'src/modules/brand_type/domain/brand-type.entity';
 export class Brand extends Model {
   id!: string;
   name!: string;
+  slug!: string;
   description!: string;
   brandTypeId!: string;
   status!: BrandStatus;
@@ -48,5 +49,15 @@ export class Brand extends Model {
 
   static async create(data: Partial<Brand>): Promise<Brand> {
     return Brand.query().insert(data).returning('*');
+  }
+
+  static slugify(input: string): string {
+    return input
+      .toLowerCase()
+      .normalize('NFD') // uklanja dijakritike (č, ć, š, ž...)
+      .replace(/[\u0300-\u036f]/g, '') // dodatni korak da se uklone svi akcenti
+      .replace(/[^a-z0-9]+/g, '-') // sve što nije alfanumeričko pretvori u "-"
+      .replace(/^-+|-+$/g, '') // ukloni višak '-' sa početka i kraja
+      .replace(/-{2,}/g, '-'); // zameni višestruke '-' jednim
   }
 }

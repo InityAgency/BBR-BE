@@ -35,8 +35,17 @@ export class UpdateBrandCommandHandler {
       throw new NotFoundException('Logo not found');
     }
 
+    const rawSlug = command.slug?.trim() ?? command.name!;
+    const slug = Brand.slugify(rawSlug);
+
+    const existing = await this.brandRepository.findBySlug(slug);
+    if (existing && existing.id !== command.id) {
+      throw new ConflictException(`Brand with slug ${slug} already exists`);
+    }
+
     const updateData = {
       name: command.name,
+      slug: slug,
       description: command.description,
       brandTypeId: command.brandTypeId,
       logoId: logo.id,

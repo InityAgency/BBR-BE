@@ -8,6 +8,7 @@ export class BrandMapper {
     return new BrandResponse(
       brand.id,
       brand.name,
+      brand.slug,
       brand.description,
       brand.status,
       brand.createdAt,
@@ -30,6 +31,7 @@ export class BrandMapper {
     return new BrandResponse(
       brand.id,
       brand.name,
+      brand.slug,
       brand.description,
       brand.status,
       brand.createdAt,
@@ -37,13 +39,13 @@ export class BrandMapper {
       brand.brandType,
       brand.logo
         ? new MediaResponse(
-          brand.logo.id,
-          brand.logo.originalFileName,
-          brand.logo.mimeType,
-          brand.logo.uploadStatus,
-          brand.logo.size,
-          brand.logo.securedUrl
-        )
+            brand.logo.id,
+            brand.logo.originalFileName,
+            brand.logo.mimeType,
+            brand.logo.uploadStatus,
+            brand.logo.size,
+            brand.logo.securedUrl
+          )
         : null
     );
   }

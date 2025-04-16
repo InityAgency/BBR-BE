@@ -20,6 +20,7 @@ export class BrandTypeMapper {
               new BrandResponse(
                 brand.id,
                 brand.name,
+                brand.slug,
                 brand.description,
                 brand.status,
                 brand.createdAt,
@@ -50,27 +51,28 @@ export class BrandTypeMapper {
       brandType.updatedAt,
       brandType.brands
         ? brandType.brands.map(
-          (brand: Brand) =>
-            new BrandPublicResponse(
-              brand.id,
-              brand.name,
-              brand.description,
-              brand.status,
-              brand.createdAt,
-              brand.updatedAt,
-              brand.brandType,
-              brand.logo
-                ? new MediaResponse(
-                  brand.logo.id,
-                  brand.logo.originalFileName,
-                  brand.logo.mimeType,
-                  brand.logo.uploadStatus,
-                  brand.logo.size,
-                  brand.logo.securedUrl
-                )
-                : null
-            )
-        )
+            (brand: Brand) =>
+              new BrandPublicResponse(
+                brand.id,
+                brand.name,
+                brand.slug,
+                brand.description,
+                brand.status,
+                brand.createdAt,
+                brand.updatedAt,
+                brand.brandType,
+                brand.logo
+                  ? new MediaResponse(
+                      brand.logo.id,
+                      brand.logo.originalFileName,
+                      brand.logo.mimeType,
+                      brand.logo.uploadStatus,
+                      brand.logo.size,
+                      brand.logo.securedUrl
+                    )
+                  : null
+              )
+          )
         : []
     );
   }

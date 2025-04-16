@@ -8,13 +8,15 @@ import { FindByIdBrandQueryHandler } from '../application/query/find-by-id-brand
 import { BrandStatus } from '../domain/brand-status.enum';
 import { BrandMapper } from './mappers/brand.mapper';
 import { BrandResponse } from './response/brand-response';
+import { FindBySlugBrandQueryHandler } from '../application/query/find-by-slug-brand.query.handler';
 
 @ApiTags('brands')
 @Controller('public/brands')
 export class BrandPublicController {
   constructor(
     private readonly findByIdBrandHandler: FindByIdBrandQueryHandler,
-    private readonly fetchAllBrandHandler: FetchAllBrandQueryHandler
+    private readonly fetchAllBrandHandler: FetchAllBrandQueryHandler,
+    private readonly findBySlugBrandQueryHandler: FindBySlugBrandQueryHandler
   ) {}
 
   @Get()
@@ -56,6 +58,15 @@ export class BrandPublicController {
       data: data.map((brand) => BrandMapper.toPublicResponse(brand)),
       pagination,
     };
+  }
+
+  @Get('/slug/:slug')
+  @ApiOperation({ summary: 'Fetch a brand by slug' })
+  @ApiResponse({ status: 200, description: 'Brand found', type: BrandResponse })
+  @ApiResponse({ status: 404, description: 'Brand not found' })
+  async findBySlug(@Param('slug') slug: string): Promise<BrandResponse> {
+    const brand = await this.findBySlugBrandQueryHandler.handle(slug);
+    return BrandMapper.toPublicResponse(brand);
   }
 
   @Get(':id')
