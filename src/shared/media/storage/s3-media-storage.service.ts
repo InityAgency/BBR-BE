@@ -111,7 +111,7 @@ export class S3MediaStorage implements MediaStorage {
   async getExternalUrl(media: Media): Promise<string> {
     const params = {
       Bucket: this.bucket,
-      Key: media.getPath(),
+      Key: media.externalId,
     };
 
     try {
@@ -124,8 +124,7 @@ export class S3MediaStorage implements MediaStorage {
 
   @LogMethod()
   async delete(url: string): Promise<void> {
-    const parsedUrl = new URL(url);
-    const key = parsedUrl.pathname.substring(1);
+    const key = url.substring(1);
 
     const params = {
       Bucket: this.bucket,

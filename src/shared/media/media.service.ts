@@ -31,13 +31,16 @@ export class MediaServiceImpl implements IMediaService {
     storage: MediaStorageType,
     basePath: string
   ): Promise<Media | null> {
+    const id = randomUUID();
+
     const media = await Media.create({
-      id: randomUUID(),
+      id:id,
       originalFileName: multipartFile.originalname,
       mimeType: multipartFile.mimetype as MimeType,
       size: multipartFile.size,
       basePath,
       storage,
+      externalId:basePath + "/" + id + "/" + multipartFile.originalname,
       uploadStatus: MediaUploadStatus.IN_PROGRESS,
     });
 
@@ -117,6 +120,9 @@ export class MediaServiceImpl implements IMediaService {
   @LogMethod()
   async deleteUnusedMediaCreatedAfterDate(date: Date): Promise<void> {
     const unusedMediaList = await this.mediaRepository.fetchUnusedMediaCreatedAfter(date);
+
+    console.log("ads");
+    console.log(unusedMediaList);
     if (!unusedMediaList.length) {
       return;
     }

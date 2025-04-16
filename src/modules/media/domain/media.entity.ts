@@ -30,7 +30,7 @@ export class Media extends Model {
     return await Media.query().insert(data).returning('*');
   }
 
-  getPath(): string {
+  public getPath(): string {
     return `${this.basePath}/${this.id}/${this.originalFileName}`;
   }
 

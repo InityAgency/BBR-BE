@@ -9,7 +9,7 @@ export class UnusedMediaJob {
 
   constructor(private readonly mediaService: IMediaService) {}
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   @LogMethod()
   async deleteUnusedMedia() {
     if (this.isRunning) {
@@ -19,9 +19,11 @@ export class UnusedMediaJob {
     this.isRunning = true; // Lock execution
 
     try {
+      console.log("deleting media...");
       const date = new Date(Date.now() - 30 * 60 * 1000); // 30 minutes ago
       await this.mediaService.deleteUnusedMediaCreatedAfterDate(date);
     } catch (error) {
+      console.error(error);
     } finally {
       this.isRunning = false; // Unlock execution
     }
