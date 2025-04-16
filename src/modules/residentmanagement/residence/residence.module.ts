@@ -23,6 +23,7 @@ import { ResidenceController } from './ui/residence.controller';
 import { UpdateResidenceStatusCommandHandler } from './application/handlers/update-status-residence.command.handler';
 import { DeleteResidenceCommandHandler } from './application/handlers/delete-residence.command.handler';
 import { ResidencePublicController } from './ui/residence.public.controller';
+import { FindBySlugResidenceCommandQuery } from './application/query/find-by-slug-residence.query';
 
 @Module({
   controllers: [ResidenceController, ResidencePublicController],
@@ -65,6 +66,7 @@ import { ResidencePublicController } from './ui/residence.public.controller';
     UpdateResidenceCommandHandler,
     UpdateResidenceStatusCommandHandler,
     DeleteResidenceCommandHandler,
+    FindBySlugResidenceCommandQuery,
   ],
   exports: [],
 })

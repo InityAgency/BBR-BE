@@ -5,6 +5,7 @@ import { HighlightedAmenityType } from '../../ui/types/highlighted-amenities.typ
 export class CreateResidenceCommand {
   constructor(
     public readonly name?: string,
+    public readonly slug?: string,
     public readonly websiteUrl?: string,
     public readonly subtitle?: string,
     public readonly description?: string,

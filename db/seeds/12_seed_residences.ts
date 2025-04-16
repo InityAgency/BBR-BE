@@ -101,6 +101,7 @@ export async function seed(knex: Knex): Promise<void> {
     const brandId = brandMap[residence.associated_brand];
     const cityId = cityMap[residence.city];
     const countryId = countryMap[residence.country];
+    const slug = residence.residence_name.toLowerCase().replace(/\s+/g, '-');
 
     if (!brandId) continue;
 
@@ -109,6 +110,7 @@ export async function seed(knex: Knex): Promise<void> {
     formattedResidences.push({
       id,
       name: residence.residence_name,
+      slug: slug,
       websiteUrl: residence.website_url,
       brandId,
       subtitle: residence.brief_subtitle,

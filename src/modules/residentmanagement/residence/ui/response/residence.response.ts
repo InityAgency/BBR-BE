@@ -15,6 +15,7 @@ export class ResidenceResponse {
   constructor(
     public readonly id: string,
     public readonly name: string,
+    public readonly slug: string,
     public readonly status: ResidenceStatusEnum,
     public readonly developmentStatus: DevelopmentStatusEnum,
     public readonly subtitle: string,

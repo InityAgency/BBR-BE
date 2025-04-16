@@ -49,6 +49,15 @@ export class ResidenceRepository implements IResidenceRepository {
       );
   }
 
+  async findBySlug(slug: string): Promise<Residence | undefined> {
+    return await Residence.query()
+      .whereNull('deleted_at')
+      .findOne({ slug })
+      .withGraphFetched(
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage]'
+      );
+  }
+
   async findByName(name: string): Promise<Residence | undefined> {
     throw new Error('Method not implemented.');
   }

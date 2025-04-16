@@ -84,6 +84,7 @@ export class ResidenceController {
   async create(@Body() request: CreateResidenceRequest): Promise<ResidenceResponse> {
     const command = new CreateResidenceCommand(
       request.name,
+      request.slug,
       request.websiteUrl,
       request.subtitle,
       request.description,
@@ -142,6 +143,7 @@ export class ResidenceController {
     const command = new UpdateResidenceCommand(
       id,
       request.name,
+      request.slug,
       request.websiteUrl,
       request.subtitle,
       request.description,

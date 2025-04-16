@@ -20,6 +20,10 @@ export class CreateResidenceRequest {
   name: string;
 
   @IsOptional()
+  @IsString()
+  slug: string;
+
+  @IsOptional()
   @IsEnum(ResidenceStatusEnum)
   status: ResidenceStatusEnum;
 

@@ -19,6 +19,7 @@ import { ResidenceTotalScore } from '../../ranking_score/domain/residence-total-
 export class Residence extends Model {
   id!: string;
   name!: string;
+  slug!: string;
   status!: ResidenceStatusEnum;
   developmentStatus!: DevelopmentStatusEnum;
   subtitle!: string;
@@ -223,5 +224,15 @@ export class Residence extends Model {
 
   static async create(data: Partial<Residence>): Promise<Residence> {
     return await Residence.query().insertAndFetch(data).returning('*');
+  }
+
+  static slugify(input: string): string {
+    return input
+      .toLowerCase()
+      .normalize('NFD') // uklanja dijakritike (č, ć, š, ž...)
+      .replace(/[\u0300-\u036f]/g, '') // dodatni korak da se uklone svi akcenti
+      .replace(/[^a-z0-9]+/g, '-') // sve što nije alfanumeričko pretvori u "-"
+      .replace(/^-+|-+$/g, '') // ukloni višak '-' sa početka i kraja
+      .replace(/-{2,}/g, '-'); // zameni višestruke '-' jednim
   }
 }

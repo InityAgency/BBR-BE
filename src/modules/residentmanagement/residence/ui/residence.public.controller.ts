@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderByDirection } from 'objection';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
@@ -14,13 +9,15 @@ import { FetchResidencesQuery } from '../application/commands/fetch-residences.q
 import { FindAllResidencesCommandQuery } from '../application/query/find-all-residences.query';
 import { FindByIdResidenceCommandQuery } from '../application/query/find-by-id-residence.query';
 import { ResidencePublicResponse } from './response/residence.public.response';
+import { FindBySlugResidenceCommandQuery } from '../application/query/find-by-slug-residence.query';
 
 ApiTags('Residence');
 @Controller('public/residences')
 export class ResidencePublicController {
   constructor(
     private readonly findAllResidencesCommandQuery: FindAllResidencesCommandQuery,
-    private readonly findByIdResidenceCommandQuery: FindByIdResidenceCommandQuery
+    private readonly findByIdResidenceCommandQuery: FindByIdResidenceCommandQuery,
+    private readonly findBySlugResidenceCommandQuery: FindBySlugResidenceCommandQuery
   ) {}
 
   @Get()
@@ -62,6 +59,14 @@ export class ResidencePublicController {
     };
   }
 
+  @Get('/slug/:slug')
+  @ApiOperation({ summary: 'Get a residence by slug' })
+  @ApiResponse({ status: 200, description: 'Residence found', type: ResidenceResponse })
+  async findBySlug(@Param('slug') slug: string): Promise<ResidencePublicResponse> {
+    const residence = await this.findBySlugResidenceCommandQuery.handle(slug);
+    return ResidenceMapper.toPublicResponse(residence);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a residence by id' })
   @ApiResponse({ status: 200, description: 'Residence found', type: ResidenceResponse })
@@ -69,5 +74,4 @@ export class ResidencePublicController {
     const residence = await this.findByIdResidenceCommandQuery.handle(id);
     return ResidenceMapper.toPublicResponse(residence);
   }
-
 }

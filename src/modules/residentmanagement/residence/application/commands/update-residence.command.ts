@@ -6,6 +6,7 @@ export class UpdateResidenceCommand {
   constructor(
     public readonly id: string,
     public readonly name?: string,
+    public readonly slug?: string,
     public readonly websiteUrl?: string,
     public readonly subtitle?: string,
     public readonly description?: string,

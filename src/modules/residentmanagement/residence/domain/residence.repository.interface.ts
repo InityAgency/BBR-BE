@@ -7,6 +7,7 @@ export abstract class IResidenceRepository {
   abstract update(id: string, data: Partial<Residence>): Promise<Residence | undefined>;
   abstract delete(id: string): Promise<void>;
   abstract findById(id: string): Promise<Residence | undefined>;
+  abstract findBySlug(slug: string): Promise<Residence | undefined>;
   abstract findByName(name: string): Promise<Residence | undefined>;
   abstract findAll(
     query: FetchResidencesQuery

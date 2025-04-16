@@ -16,6 +16,7 @@ export class ResidenceMapper {
     return new ResidenceResponse(
       residence.id,
       residence.name,
+      residence.slug,
       residence.status,
       residence.developmentStatus,
       residence.subtitle,
@@ -102,6 +103,7 @@ export class ResidenceMapper {
     return new ResidencePublicResponse(
       residence.id,
       residence.name,
+      residence.slug,
       residence.description,
       residence.status,
       residence.developmentStatus,

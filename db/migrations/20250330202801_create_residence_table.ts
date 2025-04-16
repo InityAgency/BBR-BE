@@ -3,11 +3,9 @@ import type { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('residences', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
-    table
-      .enum('status', ['DRAFT', 'ACTIVE', 'PENDING', 'REJECTED', 'INACTIVE', 'DELETED'])
-      .notNullable()
-      .defaultTo('DRAFT');
+    table.string('status').notNullable().defaultTo('DRAFT');
     table.string('name').notNullable();
+    table.string('slug').notNullable().unique().index();
     table.string('website_url').nullable();
     table.string('subtitle').nullable();
     table.text('description').nullable();

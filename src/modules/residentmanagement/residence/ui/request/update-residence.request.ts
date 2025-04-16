@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsNumber, IsOptional, isUUID, IsUUID } from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, isUUID, IsUUID } from 'class-validator';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
 import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
@@ -8,6 +8,10 @@ import { HighlightedAmenityRequest } from './highlighted-amenity.request';
 export class UpdateResidenceRequest {
   @IsOptional()
   name: string;
+
+  @IsOptional()
+  @IsString()
+  slug: string;
 
   @IsOptional()
   @IsEnum(ResidenceStatusEnum)

@@ -134,8 +134,17 @@ export class UpdateResidenceCommandHandler {
       }
     }
 
+    const rawSlug = command.slug?.trim() ?? command.name!;
+    const slug = Residence.slugify(rawSlug);
+
+    const existing = await this.residenceRepository.findBySlug(slug);
+    if (existing && existing.id !== command.id) {
+      throw new ConflictException(`Residence with slug ${slug} already exists`);
+    }
+
     const updateResidence = {
       name: command.name,
+      slug: command.slug,
       websiteUrl: command.websiteUrl,
       subtitle: command.subtitle,
       description: command.description,
