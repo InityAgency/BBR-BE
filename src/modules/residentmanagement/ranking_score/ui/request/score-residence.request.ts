@@ -9,7 +9,7 @@ export class ScoreEntry {
   @IsNumber()
   @Type(() => Number)
   @Min(1)
-  @Max(10)
+  @Max(100)
   score: number;
 }
 export class ScoreResidenceRequest {

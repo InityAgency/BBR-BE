@@ -77,13 +77,16 @@ export class RankingCriteriaRepositoryImpl implements IRankingCriteriaRepository
 
     const rows = await knex('ranking_category_criteria as rcc')
       .select(['rc.id', 'rc.name', 'rc.description', 'rcc.weight', 'rcc.is_default', 'rrcs.score'])
-      .leftJoin('ranking_criteria as rc', 'rc.id', 'rcc.ranking_criteria_id')
+      .join('ranking_criteria as rc', 'rc.id', 'rcc.ranking_criteria_id')
       .leftJoin('residence_ranking_criteria_scores as rrcs', function () {
-        this.on('rrcs.ranking_criteria_id', '=', 'rc.id')
-          .andOn('rrcs.residence_id', '=', knex.raw('?', [residenceId]))
-          .andOn('rrcs.ranking_category_id', '=', knex.raw('?', [categoryId]));
+        this.on('rrcs.ranking_criteria_id', '=', 'rc.id').andOn(
+          'rrcs.residence_id',
+          '=',
+          knex.raw('?', [residenceId])
+        );
       })
-      .where('rcc.ranking_category_id', categoryId);
+      .where('rcc.ranking_category_id', categoryId)
+      .orderBy('rc.name', 'asc');
 
     return rows;
   }
