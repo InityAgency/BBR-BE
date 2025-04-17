@@ -14,7 +14,6 @@ export class UpdateLeadStatusCommandHandler {
 
   @LogMethod()
   async handle(command: UpdateLeadStatusCommand): Promise<Lead> {
-    // Check if the lead exists
     const existingLead = await this.leadRepository.findById(command.id);
     if (!existingLead) {
       throw new NotFoundException('Lead not found');

@@ -5,7 +5,6 @@ import { CreateLeadRequest } from '../request/create-lead.request';
 import { UpdateLeadRequest } from '../request/update-lead.request';
 import { UpdateLeadStatusCommand } from '../../application/command/update-lead-status.command';
 import { UpdateLeadStatusRequest } from '../request/update-lead-status.request';
-import { PreferredContactMethodEnum } from '../../domain/preferred-contact-method.enum';
 import { LeadResponse } from '../response/lead.response';
 import { Request } from '../../../request/domain/request.entity';
 import { RequestResponse } from '../response/request.response';
@@ -18,7 +17,7 @@ export class LeadMapper {
       request.lastName,
       request.email,
       request.phone,
-      request.preferredContactMethod as PreferredContactMethodEnum,
+      request.preferredContactMethod,
     );
   }
 
@@ -29,7 +28,7 @@ export class LeadMapper {
       request.lastName,
       request.email,
       request.phone,
-      request.preferredContactMethod as PreferredContactMethodEnum,
+      request.preferredContactMethod,
     );
   }
 

@@ -121,8 +121,6 @@ export class MediaServiceImpl implements IMediaService {
   async deleteUnusedMediaCreatedAfterDate(date: Date): Promise<void> {
     const unusedMediaList = await this.mediaRepository.fetchUnusedMediaCreatedAfter(date);
 
-    console.log("ads");
-    console.log(unusedMediaList);
     if (!unusedMediaList.length) {
       return;
     }

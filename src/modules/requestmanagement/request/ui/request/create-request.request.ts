@@ -6,10 +6,10 @@ import {
   IsOptional,
   IsString,
   MaxLength,
-  Matches, IsUUID,
+   IsUUID,
+  IsArray,
 } from 'class-validator';
 import { RequestTypeEnum } from '../../domain/request-type.enum';
-import { PreferredContactMethodEnum } from 'src/modules/requestmanagement/lead/domain/preferred-contact-method.enum';
 
 export class CreateRequestRequest {
   @IsNotEmpty()
@@ -48,8 +48,9 @@ export class CreateRequestRequest {
   entityId: string;
 
   @IsOptional()
-  @IsEnum(PreferredContactMethodEnum)
-  preferredContactMethod: PreferredContactMethodEnum;
+  @IsArray()
+  @IsString({ each: true })
+  preferredContactMethod: string[];
 
   @IsNotEmpty()
   @IsBoolean()

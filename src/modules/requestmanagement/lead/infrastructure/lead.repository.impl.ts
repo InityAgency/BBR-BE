@@ -7,7 +7,6 @@ import { applyFilters } from '../../../../shared/filters/query.dynamic-filters';
 import { ILeadRepository } from '../domain/ilead.repository.interface';
 import { Lead } from '../domain/lead.entity';
 import { FetchLeadsQuery } from '../application/command/fetch-leads.query';
-import { Unit } from '../../../residentmanagement/unit/domain/unit.entity';
 
 @Injectable()
 export class LeadRepositoryImpl implements ILeadRepository {
@@ -20,7 +19,7 @@ export class LeadRepositoryImpl implements ILeadRepository {
       email: data.email,
       phone: data.phone,
       status: data.status,
-      preferredContactMethod: data.preferredContactMethod,
+      preferredContactMethod: JSON.stringify(data.preferredContactMethod ?? []),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -35,7 +34,10 @@ export class LeadRepositoryImpl implements ILeadRepository {
   }
 
   async findById(id: string): Promise<Lead | undefined> {
-    return Lead.query().findById(id).whereNull('deletedAt');
+    return Lead.query()
+      .findById(id)
+      .whereNull('deletedAt')
+      .withGraphFetched('[requests]');
   }
 
   async findByEmail(email: string): Promise<Lead | undefined> {
@@ -82,7 +84,7 @@ export class LeadRepositoryImpl implements ILeadRepository {
         email: data.email,
         phone: data.phone,
         status: data.status,
-        preferredContactMethod: data.preferredContactMethod,
+        preferredContactMethod: JSON.stringify(data.preferredContactMethod ?? []),
         updatedAt: new Date(),
       })
       .where('id', id);

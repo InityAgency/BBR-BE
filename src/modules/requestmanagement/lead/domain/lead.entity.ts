@@ -1,5 +1,4 @@
 import { Model, RelationMappings } from 'objection';
-import { PreferredContactMethodEnum } from './preferred-contact-method.enum';
 import { Request } from '../../request/domain/request.entity';
 import { LeadStatusEnum } from './lead-status.enum';
 
@@ -10,7 +9,7 @@ export class Lead extends Model {
   email!: string;
   status!: LeadStatusEnum;
   phone: string | null;
-  preferredContactMethod: PreferredContactMethodEnum | null;
+  preferredContactMethod:  string[] | null;
   requests: Request[];
 
   createdAt!: Date;

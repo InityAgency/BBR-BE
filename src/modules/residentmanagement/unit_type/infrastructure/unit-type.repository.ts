@@ -4,9 +4,11 @@ import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { applyPagination } from 'src/shared/utils/pagination.util';
 import { FetchUnitTypeQuery } from '../application/commands/fetch-unit-type.query';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { IUnitTypeRepository } from '../domain/unit-type.repository.interface';
+
 
 @Injectable()
-export class UnitTypeRepositoryImpl {
+export class UnitTypeRepositoryImpl implements IUnitTypeRepository{
   constructor() {}
 
   async findAll(
@@ -14,7 +16,7 @@ export class UnitTypeRepositoryImpl {
   ): Promise<{ data: UnitType[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
 
-    let query = UnitType.query();
+    let query = UnitType.query().whereNull('deletedAt');
 
     if (sortBy && sortOrder) {
       const allowedColumns = ['name', 'created_at', 'updated_at'];
@@ -40,11 +42,15 @@ export class UnitTypeRepositoryImpl {
   }
 
   async findByName(name: string): Promise<UnitType | undefined> {
-    return await UnitType.query().findOne({ name });
+    return await UnitType.query()
+      .findOne({ name })
+      .whereNull('deletedAt');
   }
 
   async findById(id: string): Promise<UnitType | undefined> {
-    return await UnitType.query().findById(id);
+    return await UnitType.query()
+      .findById(id)
+      .whereNull('deletedAt');
   }
 
   async create(unitType: Partial<UnitType>): Promise<UnitType> {
@@ -52,10 +58,13 @@ export class UnitTypeRepositoryImpl {
   }
 
   async update(id: string, data: Partial<UnitType>): Promise<UnitType> {
-    return await UnitType.query().patchAndFetchById(id, data);
+    return await UnitType.query()
+      .patchAndFetchById(id, data);
   }
 
   async delete(id: string): Promise<void> {
-    await UnitType.query().deleteById(id);
+    await UnitType.query()
+      .patch({ deletedAt: new Date() })
+      .where('id', id);
   }
 }

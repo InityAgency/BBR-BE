@@ -1,5 +1,3 @@
-import { PreferredContactMethodEnum } from '../../domain/preferred-contact-method.enum';
-
 export class UpdateLeadCommand {
   constructor(
     public readonly id: string,
@@ -7,6 +5,6 @@ export class UpdateLeadCommand {
     public readonly lastName: string,
     public readonly email: string,
     public readonly phone: string,
-    public readonly preferredContactMethod: PreferredContactMethodEnum | null,
+    public readonly preferredContactMethod: string[] | null,
   ) {}
 }

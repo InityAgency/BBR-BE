@@ -3,9 +3,9 @@ import { Model } from 'objection';
 export class UnitType extends Model {
   id!: string;
   name!: string;
+  deletedAt?: Date;
   createdAt!: Date;
   updatedAt!: Date;
-  deletedAt?: Date;
 
   static tableName = 'unit_types';
 
@@ -16,9 +16,5 @@ export class UnitType extends Model {
 
   $beforeUpdate() {
     this.updatedAt = new Date();
-  }
-
-  static async create(data: Partial<UnitType>): Promise<UnitType> {
-    return UnitType.query().insert(data).returning('*');
   }
 }

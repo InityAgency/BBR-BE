@@ -19,7 +19,6 @@ export class UnusedMediaJob {
     this.isRunning = true; // Lock execution
 
     try {
-      console.log("deleting media...");
       const date = new Date(Date.now() - 30 * 60 * 1000); // 30 minutes ago
       await this.mediaService.deleteUnusedMediaCreatedAfterDate(date);
     } catch (error) {

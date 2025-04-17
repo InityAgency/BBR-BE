@@ -1,5 +1,5 @@
-import { IsString, IsOptional, IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
-import { PreferredContactMethodEnum } from '../../domain/preferred-contact-method.enum';
+import { IsString, IsOptional, IsEmail, IsNotEmpty, IsArray } from 'class-validator';
+
 
 export class CreateLeadRequest {
   @IsNotEmpty()
@@ -19,6 +19,7 @@ export class CreateLeadRequest {
   readonly phone: string | null;
 
   @IsOptional()
-  @IsEnum(PreferredContactMethodEnum)
-  readonly preferredContactMethod: PreferredContactMethodEnum | null;
+  @IsArray()
+  @IsString({ each: true })
+  preferredContactMethod: string[];
 }

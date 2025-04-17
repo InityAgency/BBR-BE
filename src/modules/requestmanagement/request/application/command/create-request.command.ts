@@ -1,5 +1,4 @@
 import { RequestTypeEnum } from '../../domain/request-type.enum';
-import { PreferredContactMethodEnum } from '../../../lead/domain/preferred-contact-method.enum';
 
 export class CreateRequestCommand {
   constructor(
@@ -9,7 +8,7 @@ export class CreateRequestCommand {
     public readonly phoneNumber: string,
     public readonly subject: string,
     public readonly message: string,
-    public readonly preferredContactMethod: PreferredContactMethodEnum,
+    public readonly preferredContactMethod: string[],
     public readonly termsAccepted: boolean,
     public readonly entityId: string,
     public readonly type: RequestTypeEnum

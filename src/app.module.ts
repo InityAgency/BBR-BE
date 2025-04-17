@@ -35,6 +35,7 @@ import { RankingCriteriaModule } from './modules/shared/rankingmanagement/criter
 import { ResidenceRankingScoreModule } from './modules/residentmanagement/ranking_score/residence-ranking-score.module';
 import { RequestModule } from './modules/requestmanagement/request/request.module';
 import { LeadModule } from './modules/requestmanagement/lead/lead.module';
+import { ReviewModule } from './modules/residentmanagement/review/review.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { LeadModule } from './modules/requestmanagement/lead/lead.module';
     ResidenceRankingScoreModule,
     RequestModule,
     LeadModule,
+    ReviewModule
   ],
   providers: [],
 })

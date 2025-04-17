@@ -6,7 +6,7 @@ export class LeadResponse {
     public readonly email: string,
     public readonly status: string,
     public readonly phone: string | null,
-    public readonly preferredContactMethod: string | null,
+    public readonly preferredContactMethod: string[] | null,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
   ) {}
