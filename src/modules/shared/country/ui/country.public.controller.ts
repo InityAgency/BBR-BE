@@ -1,32 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PaginationResponse } from '../../../../shared/ui/response/pagination.response';
-import { ContinentResponse } from '../../continent/ui/response/continent.response';
-import { PhoneCode } from '../../phone_code/domain/phone-code.entity';
-import { PhoneCodeResponse } from '../../phone_code/ui/response/phone-code.response';
-import { CreateCountryCommand } from '../application/commands/create-country.command';
-import { FetchCountriesQuery } from '../application/commands/fetch-countries.query';
-import { UpdateCountryCommand } from '../application/commands/update-country.command';
-import { CreateCountryCommandHandler } from '../application/handler/create-country.command.handler';
-import { DeleteCountryCommandHandler } from '../application/handler/delete-country.command.handler';
-import { UpdateCountryCommandHandler } from '../application/handler/update-country.command.handler';
-import { FetchCountriesCommandQuery } from '../application/query/fetch-countries.command.query';
-import { FindCountryByIdCommandQuery } from '../application/query/find-country-by-id.command.query';
-import { Country } from '../domain/country.entity';
-import { CreateCountryRequest } from './request/create-country.request';
-import { UpdateCountryRequest } from './request/update-country.request';
-import { CountryResponse } from './response/country.response';
 import { OrderByDirection } from 'objection';
+import { PaginationResponse } from '../../../../shared/ui/response/pagination.response';
+import { FetchCountriesQuery } from '../application/commands/fetch-countries.query';
+import { FetchCountriesPublicCommandQuery } from '../application/query/fetch-countries.public.command.query';
+import { FindCountryByIdCommandQuery } from '../application/query/find-country-by-id.command.query';
 import { CountryMapper } from './mapper/coutry.mapper';
+import { CountryResponse } from './response/country.response';
 
 @ApiTags('Countries')
 @Controller('public/countries')
 export class CountryPublicController {
   constructor(
     private readonly findCountryByIdCommandQuery: FindCountryByIdCommandQuery,
-    private readonly fetchCountriesCommandQuery: FetchCountriesCommandQuery
+    private readonly fetchCountriesPublicCommandQuery: FetchCountriesPublicCommandQuery
   ) {}
-
 
   @Get()
   @ApiOperation({ summary: 'Fetch all countries' })
@@ -39,7 +27,7 @@ export class CountryPublicController {
     @Query('sortOrder') sortOrder?: OrderByDirection
   ): Promise<{ data: CountryResponse[]; pagination: PaginationResponse }> {
     const fetchQuery = new FetchCountriesQuery(query, page, limit, sortBy, sortOrder);
-    const result = await this.fetchCountriesCommandQuery.handler(fetchQuery);
+    const result = await this.fetchCountriesPublicCommandQuery.handler(fetchQuery);
 
     return {
       data: result.data.map((country) => CountryMapper.mapToResponse(country)),
@@ -51,6 +39,4 @@ export class CountryPublicController {
     const country = await this.findCountryByIdCommandQuery.handle(id);
     return CountryMapper.mapToResponse(country);
   }
-
-
 }

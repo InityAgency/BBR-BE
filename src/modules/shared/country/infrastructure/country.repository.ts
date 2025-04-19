@@ -7,6 +7,7 @@ import { applyPagination } from '../../../../shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { KnexService } from 'src/shared/infrastructure/database/knex.service';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { ResidenceStatusEnum } from 'src/modules/residentmanagement/residence/domain/residence-status.enum';
 
 @Injectable()
 export class CountryRepositoryImpl implements ICountryRepository {
@@ -51,6 +52,64 @@ export class CountryRepositoryImpl implements ICountryRepository {
     const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
 
     let query = Country.query().whereNull('deleted_at').withGraphFetched('[continent, phoneCodes]');
+
+    const columnsToSearch = [
+      'countries.name',
+      'countries.code',
+      'countries.capital',
+      'countries.currency_code',
+      'countries.currency_name',
+      'countries.currency_symbol',
+      'countries.subregion',
+      'countries.tld',
+    ];
+
+    const columnsToSort = [
+      'name',
+      'code',
+      'capital',
+      'currency_code',
+      'currency_name',
+      'currency_symbol',
+      'subregion',
+      'tld',
+    ];
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
+
+    if (sortBy && sortOrder) {
+      if (columnsToSort.includes(sortBy)) {
+        query = query.orderBy(sortBy, sortOrder);
+      }
+    }
+
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
+
+    return {
+      data: paginatedQuery,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page: page,
+        limit: limit,
+      },
+    };
+  }
+
+  @LogMethod()
+  async findAllPublic(
+    fetchQuery: FetchCountriesQuery
+  ): Promise<{ data: Country[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
+
+    let query = Country.query()
+      .whereExists(function () {
+        this.select('*')
+          .from('residences')
+          .whereRaw('residences.country_id = countries.id')
+          .where('residences.status', ResidenceStatusEnum.ACTIVE)
+          .whereNull('residences.deleted_at');
+      })
+      .withGraphFetched('[continent, phoneCodes]');
 
     const columnsToSearch = [
       'countries.name',

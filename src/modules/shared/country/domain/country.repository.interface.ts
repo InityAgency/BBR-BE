@@ -8,6 +8,9 @@ export abstract class ICountryRepository {
   abstract findAll(
     query: FetchCountriesQuery
   ): Promise<{ data: Country[]; pagination: PaginationResponse }>;
+  abstract findAllPublic(
+    query: FetchCountriesQuery
+  ): Promise<{ data: Country[]; pagination: PaginationResponse }>;
   abstract findByName(name: string): Promise<Country | undefined>;
   abstract update(id: string, data: Partial<Country>): Promise<Country | undefined>;
   abstract delete(id: string): Promise<void>;

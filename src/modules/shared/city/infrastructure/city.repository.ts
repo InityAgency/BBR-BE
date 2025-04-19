@@ -8,6 +8,7 @@ import { ICityRepository } from '../domain/city.repository.interface';
 import { FetchCitiesQuery } from '../application/commands/fetch-cities.query';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
+import { ResidenceStatusEnum } from 'src/modules/residentmanagement/residence/domain/residence-status.enum';
 
 @Injectable()
 export class CityRepositoryImpl implements ICityRepository {
@@ -98,6 +99,7 @@ export class CityRepositoryImpl implements ICityRepository {
         this.select('*')
           .from('residences')
           .whereRaw('residences.city_id = cities.id')
+          .where('residences.status', ResidenceStatusEnum.ACTIVE)
           .whereNull('residences.deleted_at');
       })
       .withGraphFetched('[country]'); // Assuming "country" is a relation to be fetched

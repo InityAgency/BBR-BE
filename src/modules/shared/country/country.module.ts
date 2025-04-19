@@ -15,6 +15,7 @@ import { MediaRepositoryImpl } from 'src/modules/media/infrastructure/media.repo
 import { IPhoneCodeRepository } from '../phone_code/domain/phone-code.repository.interface';
 import { PhoneCodeRepositoryImpl } from '../phone_code/infrastructure/phone-code.repository';
 import { CountryPublicController } from './ui/country.public.controller';
+import { FetchCountriesPublicCommandQuery } from './application/query/fetch-countries.public.command.query';
 
 @Module({
   imports: [DatabaseModule],
@@ -35,6 +36,7 @@ import { CountryPublicController } from './ui/country.public.controller';
     CreateCountryCommandHandler,
     FindCountryByIdCommandQuery,
     FetchCountriesCommandQuery,
+    FetchCountriesPublicCommandQuery,
     UpdateCountryCommandHandler,
     DeleteCountryCommandHandler,
   ],
