@@ -15,14 +15,16 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OrderByDirection } from 'objection';
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { Permissions } from 'src/shared/decorators/permissions.decorator';
 import { RBACGuard } from 'src/shared/guards/rbac.guard';
 import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
 import { PermissionsEnum } from 'src/shared/types/permissions.enum';
-import { PaginationRequest } from 'src/shared/ui/request/pagination.request';
+import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { CreateUserCommand } from '../application/command/create-user.command';
+import { FetchUsersQuery } from '../application/command/fetch-users.query';
 import { SendVerificationCommand } from '../application/command/send-verification.command';
 import { UpdateUserProfileCommand } from '../application/command/update-user-profile.command';
 import { UpdateUserStatusCommand } from '../application/command/update-user-status.command';
@@ -44,9 +46,7 @@ import { UpdateUserProfileRequest } from './request/update-user-profile.request'
 import { UpdateUserStatusRequest } from './request/update-user-status.request';
 import { UpdateUserRequest } from './request/update-user.request';
 import { UserResponse } from './response/user-response';
-import { OrderByDirection } from 'objection';
-import { FetchUsersQuery } from '../application/command/fetch-users.query';
-import { UserStatusEnum } from 'src/shared/types/user-status.enum';
+import { FindByEmailUserQueryHandler } from '../application/query/find-by-email-user.command.query';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -63,6 +63,7 @@ export class UserController {
     private readonly verifyEmailCommandHandler: VerifyEmailCommandHandler,
     private readonly updateUserProfileCommandHandler: UpdateUserProfileCommandHandler,
     private readonly updateUserStatusCommandHandler: UpdateUserStatusCommandHandler,
+    private readonly findByEmailUserQueryHandler: FindByEmailUserQueryHandler,
     private readonly userMapper: UserMapper
   ) {}
 
@@ -163,6 +164,13 @@ export class UserController {
     );
 
     return await this.updateUserProfileCommandHandler.handle(command);
+  }
+
+  @Get('by-email')
+  @UseGuards(SessionAuthGuard)
+  async findByEmail(@Query('email') email: string) {
+    const user = await this.findByEmailUserQueryHandler.handle(email);
+    return this.userMapper.toResponse(user);
   }
 
   @Get(':id')

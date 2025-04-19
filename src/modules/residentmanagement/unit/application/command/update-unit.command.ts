@@ -5,6 +5,7 @@ export class UpdateUnitCommand {
   constructor(
     public readonly id: string,
     public readonly name: string,
+    public readonly slug: string,
     public readonly description: string,
     public readonly surface: number,
     public readonly status: UnitStatusEnum,
@@ -25,6 +26,6 @@ export class UpdateUnitCommand {
     public readonly bedroom: string,
     public readonly floor: string,
     public readonly transactionType: UnitTransactionTypeEnum,
-    public readonly characteristics: string[],
+    public readonly characteristics: string[]
   ) {}
 }

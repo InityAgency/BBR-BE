@@ -1,5 +1,5 @@
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
-import { ResidenceResponse } from '../response/residence.response';  // Import the ResidenceResponse
+import { ResidenceResponse } from '../response/residence.response'; // Import the ResidenceResponse
 import { Unit } from '../../domain/unit.entity';
 import { UnitResponse } from '../response/unit.response';
 import { CreateUnitRequest } from '../request/create-unit.request';
@@ -13,6 +13,7 @@ export class UnitMapper {
   static toCreateCommand(request: CreateUnitRequest): CreateUnitCommand {
     return new CreateUnitCommand(
       request.name,
+      request.slug,
       request.description,
       request.surface,
       request.status,
@@ -33,7 +34,7 @@ export class UnitMapper {
       request.bedroom,
       request.floor,
       request.transactionType,
-      request.characteristics,
+      request.characteristics
     );
   }
 
@@ -41,6 +42,7 @@ export class UnitMapper {
     return new UpdateUnitCommand(
       id,
       request.name,
+      request.slug,
       request.description,
       request.surface,
       request.status,
@@ -61,15 +63,15 @@ export class UnitMapper {
       request.bedroom,
       request.floor,
       request.transactionType,
-      request.characteristics,
+      request.characteristics
     );
   }
 
   static toResponse(unit: Unit): UnitResponse {
-
     return new UnitResponse(
       unit.id,
       unit.name,
+      unit.slug,
       unit.description,
       unit.surface,
       unit.status,
@@ -79,47 +81,52 @@ export class UnitMapper {
       unit.exclusiveOfferEndDate,
       unit.roomType,
       unit.roomAmount,
-      new UnitTypeResponse(unit.unitType.id, unit.unitType.name, unit.unitType.createdAt, unit.unitType.updatedAt),
+      new UnitTypeResponse(
+        unit.unitType.id,
+        unit.unitType.name,
+        unit.unitType.createdAt,
+        unit.unitType.updatedAt
+      ),
       unit.serviceType,
       unit.serviceAmount,
       unit.gallery
         ? unit.gallery.map(
-          (media) =>
-            new MediaResponse(
-              media.id,
-              media.originalFileName,
-              media.mimeType,
-              media.uploadStatus,
-              media.size,
-              media.securedUrl
-            )
-        )
+            (media) =>
+              new MediaResponse(
+                media.id,
+                media.originalFileName,
+                media.mimeType,
+                media.uploadStatus,
+                media.size,
+                media.securedUrl
+              )
+          )
         : [],
       unit.featureImage
         ? new MediaResponse(
-          unit.featureImage.id,
-          unit.featureImage.originalFileName,
-          unit.featureImage.mimeType,
-          unit.featureImage.uploadStatus,
-          unit.featureImage.size,
-          unit.featureImage.securedUrl
-        )
+            unit.featureImage.id,
+            unit.featureImage.originalFileName,
+            unit.featureImage.mimeType,
+            unit.featureImage.uploadStatus,
+            unit.featureImage.size,
+            unit.featureImage.securedUrl
+          )
         : null,
-        unit.residence
-        ?
-      new ResidenceResponse(
-        unit.residence.id,
-        unit.residence.name,
-        unit.residence.status,
-        unit.residence.developmentStatus,
-        unit.residence.subtitle,
-        unit.residence.description,
-        unit.residence.budgetStartRange,
-        unit.residence.budgetEndRange,
-        unit.residence.address,
-        unit.residence.longitude,
-        unit.residence.latitude
-      ) : null,
+      unit.residence
+        ? new ResidenceResponse(
+            unit.residence.id,
+            unit.residence.name,
+            unit.residence.status,
+            unit.residence.developmentStatus,
+            unit.residence.subtitle,
+            unit.residence.description,
+            unit.residence.budgetStartRange,
+            unit.residence.budgetEndRange,
+            unit.residence.address,
+            unit.residence.longitude,
+            unit.residence.latitude
+          )
+        : null,
       unit.about,
       unit.bathrooms,
       unit.bedroom,
@@ -132,10 +139,10 @@ export class UnitMapper {
   }
 
   static toPublicResponse(unit: Unit): UnitPublicResponse {
-
     return new UnitPublicResponse(
       unit.id,
       unit.name,
+      unit.slug,
       unit.description,
       unit.surface,
       unit.status,
@@ -145,47 +152,52 @@ export class UnitMapper {
       unit.exclusiveOfferEndDate,
       unit.roomType,
       unit.roomAmount,
-      new UnitTypeResponse(unit.unitType.id, unit.unitType.name, unit.unitType.createdAt, unit.unitType.updatedAt),
+      new UnitTypeResponse(
+        unit.unitType.id,
+        unit.unitType.name,
+        unit.unitType.createdAt,
+        unit.unitType.updatedAt
+      ),
       unit.serviceType,
       unit.serviceAmount,
       unit.gallery
         ? unit.gallery.map(
-          (media) =>
-            new MediaResponse(
-              media.id,
-              media.originalFileName,
-              media.mimeType,
-              media.uploadStatus,
-              media.size,
-              media.securedUrl
-            )
-        )
+            (media) =>
+              new MediaResponse(
+                media.id,
+                media.originalFileName,
+                media.mimeType,
+                media.uploadStatus,
+                media.size,
+                media.securedUrl
+              )
+          )
         : [],
       unit.featureImage
         ? new MediaResponse(
-          unit.featureImage.id,
-          unit.featureImage.originalFileName,
-          unit.featureImage.mimeType,
-          unit.featureImage.uploadStatus,
-          unit.featureImage.size,
-          unit.featureImage.securedUrl
-        )
+            unit.featureImage.id,
+            unit.featureImage.originalFileName,
+            unit.featureImage.mimeType,
+            unit.featureImage.uploadStatus,
+            unit.featureImage.size,
+            unit.featureImage.securedUrl
+          )
         : null,
       unit.residence
-        ?
-        new ResidenceResponse(
-          unit.residence.id,
-          unit.residence.name,
-          unit.residence.status,
-          unit.residence.developmentStatus,
-          unit.residence.subtitle,
-          unit.residence.description,
-          unit.residence.budgetStartRange,
-          unit.residence.budgetEndRange,
-          unit.residence.address,
-          unit.residence.longitude,
-          unit.residence.latitude
-        ) : null,
+        ? new ResidenceResponse(
+            unit.residence.id,
+            unit.residence.name,
+            unit.residence.status,
+            unit.residence.developmentStatus,
+            unit.residence.subtitle,
+            unit.residence.description,
+            unit.residence.budgetStartRange,
+            unit.residence.budgetEndRange,
+            unit.residence.address,
+            unit.residence.longitude,
+            unit.residence.latitude
+          )
+        : null,
       unit.about,
       unit.bathrooms,
       unit.bedroom,

@@ -45,6 +45,14 @@ export class UpdateRankingCategoryCommandHandler {
       throw new NotFoundException('Featured image not found');
     }
 
+    const rawSlug = command.slug?.trim() ?? command.name!;
+    const slug = RankingCategory.slugify(rawSlug);
+
+    const existing = await this.rankingCategoryRepository.findBySlug(slug);
+    if (existing && existing.id !== command.id) {
+      throw new ConflictException(`Ranking category with slug ${slug} already exists`);
+    }
+
     const updateData: Partial<RankingCategory> = {
       name: command.name,
       title: command.title,

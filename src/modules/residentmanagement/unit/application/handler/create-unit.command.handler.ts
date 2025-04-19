@@ -19,8 +19,8 @@ export class CreateUnitCommandHandler {
     private readonly unitRepository: IUnitRepository,
     private readonly mediaRepository: IMediaRepository,
     private readonly residenceRepository: IResidenceRepository,
-    private readonly unitTypeRepository: IUnitTypeRepository,
-    ) {}
+    private readonly unitTypeRepository: IUnitTypeRepository
+  ) {}
 
   @LogMethod()
   async handle(command: CreateUnitCommand): Promise<Unit> {
@@ -47,8 +47,17 @@ export class CreateUnitCommandHandler {
       throw new NotFoundException(`Gallery image(s) not found for id(s): ${missingIds.join(', ')}`);
     }
 
+    const rawSlug = command.slug?.trim() ?? command.name!;
+    const slug = Unit.slugify(rawSlug);
+
+    const existingSlug = await this.unitRepository.findBySlug(slug);
+    if (existingSlug) {
+      throw new ConflictException(`Unit with slug ${slug} already exists`);
+    }
+
     const unitData: Partial<Unit> = {
       name: command.name,
+      slug,
       description: command.description,
       surface: command.surface,
       status: command.status,

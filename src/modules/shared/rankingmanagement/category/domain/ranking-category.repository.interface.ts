@@ -10,6 +10,7 @@ export abstract class IRankingCategoryRepository {
     query: FetchRankingCategoriesQuery
   ): Promise<{ data: RankingCategory[]; pagination: PaginationResponse }>;
   abstract findByName(name: string): Promise<RankingCategory | undefined>;
+  abstract findBySlug(slug: string): Promise<RankingCategory | undefined>;
   abstract update(id: string, data: Partial<RankingCategory>): Promise<RankingCategory | undefined>;
   abstract softDelete(id: string): Promise<void>;
   abstract assignWeights(

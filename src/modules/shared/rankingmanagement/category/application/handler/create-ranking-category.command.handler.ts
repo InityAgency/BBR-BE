@@ -24,6 +24,7 @@ export class CreateRankingCategoryCommandHandler {
   @LogMethod()
   async handle(command: CreateRankingCategoryCommand): Promise<RankingCategory> {
     const existingCategory = await this.rankingCategoryRepository.findByName(command.name);
+
     if (existingCategory) {
       throw new ConflictException('Ranking Category with this name already exists');
     }
@@ -40,8 +41,19 @@ export class CreateRankingCategoryCommandHandler {
       throw new NotFoundException('Featured image not found');
     }
 
+    const rawSlug = command.slug?.trim() ?? command.name!;
+    const slug = RankingCategory.slugify(rawSlug);
+
+    const existingSlug = await this.rankingCategoryRepository.findBySlug(slug);
+    if (existingSlug) {
+      throw new ConflictException(`Ranking category with slug ${slug} already exists`);
+    }
+
+    console.log(slug);
+
     const categoryData: Partial<RankingCategory> = {
       name: command.name,
+      slug: slug,
       title: command.title,
       description: command.description,
       rankingCategoryType: categoryType,

@@ -1,20 +1,21 @@
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
-import { RankingCategory } from '../../domain/ranking-category.entity';
-import { RankingCategoryResponse } from '../response/ranking-category.response';
 import { RankingCategoryTypeResponse } from '../../../categorytype/ui/response/ranking-category-type.response';
-import { CreateRankingCategoryRequest } from '../request/create-ranking-category.request';
-import { CreateRankingCategoryCommand } from '../../application/command/create-ranking-category.command';
-import { UpdateRankingCategoryRequest } from '../request/update-ranking-category.request';
-import { UpdateRankingCategoryCommand } from '../../application/command/update-ranking-category.command';
-import { UpdateRankingCategoryStatusCommand } from '../../application/command/update-ranking-category-status.command';
-import { UpdateRankingCategoryStatusRequest } from '../request/update-ranking-category-status.request';
-import { AssignWeightsRequest, CriteriaWeightRequest } from '../request/assign-weights.request';
 import { AssignWeightsToRankingCategoryCommand } from '../../application/command/assign-weights-to-ranking-category.command';
+import { CreateRankingCategoryCommand } from '../../application/command/create-ranking-category.command';
+import { UpdateRankingCategoryStatusCommand } from '../../application/command/update-ranking-category-status.command';
+import { UpdateRankingCategoryCommand } from '../../application/command/update-ranking-category.command';
+import { RankingCategory } from '../../domain/ranking-category.entity';
+import { CriteriaWeightRequest } from '../request/assign-weights.request';
+import { CreateRankingCategoryRequest } from '../request/create-ranking-category.request';
+import { UpdateRankingCategoryStatusRequest } from '../request/update-ranking-category-status.request';
+import { UpdateRankingCategoryRequest } from '../request/update-ranking-category.request';
+import { RankingCategoryResponse } from '../response/ranking-category.response';
 
 export class RankingCategoryMapper {
   static toCreateCommand(request: CreateRankingCategoryRequest): CreateRankingCategoryCommand {
     return new CreateRankingCategoryCommand(
       request.name,
+      request.slug,
       request.title,
       request.description,
       request.rankingCategoryTypeId,
@@ -32,6 +33,7 @@ export class RankingCategoryMapper {
     return new UpdateRankingCategoryCommand(
       id,
       request.name,
+      request.slug,
       request.title,
       request.description,
       request.rankingCategoryTypeId,
@@ -59,6 +61,7 @@ export class RankingCategoryMapper {
     return new RankingCategoryResponse(
       rankingCategory.id,
       rankingCategory.name,
+      rankingCategory.slug,
       rankingCategory.title,
       rankingCategory.description,
       new RankingCategoryTypeResponse(

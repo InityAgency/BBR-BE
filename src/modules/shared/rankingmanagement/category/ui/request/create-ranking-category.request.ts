@@ -16,6 +16,10 @@ export class CreateRankingCategoryRequest {
   @MaxLength(126)
   name: string;
 
+  @IsOptional()
+  @IsString()
+  slug: string;
+
   @IsNotEmpty()
   @IsString()
   @MaxLength(255)

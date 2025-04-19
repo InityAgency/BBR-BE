@@ -5,8 +5,6 @@ import { Residence } from '../domain/residence.entity';
 @Injectable()
 export class ResidenceRepositoryImpl implements IResidenceRepository {
   async findById(id: string): Promise<Residence | undefined> {
-    return Residence.query()
-      .findById(id)
-      .whereNull('deletedAt');
+    return Residence.query().findById(id).whereNull('deletedAt');
   }
 }

@@ -6,7 +6,8 @@ import {
   Body,
   Delete,
   Query,
-  Patch, UnauthorizedException,
+  Patch,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Req } from '@nestjs/common';
@@ -14,9 +15,7 @@ import { Request } from 'express';
 import { FetchReviewsCommandQuery } from '../application/query/fetch-reviews-command.query';
 import { FindReviewByIdCommandQuery } from '../application/query/find-review-by-id-command.query';
 import { CreateReviewCommandHandler } from '../application/handler/create-review-command.handler';
-import {
-  UpdateReviewStatusCommandHandler
-} from '../application/handler/update-review-status-command.handler';
+import { UpdateReviewStatusCommandHandler } from '../application/handler/update-review-status-command.handler';
 import { DeleteReviewCommandHandler } from '../application/handler/delete-review-command.handler';
 import { ReviewResponse } from './response/review.response';
 import { FetchReviewsQuery } from '../application/command/fetch-reviews.query';
@@ -51,10 +50,20 @@ export class ReviewController {
     @Query('residenceId') residenceId?: string[],
     @Query('userId') userId?: string[],
     @Query('status') status?: string[],
-    @Query('unitTypeId') unitTypeId?: string[],
+    @Query('unitTypeId') unitTypeId?: string[]
   ) {
     const { data, pagination } = await this.fetchReviewsCommandQuery.handle(
-      new FetchReviewsQuery(query, page, limit, sortBy, sortOrder, status, residenceId, userId, unitTypeId)
+      new FetchReviewsQuery(
+        query,
+        page,
+        limit,
+        sortBy,
+        sortOrder,
+        status,
+        residenceId,
+        userId,
+        unitTypeId
+      )
     );
 
     const mapped = data.map((review: Review) => ReviewMapper.toResponse(review));
@@ -77,13 +86,10 @@ export class ReviewController {
   @Post()
   @ApiOperation({ summary: 'Create a review' })
   @ApiResponse({ type: ReviewResponse })
-  async create(
-    @Body() createReviewRequest: CreateReviewRequest,
-    @Req() req: Request
-  ) {
+  async create(@Body() createReviewRequest: CreateReviewRequest, @Req() req: Request) {
     const loggedUserId = (req.user as User).id;
 
-    const command = ReviewMapper.toCreateCommand(loggedUserId,createReviewRequest);
+    const command = ReviewMapper.toCreateCommand(loggedUserId, createReviewRequest);
     const created = await this.createReviewCommandHandler.handle(command);
 
     return ReviewMapper.toResponse(created);
@@ -91,16 +97,13 @@ export class ReviewController {
 
   @Patch(':id/status')
   @ApiOperation({ summary: 'Update review status' })
-  async updateStatus(
-    @Param('id') id: string,
-    @Body() request: UpdateReviewStatusRequest
-  ) {
+  async updateStatus(@Param('id') id: string, @Body() request: UpdateReviewStatusRequest) {
     const result = await this.updateReviewStatusCommandHandler.handle({
       id,
       status: request.status,
     });
 
-    return  ReviewMapper.toResponse(result);
+    return ReviewMapper.toResponse(result);
   }
 
   @Delete(':id')

@@ -4,6 +4,7 @@ import { UnitTransactionTypeEnum } from '../../domain/unit-transaction-type.enum
 export class CreateUnitCommand {
   constructor(
     public readonly name: string,
+    public readonly slug: string,
     public readonly description: string,
     public readonly surface: number,
     public readonly status: UnitStatusEnum,
@@ -24,6 +25,6 @@ export class CreateUnitCommand {
     public readonly bedroom: string,
     public readonly floor: string,
     public readonly transactionType: UnitTransactionTypeEnum,
-    public readonly characteristics: string[],
+    public readonly characteristics: string[]
   ) {}
 }

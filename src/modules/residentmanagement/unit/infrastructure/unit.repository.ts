@@ -1,14 +1,12 @@
-import { IUnitRepository } from '../domain/unit.repository.interface';
-import { Unit } from '../domain/unit.entity';
 import { Injectable } from '@nestjs/common';
-import { FetchUnitsQuery } from '../application/command/fetch-units.query';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { applyFilters } from '../../../../shared/filters/query.dynamic-filters';
 import { KnexService } from '../../../../shared/infrastructure/database/knex.service';
 import { PaginationResponse } from '../../../../shared/ui/response/pagination.response';
 import { applyPagination } from '../../../../shared/utils/pagination.util';
-import { applySearchFilter } from 'src/shared/filters/query.search-filter';
-import { applyFilters } from '../../../../shared/filters/query.dynamic-filters';
-import { Residence } from '../../residence/domain/residence.entity';
-
+import { FetchUnitsQuery } from '../application/command/fetch-units.query';
+import { Unit } from '../domain/unit.entity';
+import { IUnitRepository } from '../domain/unit.repository.interface';
 
 @Injectable()
 export class UnitRepositoryImpl implements IUnitRepository {
@@ -17,6 +15,7 @@ export class UnitRepositoryImpl implements IUnitRepository {
   async create(unit: Partial<Unit>): Promise<Unit | undefined> {
     const unitData = {
       name: unit.name,
+      slug: unit.slug,
       description: unit.description,
       surface: unit.surface,
       status: unit.status,
@@ -43,19 +42,16 @@ export class UnitRepositoryImpl implements IUnitRepository {
 
     const knex = this.knexService.connection;
 
-    const insertedUnit = await knex('units')
-      .insert(unitData)
-      .returning('*');
+    const insertedUnit = await knex('units').insert(unitData).returning('*');
 
     // Insert gallery images
     if (unit.gallery && unit.gallery.length > 0) {
-      await knex('unit_gallery')
-        .insert(
-          unit.gallery.map(media => ({
-            unit_id: insertedUnit[0].id,
-            media_id: media.id,
-          }))
-        );
+      await knex('unit_gallery').insert(
+        unit.gallery.map((media) => ({
+          unit_id: insertedUnit[0].id,
+          media_id: media.id,
+        }))
+      );
     }
 
     return this.findById(insertedUnit[0].id);
@@ -68,26 +64,38 @@ export class UnitRepositoryImpl implements IUnitRepository {
       .withGraphFetched('[residence, gallery, featureImage, unitType]');
   }
 
+  async findBySlug(slug: string): Promise<Unit | undefined> {
+    return Unit.query()
+      .findOne('slug', slug)
+      .whereNull('deletedAt')
+      .withGraphFetched('[residence, gallery, featureImage, unitType]');
+  }
+
   async findAll(query: FetchUnitsQuery): Promise<{ data: Unit[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery, unitTypeId } = query;
 
     let unitQuery = Unit.query()
       .modify((qb) => applyFilters(qb, { unitTypeId }, Unit.tableName))
       .joinRelated('unitType')
-      .whereNull('deletedAt')
+      .whereNull('units.deletedAt')
       .withGraphFetched('[residence, gallery, featureImage, unitType]');
 
-
-    const columnsToSearchAndSort = ['name', 'description', 'roomType', 'status'];
-    unitQuery = applySearchFilter(unitQuery, searchQuery, columnsToSearchAndSort);
+    const columnsToSearch = ['name', 'description', 'roomType', 'status'];
 
     if (sortBy && sortOrder) {
-      if (columnsToSearchAndSort.includes(sortBy)) {
+      const columnsToSort = ['units.name', 'units.description', 'units.roomType', 'units.status'];
+      if (columnsToSort.includes(sortBy)) {
         unitQuery = unitQuery.orderBy(sortBy, sortOrder);
       }
     }
 
-    const { paginatedQuery, totalCount, totalPages } = await applyPagination(unitQuery, page, limit);
+    unitQuery = applySearchFilter(unitQuery, searchQuery, columnsToSearch);
+
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      unitQuery,
+      page,
+      limit
+    );
 
     return {
       data: paginatedQuery,
@@ -135,12 +143,11 @@ export class UnitRepositoryImpl implements IUnitRepository {
         .select('media_id')
         .where('unit_id', id);
 
-      const currentImageIds = currentGalleryImages.map(image => image.mediaId);
-      const newImageIds = data.gallery.map(media => media.id);
+      const currentImageIds = currentGalleryImages.map((image) => image.mediaId);
+      const newImageIds = data.gallery.map((media) => media.id);
 
-      const imagesToRemove = currentImageIds.filter(id => !newImageIds.includes(id));
+      const imagesToRemove = currentImageIds.filter((id) => !newImageIds.includes(id));
 
-    
       if (Array.isArray(imagesToRemove)) {
         const validImagesToRemove = imagesToRemove.filter((id) => !!id);
         if (validImagesToRemove.length > 0) {
@@ -151,15 +158,14 @@ export class UnitRepositoryImpl implements IUnitRepository {
         }
       }
 
-      const imagesToInsert = newImageIds.filter(id => !currentImageIds.includes(id));
+      const imagesToInsert = newImageIds.filter((id) => !currentImageIds.includes(id));
       if (imagesToInsert.length > 0) {
-        await knex('unit_gallery')
-          .insert(
-            imagesToInsert.map(mediaId => ({
-              unit_id: id,
-              media_id: mediaId,
-            }))
-          );
+        await knex('unit_gallery').insert(
+          imagesToInsert.map((mediaId) => ({
+            unit_id: id,
+            media_id: mediaId,
+          }))
+        );
       }
     }
 
@@ -169,13 +175,8 @@ export class UnitRepositoryImpl implements IUnitRepository {
   async softDelete(id: string): Promise<void> {
     const knex = this.knexService.connection;
 
-    await Unit.query()
-      .patch({ deletedAt: new Date() })
-      .where('id', id)
-      .whereNull('deletedAt');
+    await Unit.query().patch({ deletedAt: new Date() }).where('id', id).whereNull('deletedAt');
 
-    await knex('unit_gallery')
-      .where('unit_id', id)
-      .delete();
+    await knex('unit_gallery').where('unit_id', id).delete();
   }
 }

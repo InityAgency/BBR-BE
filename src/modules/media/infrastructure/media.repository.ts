@@ -65,7 +65,6 @@ export class MediaRepositoryImpl implements IMediaRepository {
       .whereNull('companies_avatar.contact_person_avatar_id')
       .whereNull('career_contact_forms.cv_id')
       .whereNull('amenities.icon_id')
-      .whereNull('lifestyles.image_id')
       .whereNull('ranking_categories.featured_image_id')
       .whereNull('residences.featured_image_id')
       .whereNull('residences_video.video_tour_id')

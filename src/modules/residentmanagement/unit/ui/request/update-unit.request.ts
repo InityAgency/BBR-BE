@@ -1,5 +1,14 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 import { UnitStatusEnum } from '../../domain/unit-status.enum';
 import { UnitTransactionTypeEnum } from '../../domain/unit-transaction-type.enum';
 
@@ -8,6 +17,11 @@ export class UpdateUnitRequest {
   @IsString()
   @MaxLength(126)
   name: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1024)
+  slug: string;
 
   @IsNotEmpty()
   @IsString()
@@ -78,19 +92,19 @@ export class UpdateUnitRequest {
 
   @IsNotEmpty()
   @IsString()
-  about: string="test";
+  about: string = 'test';
 
   @IsNotEmpty()
   @IsString()
-  bathrooms: string="test";
+  bathrooms: string = 'test';
 
   @IsNotEmpty()
   @IsString()
-  bedroom: string="test";
+  bedroom: string = 'test';
 
   @IsNotEmpty()
   @IsString()
-  floor: string="test";
+  floor: string = 'test';
 
   @IsNotEmpty()
   @IsEnum(UnitTransactionTypeEnum)

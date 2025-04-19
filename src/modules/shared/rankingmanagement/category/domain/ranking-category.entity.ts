@@ -8,6 +8,7 @@ import { RankingCategoryCriteria } from './ranking-category-criteria.entity';
 export class RankingCategory extends Model {
   id!: string;
   name!: string;
+  slug!: string;
   title!: string;
   description!: string;
   rankingCategoryType!: RankingCategoryType;
@@ -69,5 +70,15 @@ export class RankingCategory extends Model {
 
   $beforeUpdate() {
     this.updatedAt = new Date();
+  }
+
+  static slugify(input: string): string {
+    return input
+      .toLowerCase()
+      .normalize('NFD') // uklanja dijakritike (č, ć, š, ž...)
+      .replace(/[\u0300-\u036f]/g, '') // dodatni korak da se uklone svi akcenti
+      .replace(/[^a-z0-9]+/g, '-') // sve što nije alfanumeričko pretvori u "-"
+      .replace(/^-+|-+$/g, '') // ukloni višak '-' sa početka i kraja
+      .replace(/-{2,}/g, '-'); // zameni višestruke '-' jednim
   }
 }

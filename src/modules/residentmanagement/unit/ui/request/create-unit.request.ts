@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
   MaxLength,
@@ -16,6 +17,11 @@ export class CreateUnitRequest {
   @IsString()
   @MaxLength(126)
   name: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1024)
+  slug: string;
 
   @IsNotEmpty()
   @IsString()
@@ -86,19 +92,19 @@ export class CreateUnitRequest {
 
   @IsNotEmpty()
   @IsString()
-  about: string ="test";
+  about: string = 'test';
 
   @IsNotEmpty()
   @IsString()
-  bathrooms: string ="test";
+  bathrooms: string = 'test';
 
   @IsNotEmpty()
   @IsString()
-  bedroom: string ="test";
+  bedroom: string = 'test';
 
   @IsNotEmpty()
   @IsString()
-  floor: string ="test";
+  floor: string = 'test';
 
   @IsNotEmpty()
   @IsEnum(UnitTransactionTypeEnum)

@@ -18,7 +18,7 @@ export class UpdateUnitCommandHandler {
     private readonly unitRepository: IUnitRepository,
     private readonly residenceRepository: IResidenceRepository,
     private readonly mediaRepository: IMediaRepository,
-    private readonly unitTypeRepository: IUnitTypeRepository,
+    private readonly unitTypeRepository: IUnitTypeRepository
   ) {}
 
   @LogMethod()
@@ -51,8 +51,17 @@ export class UpdateUnitCommandHandler {
       throw new NotFoundException(`Gallery image(s) not found for id(s): ${missingIds.join(', ')}`);
     }
 
+    const rawSlug = command.slug?.trim() ?? command.name!;
+    const slug = Unit.slugify(rawSlug);
+
+    const existing = await this.unitRepository.findBySlug(slug);
+    if (existing && existing.id !== command.id) {
+      throw new ConflictException(`Unit with slug ${slug} already exists`);
+    }
+
     const updateData: Partial<Unit> = {
       name: command.name,
+      slug: slug,
       description: command.description,
       surface: command.surface,
       status: command.status,

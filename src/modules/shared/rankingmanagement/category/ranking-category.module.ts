@@ -19,6 +19,7 @@ import { RankingCriteriaRepositoryImpl } from '../criteria/infrastructure/rankin
 import { AssignResidencesToRankingCategoryCommandHandler } from './application/handler/assign-residences-to-ranking-category.command.handler';
 import { IRankingScoreRepository } from 'src/modules/residentmanagement/ranking_score/domain/residence-ranking-score.repository.interface';
 import { ResidenceRankingScoreRepositoryImpl } from 'src/modules/residentmanagement/ranking_score/infrastructure/residence-ranking-score.repository';
+import { FindRankingCategoryBySlugCommandQuery } from './application/query/find-by-slug-ranking-category.query';
 @Module({
   imports: [DatabaseModule, MediaModule],
   controllers: [RankingCategoryController],
@@ -42,6 +43,7 @@ import { ResidenceRankingScoreRepositoryImpl } from 'src/modules/residentmanagem
     CreateRankingCategoryCommandHandler,
     FindRankingCategoryByIdCommandQuery,
     FetchRankingCategoriesCommandQuery,
+    FindRankingCategoryBySlugCommandQuery,
     UpdateRankingCategoryCommandHandler,
     UpdateRankingCategoryStatusCommandHandler,
     DeleteRankingCategoryCommandHandler,

@@ -20,6 +20,7 @@ import { AssignWeightsToRankingCategoryCommandHandler } from '../application/han
 import { AssignResidencesToRankingCategoryCommand } from '../application/command/assign-residences-to-ranking-category.command';
 import { AssignResidencesToRankingCategoryRequest } from './request/assign-residences-to-ranking-category.request';
 import { AssignResidencesToRankingCategoryCommandHandler } from '../application/handler/assign-residences-to-ranking-category.command.handler';
+import { FindRankingCategoryBySlugCommandQuery } from '../application/query/find-by-slug-ranking-category.query';
 
 @ApiTags('Ranking Categories')
 @Controller('ranking-categories')
@@ -27,6 +28,7 @@ export class RankingCategoryController {
   constructor(
     private readonly fetchRankingCategoriesCommandQuery: FetchRankingCategoriesCommandQuery,
     private readonly findRankingCategoryByIdCommandQuery: FindRankingCategoryByIdCommandQuery,
+    private readonly findRankingCategoryBySlugCommandQuery: FindRankingCategoryBySlugCommandQuery,
     private readonly createRankingCategoryCommandHandler: CreateRankingCategoryCommandHandler,
     private readonly updateRankingCategoryCommandHandler: UpdateRankingCategoryCommandHandler,
     private readonly updateRankingCategoryStatusCommandHandler: UpdateRankingCategoryStatusCommandHandler,
@@ -59,6 +61,15 @@ export class RankingCategoryController {
       data: mappedRankingCategories,
       pagination,
     };
+  }
+
+  @Get('slug/:slug')
+  @ApiOperation({ summary: 'Get ranking category by slug' })
+  @ApiResponse({ type: RankingCategoryResponse })
+  async findBySlug(@Param('slug') slug: string) {
+    const rankingCategory = await this.findRankingCategoryBySlugCommandQuery.handle(slug);
+
+    return RankingCategoryMapper.toResponse(rankingCategory);
   }
 
   @Get(':id')

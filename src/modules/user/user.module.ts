@@ -25,6 +25,7 @@ import { UpdateUserProfileCommandHandler } from './application/handler/update-us
 import { MediaModule } from '../media/media.module';
 import { UpdateUserStatusCommandHandler } from './application/handler/update-user-status.command.handler';
 import { UserMapper } from './ui/mappers/user.mapper';
+import { FindByEmailUserQueryHandler } from './application/query/find-by-email-user.command.query';
 
 @Module({
   imports: [DatabaseModule, EmailModule, MediaModule],
@@ -58,8 +59,9 @@ import { UserMapper } from './ui/mappers/user.mapper';
     InviteUserCommandHandler,
     UpdateUserProfileCommandHandler,
     UpdateUserStatusCommandHandler,
+    FindByEmailUserQueryHandler,
     ConfigService,
-    UserMapper
+    UserMapper,
   ],
   exports: [SendVerifyEmailCommandHandler],
 })

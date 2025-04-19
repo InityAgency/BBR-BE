@@ -16,6 +16,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   async create(rankingCategory: Partial<RankingCategory>): Promise<RankingCategory | undefined> {
     const rankingCategoryData = {
       name: rankingCategory.name,
+      slug: rankingCategory.slug,
       description: rankingCategory.description,
       rankingCategoryTypeId: rankingCategory.rankingCategoryType?.id,
       residenceLimitation: rankingCategory.residenceLimitation,
@@ -88,6 +89,10 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
   async findByName(name: string): Promise<RankingCategory | undefined> {
     return RankingCategory.query().findOne({ name }).whereNull('deletedAt');
+  }
+
+  async findBySlug(slug: string): Promise<RankingCategory | undefined> {
+    return RankingCategory.query().findOne({ slug }).whereNull('deletedAt');
   }
 
   async update(id: string, data: Partial<RankingCategory>): Promise<RankingCategory | undefined> {

@@ -7,6 +7,10 @@ export class UpdateRankingCategoryRequest {
   @MaxLength(126)
   name: string;
 
+  @IsOptional()
+  @IsString()
+  slug: string;
+
   @IsString()
   @MaxLength(255)
   title: string;

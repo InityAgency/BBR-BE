@@ -8,6 +8,7 @@ import { UnitTransactionTypeEnum } from './unit-transaction-type.enum';
 export class Unit extends Model {
   id!: string;
   name!: string;
+  slug!: string;
   description: string;
   about: string;
   bathrooms: string;
@@ -23,7 +24,7 @@ export class Unit extends Model {
   exclusiveOfferEndDate: Date;
   roomType: string;
   roomAmount: number;
-  unitTypeId!:string;
+  unitTypeId!: string;
   unitType: UnitType;
   serviceType: string;
   serviceAmount: number;
@@ -91,5 +92,15 @@ export class Unit extends Model {
     const feature = [this.featureImage];
 
     return [...gallery, ...feature];
+  }
+
+  static slugify(input: string): string {
+    return input
+      .toLowerCase()
+      .normalize('NFD') // uklanja dijakritike (č, ć, š, ž...)
+      .replace(/[\u0300-\u036f]/g, '') // dodatni korak da se uklone svi akcenti
+      .replace(/[^a-z0-9]+/g, '-') // sve što nije alfanumeričko pretvori u "-"
+      .replace(/^-+|-+$/g, '') // ukloni višak '-' sa početka i kraja
+      .replace(/-{2,}/g, '-'); // zameni višestruke '-' jednim
   }
 }
