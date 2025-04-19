@@ -19,14 +19,14 @@ export class CreateCityCommandHandler {
 
   @LogMethod()
   async handle(command: CreateCityCommand): Promise<City> {
-    const existingCity = await this.cityRepository.findByName(command.name);
-    if (existingCity) {
-      throw new ConflictException('City with this name already exists');
-    }
-
     const country = await this.countryRepository.findById(command.countryId);
     if (!country) {
       throw new NotFoundException('Country not found');
+    }
+
+    const existingCity = await this.cityRepository.findByName(command.name);
+    if (existingCity && existingCity.countryId === country.id) {
+      throw new ConflictException('City with this name already exists in this country');
     }
 
     const city = await this.cityRepository.create({

@@ -24,14 +24,18 @@ export class UpdateCityCommandHandler {
       throw new NotFoundException('City not found');
     }
 
-    const existingCityByName = await this.cityRepository.findByName(command.name ?? '');
-    if (existingCityByName && existingCityByName.id !== command.id) {
-      throw new ConflictException('City with this name already exists');
-    }
-
     const country = await this.countryRepository.findById(command.countryId);
     if (!country) {
       throw new NotFoundException('Country not found');
+    }
+
+    const existingCityByName = await this.cityRepository.findByName(command.name ?? '');
+    if (
+      existingCityByName &&
+      existingCityByName.id !== command.id &&
+      existingCityByName.countryId === country.id
+    ) {
+      throw new ConflictException('City with this name already exists');
     }
 
     const updatedCity = await this.cityRepository.update(command.id, {
