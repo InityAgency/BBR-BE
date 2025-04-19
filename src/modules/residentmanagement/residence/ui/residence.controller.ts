@@ -29,6 +29,7 @@ import { ResidenceMapper } from './mappers/residence.mapper';
 import { CreateResidenceRequest } from './request/create-residence.request';
 import { UpdateResidenceRequest } from './request/update-residence.request';
 import { ResidenceResponse } from './response/residence.response';
+import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 
 ApiTags('Residence');
 @Controller('residences')
@@ -58,6 +59,7 @@ export class ResidenceController {
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
     @Query('status') status?: ResidenceStatusEnum[],
+    @Query('developmentStatus') developmentStatus?: DevelopmentStatusEnum[],
     @Query('cityId') cityId?: string[]
   ): Promise<{ data: ResidenceResponse[]; pagination: PaginationResponse }> {
     const fetchQuery = new FetchResidencesQuery(
@@ -67,6 +69,7 @@ export class ResidenceController {
       sortBy,
       sortOrder,
       status,
+      developmentStatus,
       cityId
     );
 

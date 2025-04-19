@@ -10,6 +10,7 @@ import { FindAllResidencesCommandQuery } from '../application/query/find-all-res
 import { FindByIdResidenceCommandQuery } from '../application/query/find-by-id-residence.query';
 import { ResidencePublicResponse } from './response/residence.public.response';
 import { FindBySlugResidenceCommandQuery } from '../application/query/find-by-slug-residence.query';
+import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 
 ApiTags('Residence');
 @Controller('public/residences')
@@ -35,6 +36,7 @@ export class ResidencePublicController {
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
     @Query('status') status?: ResidenceStatusEnum[],
+    @Query('developmentStatus') developmentStatus?: DevelopmentStatusEnum[],
     @Query('cityId') cityId?: string[],
     @Query('brandId') brandId?: string[],
     @Query('address') address?: string[]
@@ -46,6 +48,7 @@ export class ResidencePublicController {
       sortBy,
       sortOrder,
       status,
+      developmentStatus,
       cityId,
       brandId,
       address

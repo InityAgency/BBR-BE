@@ -1,9 +1,11 @@
 import { OrderByDirection } from 'objection';
 import { BaseFetchQuery } from 'src/shared/query/base-fetch.query';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
+import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 
 export class FetchResidencesQuery extends BaseFetchQuery {
   status?: ResidenceStatusEnum[];
+  developmentStatus?: DevelopmentStatusEnum[];
   cityId?: string[];
   brandId?: string[];
   address?: string[];
@@ -14,12 +16,14 @@ export class FetchResidencesQuery extends BaseFetchQuery {
     sortBy?: string,
     sortOrder?: OrderByDirection,
     status?: ResidenceStatusEnum[],
+    developmentStatus?: DevelopmentStatusEnum[],
     cityId?: string[],
     brandId?: string[],
     address?: string[]
   ) {
     super(searchQuery, page, limit, sortBy, sortOrder);
     this.status = status;
+    this.developmentStatus = developmentStatus;
     this.cityId = cityId;
     this.brandId = brandId;
     this.address = address;

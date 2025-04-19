@@ -72,6 +72,7 @@ export class ResidenceRepository implements IResidenceRepository {
       sortOrder,
       searchQuery: searchQuery,
       status,
+      developmentStatus,
       cityId,
       brandId,
       address,
@@ -79,7 +80,13 @@ export class ResidenceRepository implements IResidenceRepository {
 
     const baseQuery = Residence.query()
       .whereNull('residences.deleted_at')
-      .modify((qb) => applyFilters(qb, { status, cityId, brandId, address }, Residence.tableName))
+      .modify((qb) =>
+        applyFilters(
+          qb,
+          { status, cityId, brandId, address, developmentStatus },
+          Residence.tableName
+        )
+      )
       .joinRelated('city')
       .leftJoinRelated('company')
       .leftJoinRelated('brand')
