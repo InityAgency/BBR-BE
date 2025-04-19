@@ -8,13 +8,14 @@ import { FetchCitiesCommandQuery } from '../application/query/fetch-cities.comma
 import { FindCityByIdCommandQuery } from '../application/query/find-city-by-id.command.query';
 import { CityMapper } from './mapper/city.mapper';
 import { CityPublicResponse } from './response/city.public.response';
+import { FetchCitiesPublicCommandQuery } from '../application/query/fetch-cities.public.command.query';
 
 @ApiTags('Cities')
 @Controller('public/cities')
 export class CityPublicController {
   constructor(
     private readonly findCityByIdCommandQuery: FindCityByIdCommandQuery,
-    private readonly fetchCitiesCommandQuery: FetchCitiesCommandQuery
+    private readonly fetchCitiesPublicCommandQuery: FetchCitiesPublicCommandQuery
   ) {}
 
   @Get()
@@ -46,7 +47,7 @@ export class CityPublicController {
     @Query('sortOrder') sortOrder?: OrderByDirection
   ): Promise<{ data: CityPublicResponse[]; pagination: PaginationResponse }> {
     const fetchQuery = new FetchCitiesQuery(query, page, limit, sortBy, sortOrder);
-    const cities = await this.fetchCitiesCommandQuery.handler(fetchQuery);
+    const cities = await this.fetchCitiesPublicCommandQuery.handler(fetchQuery);
     return {
       data: cities.data.map((city) => CityMapper.mapToPublicResponse(city)),
       pagination: cities.pagination,

@@ -87,6 +87,58 @@ export class CityRepositoryImpl implements ICityRepository {
   }
 
   @LogMethod()
+  async findAllPublic(
+    fetchQuery: FetchCitiesQuery
+  ): Promise<{ data: City[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery, countryId } = fetchQuery;
+
+    let query = City.query()
+      .modify((qb) => applyFilters(qb, { countryId }, City.tableName))
+      .whereExists(function () {
+        this.select('*')
+          .from('residences')
+          .whereRaw('residences.city_id = cities.id')
+          .whereNull('residences.deleted_at');
+      })
+      .withGraphFetched('[country]'); // Assuming "country" is a relation to be fetched
+
+    const columnsToSearch = [
+      'cities.name',
+      'cities.ascii_name',
+      'cities.population',
+      'cities.x_coordinate',
+      'cities.y_coordinate',
+    ];
+    const columnsToSort = [
+      'name',
+      'asciiName',
+      'population',
+      'timezone',
+      'xCoordinate',
+      'yCoordinate',
+    ];
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
+
+    if (sortBy && sortOrder) {
+      if (columnsToSort.includes(sortBy)) {
+        query = query.orderBy(sortBy, sortOrder);
+      }
+    }
+
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
+
+    return {
+      data: paginatedQuery,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page,
+        limit,
+      },
+    };
+  }
+
+  @LogMethod()
   async findByName(name: string): Promise<City | undefined> {
     return City.query().findOne({ name }).whereNull('deleted_at');
   }

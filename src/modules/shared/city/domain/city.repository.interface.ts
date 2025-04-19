@@ -8,6 +8,9 @@ export abstract class ICityRepository {
   abstract findAll(
     fetchQuery: FetchCitiesQuery
   ): Promise<{ data: City[]; pagination: PaginationResponse }>;
+  abstract findAllPublic(
+    fetchQuery: FetchCitiesQuery
+  ): Promise<{ data: City[]; pagination: PaginationResponse }>;
   abstract findByName(name: string): Promise<City | undefined>;
   abstract update(id: string, data: Partial<City>): Promise<City | undefined>;
   abstract delete(id: string): Promise<void>;
