@@ -12,6 +12,7 @@ import { FindUnitByIdCommandQuery } from '../application/query/find-by-id-unit.q
 import { FetchUnitsCommandQuery } from '../application/query/fetch-units.query';
 import { OrderByDirection } from 'objection';
 import { FetchUnitsQuery } from '../application/command/fetch-units.query';
+import { UnitStatusEnum } from '../domain/unit-status.enum';
 
 @ApiTags('Units')
 @Controller('units')
@@ -34,9 +35,10 @@ export class UnitController {
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
     @Query('unitTypeId') unitTypeId?: string[],
+    @Query('status') status?: UnitStatusEnum[]
   ) {
     const { data, pagination } = await this.fetchUnitsCommandQuery.handle(
-      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, unitTypeId)
+      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, unitTypeId, status)
     );
 
     const mappedUnits = data.map((unit: Unit) => UnitMapper.toResponse(unit));
@@ -69,10 +71,7 @@ export class UnitController {
   @Put(':id')
   @ApiOperation({ summary: 'Update a unit' })
   @ApiResponse({ type: UnitResponse })
-  async update(
-    @Param('id') id: string,
-    @Body() updateUnitRequest: UpdateUnitRequest
-  ) {
+  async update(@Param('id') id: string, @Body() updateUnitRequest: UpdateUnitRequest) {
     const command = UnitMapper.toUpdateCommand(id, updateUnitRequest);
     const updatedUnit = await this.updateUnitCommandHandler.handle(command);
 

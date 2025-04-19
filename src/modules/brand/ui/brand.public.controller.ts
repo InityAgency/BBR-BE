@@ -40,7 +40,6 @@ export class BrandPublicController {
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
-    @Query('status') status?: BrandStatus[],
     @Query('brandTypeId') brandTypeId?: string[]
   ): Promise<{ data: BrandResponse[]; pagination: PaginationResponse }> {
     const fetchQuery = new FetchBrandsQuery(
@@ -49,7 +48,7 @@ export class BrandPublicController {
       limit,
       sortBy,
       sortOrder,
-      status,
+      [BrandStatus.ACTIVE],
       brandTypeId
     );
     const { data, pagination } = await this.fetchAllBrandHandler.handle(fetchQuery);

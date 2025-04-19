@@ -7,13 +7,14 @@ import { FindUnitByIdCommandQuery } from '../application/query/find-by-id-unit.q
 import { FetchUnitsCommandQuery } from '../application/query/fetch-units.query';
 import { OrderByDirection } from 'objection';
 import { FetchUnitsQuery } from '../application/command/fetch-units.query';
+import { UnitStatusEnum } from '../domain/unit-status.enum';
 
 @ApiTags('Units')
 @Controller('public/units')
 export class UnitPublicController {
   constructor(
     private readonly fetchUnitsCommandQuery: FetchUnitsCommandQuery,
-    private readonly findUnitByIdCommandQuery: FindUnitByIdCommandQuery,
+    private readonly findUnitByIdCommandQuery: FindUnitByIdCommandQuery
   ) {}
 
   @Get()
@@ -25,10 +26,12 @@ export class UnitPublicController {
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
-    @Query('unitTypeId') unitTypeId?: string[],
+    @Query('unitTypeId') unitTypeId?: string[]
   ) {
     const { data, pagination } = await this.fetchUnitsCommandQuery.handle(
-      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, unitTypeId)
+      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, unitTypeId, [
+        UnitStatusEnum.ACTIVE,
+      ])
     );
 
     const mappedUnits = data.map((unit: Unit) => UnitMapper.toPublicResponse(unit));

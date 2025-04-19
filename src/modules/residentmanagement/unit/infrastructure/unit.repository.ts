@@ -72,15 +72,15 @@ export class UnitRepositoryImpl implements IUnitRepository {
   }
 
   async findAll(query: FetchUnitsQuery): Promise<{ data: Unit[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery, unitTypeId } = query;
+    const { page, limit, sortBy, sortOrder, searchQuery, unitTypeId, status } = query;
 
     let unitQuery = Unit.query()
-      .modify((qb) => applyFilters(qb, { unitTypeId }, Unit.tableName))
+      .modify((qb) => applyFilters(qb, { status, unitTypeId }, Unit.tableName))
       .joinRelated('unitType')
       .whereNull('units.deletedAt')
       .withGraphFetched('[residence, gallery, featureImage, unitType]');
 
-    const columnsToSearch = ['name', 'description', 'roomType', 'status'];
+    const columnsToSearch = ['name', 'description', 'roomType'];
 
     if (sortBy && sortOrder) {
       const columnsToSort = ['units.name', 'units.description', 'units.roomType', 'units.status'];
