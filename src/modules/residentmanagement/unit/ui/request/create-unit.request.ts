@@ -92,19 +92,19 @@ export class CreateUnitRequest {
 
   @IsNotEmpty()
   @IsString()
-  about: string = 'test';
+  about: string;
 
   @IsNotEmpty()
   @IsString()
-  bathrooms: string = 'test';
+  bathrooms: string;
 
   @IsNotEmpty()
   @IsString()
-  bedroom: string = 'test';
+  bedroom: string;
 
   @IsNotEmpty()
   @IsString()
-  floor: string = 'test';
+  floor: string;
 
   @IsNotEmpty()
   @IsEnum(UnitTransactionTypeEnum)
@@ -112,5 +112,5 @@ export class CreateUnitRequest {
 
   @IsArray()
   @IsString({ each: true })
-  characteristics: string[] = [];
+  characteristics: string[];
 }
