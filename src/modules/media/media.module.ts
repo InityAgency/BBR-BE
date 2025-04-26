@@ -47,6 +47,12 @@ import {
 import {
   CareerContactFormMediaStorageService
 } from '../contactform/career/infrastructure/media/career-contact-form-media-storage.service';
+import {
+  ContactFormStorageConfig
+} from '../contactform/contactform/infrastructure/media/contact-form-storage-config.service';
+import {
+  ContactFormMediaStorageService
+} from '../contactform/contactform/infrastructure/media/contact-form-media-storage.service';
 @Global()
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
@@ -92,6 +98,7 @@ import {
         residenceStorage: ResidenceMediaStorageService,
         residenceUnitStorage: ResidenceUnitMediaStorageService,
         careerContactFormStorage: CareerContactFormMediaStorageService,
+        errorContactFormStorage: ContactFormMediaStorageService,
       ) => [
         brandStorage,
         companyStorage,
@@ -102,6 +109,7 @@ import {
         residenceStorage,
         residenceUnitStorage,
         careerContactFormStorage,
+        errorContactFormStorage
       ],
       inject: [
         BrandMediaStorageService,
@@ -111,7 +119,8 @@ import {
         RankingCategoryMediaStorageService,
         ResidenceMediaStorageService,
         ResidenceUnitMediaStorageService,
-        CareerContactFormMediaStorageService
+        CareerContactFormMediaStorageService,
+        ContactFormMediaStorageService,
       ],
     },
     BrandStorageConfig,
@@ -132,6 +141,8 @@ import {
     ResidenceUnitMediaStorageService,
     CareerContactFormStorageConfig,
     CareerContactFormMediaStorageService,
+    ContactFormStorageConfig,
+    ContactFormMediaStorageService,
   ],
 
   exports: [
@@ -159,6 +170,8 @@ import {
     ResidenceUnitMediaStorageService,
     CareerContactFormStorageConfig,
     CareerContactFormMediaStorageService,
+    ContactFormStorageConfig,
+    ContactFormMediaStorageService,
   ],
 })
 export class MediaModule {}

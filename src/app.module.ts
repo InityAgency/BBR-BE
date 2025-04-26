@@ -36,6 +36,7 @@ import { ResidenceRankingScoreModule } from './modules/residentmanagement/rankin
 import { RequestModule } from './modules/requestmanagement/request/request.module';
 import { LeadModule } from './modules/requestmanagement/lead/lead.module';
 import { ReviewModule } from './modules/residentmanagement/review/review.module';
+import { ContactFormModule } from './modules/contactform/contactform/contact-form.module';
 
 @Module({
   imports: [
@@ -78,7 +79,8 @@ import { ReviewModule } from './modules/residentmanagement/review/review.module'
     ResidenceRankingScoreModule,
     RequestModule,
     LeadModule,
-    ReviewModule
+    ReviewModule,
+    ContactFormModule
   ],
   providers: [],
 })

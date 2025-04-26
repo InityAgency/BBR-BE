@@ -59,6 +59,7 @@ export class MediaRepositoryImpl implements IMediaRepository {
       .leftJoin('unit_gallery', 'unit_gallery.media_id', 'media.id')
       .leftJoin('units', 'units.feature_image_id', 'media.id')
       .leftJoin('user_buyers', 'user_buyers.image_id', 'media.id')
+      .leftJoin('contact_forms', 'contact_forms.attachmentId', 'media.id')
       .whereNull('media.deleted_at')
       .whereNull('brands.logo_id')
       .whereNull('companies.image_id')
@@ -72,6 +73,7 @@ export class MediaRepositoryImpl implements IMediaRepository {
       .whereNull('unit_gallery.media_id')
       .whereNull('units.feature_image_id')
       .whereNull('user_buyers.image_id')
+      .whereNull('contact_forms.attachmentId')
       .andWhere('media.created_at', '>', date);
 
     const mediaList = rawMediaList.map((data) => Media.fromJson(data));
