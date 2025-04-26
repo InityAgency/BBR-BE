@@ -110,6 +110,9 @@ importers:
       rxjs:
         specifier: ^7.8.1
         version: 7.8.2
+      stripe:
+        specifier: ^18.0.0
+        version: 18.0.0
       swagger-ui-express:
         specifier: ^5.0.1
         version: 5.0.1(express@5.0.1)
@@ -4907,6 +4910,10 @@ packages:
   strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
+
+  stripe@18.0.0:
+    resolution: {integrity: sha512-3Fs33IzKUby//9kCkCa1uRpinAoTvj6rJgQ2jrBEysoxEvfsclvXdna1amyEYbA2EKkjynuB4+L/kleCCaWTpA==}
+    engines: {node: '>=12.*'}
 
   strnum@1.1.2:
     resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
@@ -11368,6 +11375,11 @@ snapshots:
     optional: true
 
   strip-json-comments@3.1.1: {}
+
+  stripe@18.0.0:
+    dependencies:
+      '@types/node': 22.13.10
+      qs: 6.14.0
 
   strnum@1.1.2: {}
 

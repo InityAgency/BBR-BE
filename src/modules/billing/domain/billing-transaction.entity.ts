@@ -1,0 +1,41 @@
+import { Model, RelationMappings } from 'objection';
+import { BillingProductTypeEnum } from 'src/shared/types/product-type.enum';
+import { StripeCustomer } from './stripe-customer.entity';
+
+export class BillingTransaction extends Model {
+  id!: string;
+  userId!: string;
+  paymentIntentId!: string;
+  invoiceId?: string;
+  type!: BillingProductTypeEnum;
+  amount!: number;
+  currency!: string;
+  status!: string;
+  createdAt!: Date;
+  updatedAt!: Date;
+
+  customer?: StripeCustomer;
+
+  static tableName = 'billing_transactions';
+
+  static relationMappings: RelationMappings = {
+    customer: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => StripeCustomer,
+      join: {
+        from: 'billing_transactions.userId',
+        to: 'stripe_customers.userId',
+      },
+    },
+  };
+
+  async $beforeInsert() {
+    const now = new Date();
+    this.createdAt = now;
+    this.updatedAt = now;
+  }
+
+  async $beforeUpdate() {
+    this.updatedAt = new Date();
+  }
+}

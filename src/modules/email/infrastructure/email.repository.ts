@@ -25,4 +25,17 @@ export class EmailRepository implements IEmailRepository {
       Logger.error(e);
     }
   }
+  @LogMethod()
+  async sendInvoice(to: string, subject: string, pdf: string, html: string): Promise<any> {
+    try {
+      await this.mailerService.sendMail({
+        to,
+        subject,
+        template: 'invoice',
+        context: { pdf, html },
+      });
+    } catch (e: any) {
+      Logger.error(e);
+    }
+  }
 }

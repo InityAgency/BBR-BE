@@ -15,6 +15,8 @@ export class UserBuyer extends Model {
   preferredResidenceLocation?: string;
   lifestyles?: Lifestyle[];
   unitTypes: UnitType[];
+  createdAt!: Date;
+  updatedAt!: Date;
 
   static tableName = 'user_buyers';
 
@@ -46,7 +48,7 @@ export class UserBuyer extends Model {
         from: 'user_buyers.user_id',
         through: {
           from: 'user_buyer_lifestyles.user_id',
-          to: 'user_buyer_lifestyles.lifestyle_id', 
+          to: 'user_buyer_lifestyles.lifestyle_id',
         },
         to: 'lifestyles.id',
       },
@@ -60,4 +62,13 @@ export class UserBuyer extends Model {
       },
     },
   };
+
+  async $beforeInsert() {
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
+  }
+
+  async $beforeUpdate() {
+    this.updatedAt = new Date();
+  }
 }
