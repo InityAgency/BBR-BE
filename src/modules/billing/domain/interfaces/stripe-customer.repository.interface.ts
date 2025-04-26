@@ -1,4 +1,4 @@
-import { StripeCustomer } from './stripe-customer.entity';
+import { StripeCustomer } from '../stripe-customer.entity';
 
 export interface IStripeCustomerRepository {
   findByUserId(userId: string): Promise<StripeCustomer | undefined>;
