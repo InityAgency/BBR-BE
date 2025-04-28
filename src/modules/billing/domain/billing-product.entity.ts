@@ -2,13 +2,17 @@ import { BillingProductTypeEnum } from 'src/shared/types/product-type.enum';
 import { Model } from 'objection';
 
 export class BillingProduct extends Model {
-  id!: number;
+  id!: string;
   name!: string;
+  description!: string;
   featureKey!: string;
   type!: BillingProductTypeEnum;
-  productId!: string;
-  priceId!: string;
+  stripeProductId!: string;
+  stripePriceId!: string;
   active!: boolean;
+  amount!: number;
+  currency!: string;
+  interval!: string;
   createdAt!: Date;
   updatedAt!: Date;
 

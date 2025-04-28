@@ -1,6 +1,9 @@
 import { StripeCustomer } from '../stripe-customer.entity';
 
-export interface IStripeCustomerRepository {
-  findByUserId(userId: string): Promise<StripeCustomer | undefined>;
-  create(input: { userId: string; stripeCustomerId: string }): Promise<StripeCustomer | undefined>;
+export abstract class IStripeCustomerRepository {
+  abstract findByUserId(userId: string): Promise<StripeCustomer | undefined>;
+  abstract create(input: {
+    userId: string;
+    stripeCustomerId: string;
+  }): Promise<StripeCustomer | undefined>;
 }

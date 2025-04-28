@@ -6,6 +6,8 @@ import { IBillingProductRepository } from '../../domain/interfaces/billing-produ
 import { ITransactionRepository } from '../../domain/interfaces/transaction.repository.interface';
 import { IStripeCustomerRepository } from '../../domain/interfaces/stripe-customer.repository.interface';
 import { StripeCustomerService } from './stripe-customer.service';
+import { IEmailRepository } from 'src/modules/email/domain/email.repository.interface';
+import Stripe from 'stripe';
 
 @Injectable()
 export class OneTimePurchaseService {
@@ -13,7 +15,8 @@ export class OneTimePurchaseService {
     private readonly stripe: StripeService,
     private readonly stripeCustomerService: StripeCustomerService,
     private readonly productRepo: IBillingProductRepository,
-    private readonly transactionRepo: ITransactionRepository
+    private readonly transactionRepo: ITransactionRepository,
+    private readonly emailRepository: IEmailRepository
   ) {}
 
   async createCheckout(
@@ -26,7 +29,7 @@ export class OneTimePurchaseService {
   ) {
     const customerId = await this.stripeCustomerService.getOrCreateCustomer(userId, email);
 
-    return this.stripe.createCheckoutSession({
+    return await this.stripe.createCheckoutSession({
       mode: 'payment',
       success_url: successUrl,
       cancel_url: cancelUrl,
@@ -46,12 +49,11 @@ export class OneTimePurchaseService {
         'customer',
         'payment_intent',
         'subscription',
-        'payment_intent.invoice',
         'payment_intent.payment_method',
       ],
     });
 
-    const paymentIntentId = session.payment_intent as string;
+    const paymentIntent = session.payment_intent as Stripe.PaymentIntent;
     const userId = session.metadata?.userId;
 
     if (!userId) throw new InternalServerErrorException('Missing userId in session metadata');
@@ -64,13 +66,49 @@ export class OneTimePurchaseService {
     const product = await this.productRepo.findByBillingPriceId(priceId);
     if (!product) throw new NotFoundException('Product not found for provided priceId');
 
-    await this.transactionRepo.create({
-      userId,
-      paymentIntentId,
-      type: BillingProductTypeEnum.ONE_TIME,
-      amount: (session.amount_total ?? 0) / 100,
-      currency: session.currency ?? 'USD',
-      status: TransactionStatusEnum.SUCCESS,
-    });
+    const invoiceId = (session as any).invoice as string | undefined;
+
+    if (invoiceId) {
+      console.log('invoice found', invoiceId);
+      const invoice = await this.stripe.getInvoice(invoiceId);
+      const pdfUrl = invoice.invoice_pdf;
+      const htmlUrl = invoice.hosted_invoice_url;
+
+      await this.transactionRepo.create({
+        userId,
+        stripePaymentIntentId: paymentIntent.id,
+        stripeProductId: product.stripeProductId,
+        stripePriceId: priceId,
+        type: BillingProductTypeEnum.ONE_TIME,
+        amount: (session.amount_total ?? 0) / 100,
+        currency: session.currency ?? 'USD',
+        status: TransactionStatusEnum.SUCCESS,
+      });
+
+      await this.emailRepository.sendInvoice(
+        'g8M5H@example.com',
+        'subject invoice',
+        pdfUrl!,
+        htmlUrl!
+      );
+    } else {
+      console.log('No invoice found');
+
+      console.log('paymentIntentId', paymentIntent.id);
+      console.log('product.stripeProductId', product.stripeProductId);
+      console.log('priceId', priceId);
+      console.log(userId);
+
+      await this.transactionRepo.create({
+        userId,
+        stripePaymentIntentId: paymentIntent.id,
+        stripeProductId: product.stripeProductId,
+        stripePriceId: priceId,
+        type: BillingProductTypeEnum.ONE_TIME,
+        amount: (session.amount_total ?? 0) / 100,
+        currency: session.currency ?? 'USD',
+        status: TransactionStatusEnum.SUCCESS,
+      });
+    }
   }
 }

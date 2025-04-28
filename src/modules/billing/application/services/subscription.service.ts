@@ -6,6 +6,7 @@ import { StripeCustomerService } from './stripe-customer.service';
 import { IEmailRepository } from 'src/modules/email/domain/email.repository.interface';
 import { ITransactionRepository } from '../../domain/interfaces/transaction.repository.interface';
 import { BillingProductTypeEnum } from 'src/shared/types/product-type.enum';
+import Stripe from 'stripe';
 
 @Injectable()
 export class SubscriptionService {
@@ -34,6 +35,34 @@ export class SubscriptionService {
       customer: customerId,
       metadata: { userId },
       line_items: [{ price: priceId, quantity: 1 }],
+    });
+  }
+
+  async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session): Promise<void> {
+    const subscriptionId = session.subscription as string;
+    const userId = session.metadata?.userId;
+    if (!userId || !subscriptionId) return;
+
+    const sub: any = await this.stripe.getSubscription(subscriptionId);
+
+    const items = sub.items?.data;
+    if (!items?.length) return;
+
+    const priceId = items[0]?.price?.id;
+    if (!priceId) return;
+
+    const product = await this.productRepo.findByBillingPriceId(priceId);
+    if (!product) return;
+
+    const periodEndUnix = sub.current_period_end ?? items[0]?.current_period_end;
+    if (!periodEndUnix) return;
+
+    await this.subscriptionRepo.create({
+      userId,
+      productId: product.id,
+      subscriptionId: sub.id,
+      currentPeriodEnd: new Date(periodEndUnix * 1000),
+      status: sub.status,
     });
   }
 
@@ -71,8 +100,10 @@ export class SubscriptionService {
 
       await this.transactionRepo.create({
         userId,
-        paymentIntentId: (invoice as any).payment_intent,
-        invoiceId: invoice.id,
+        stripePaymentIntentId: (invoice as any).payment_intent,
+        stripeInvoiceId: invoice.id,
+        stripeProductId: product.stripeProductId,
+        stripePriceId: priceId,
         type: BillingProductTypeEnum.SUBSCRIPTION,
         amount: invoice.amount_paid / 100,
         currency: invoice.currency,

@@ -37,6 +37,7 @@ import { RequestModule } from './modules/requestmanagement/request/request.modul
 import { LeadModule } from './modules/requestmanagement/lead/lead.module';
 import { ReviewModule } from './modules/residentmanagement/review/review.module';
 import { ContactFormModule } from './modules/contactform/contactform/contact-form.module';
+import { BillingModule } from './modules/billing/billing.module';
 
 @Module({
   imports: [
@@ -80,7 +81,8 @@ import { ContactFormModule } from './modules/contactform/contactform/contact-for
     RequestModule,
     LeadModule,
     ReviewModule,
-    ContactFormModule
+    ContactFormModule,
+    BillingModule,
   ],
   providers: [],
 })

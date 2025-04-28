@@ -12,26 +12,6 @@ export class PaymentMethodService {
 
   //   TODO PREBACITI U HANDLE
 
-  async attach(userId: string, customerId: string, paymentMethodId: string): Promise<void> {
-    const method = await this.stripe.attachPaymentMethod(customerId, paymentMethodId);
-
-    if (!method.card) {
-      throw new InternalServerErrorException(
-        `Payment method ${method.id} does not contain card info`
-      );
-    }
-
-    await this.paymentRepo.create({
-      userId,
-      paymentMethodId: method.id,
-      brand: method.card.brand,
-      last4: method.card.last4,
-      expMonth: method.card.exp_month,
-      expYear: method.card.exp_year,
-      isDefault: false,
-    });
-  }
-
   //   TODO PREBACITI U HANDLE
   async setDefault(userId: string, customerId: string, paymentMethodId: string): Promise<void> {
     await this.stripe.setDefaultPaymentMethod(customerId, paymentMethodId);

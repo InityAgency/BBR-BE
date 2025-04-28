@@ -9,8 +9,13 @@ import { RedisService } from './shared/cache/redis.service';
 import { RestExceptionFilter } from './shared/error/handler/rest.exception.handler';
 import { HttpResponseInterceptor } from './shared/interceptors/http-response-interceptor';
 import { swaggerConfig } from './shared/swagger/swagger.config';
+import * as express from 'express';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
+    bodyParser: true,
+  });
 
   const redisService = app.get(RedisService);
   const redisClient = redisService.getClient();

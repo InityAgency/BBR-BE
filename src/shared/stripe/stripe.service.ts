@@ -40,12 +40,23 @@ export class StripeService {
     return this.stripe.customers.retrieve(customerId);
   }
 
+  listCustomerByEmail(email: string): Promise<Stripe.ApiSearchResult<Stripe.Customer>> {
+    return this.stripe.customers.search({
+      query: `email:"${email}"`,
+      limit: 1,
+    });
+  }
+
   listPrices(params?: Stripe.PriceListParams) {
     return this.stripe.prices.list(params);
   }
 
   listProducts(params?: Stripe.ProductListParams) {
     return this.stripe.products.list(params);
+  }
+
+  createPaymentMethod(params: Stripe.PaymentMethodCreateParams) {
+    return this.stripe.paymentMethods.create(params);
   }
 
   attachPaymentMethod(customerId: string, paymentMethodId: string) {
@@ -68,5 +79,17 @@ export class StripeService {
 
   getInvoice(invoiceId: string): Promise<Stripe.Invoice> {
     return this.stripe.invoices.retrieve(invoiceId);
+  }
+
+  createProduct(params: Stripe.ProductCreateParams): Promise<Stripe.Product> {
+    return this.stripe.products.create(params);
+  }
+
+  createPrice(params: Stripe.PriceCreateParams): Promise<Stripe.Price> {
+    return this.stripe.prices.create(params);
+  }
+
+  updateProduct(productId: string, params: Stripe.ProductUpdateParams): Promise<Stripe.Product> {
+    return this.stripe.products.update(productId, params);
   }
 }

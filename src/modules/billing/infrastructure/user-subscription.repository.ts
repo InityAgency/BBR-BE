@@ -7,7 +7,7 @@ import { IUserSubscriptionRepository } from '../domain/interfaces/user-subscript
 export class UserSubscriptionRepositoryImpl implements IUserSubscriptionRepository {
   async create(input: {
     userId: string;
-    productId: number;
+    productId: string;
     subscriptionId: string;
     currentPeriodEnd: Date;
     status: SubscriptionStatusEnum;

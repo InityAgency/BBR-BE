@@ -5,8 +5,10 @@ import { StripeCustomer } from './stripe-customer.entity';
 export class BillingTransaction extends Model {
   id!: string;
   userId!: string;
-  paymentIntentId!: string;
-  invoiceId?: string;
+  stripePaymentIntentId!: string;
+  stripeInvoiceId?: string;
+  stripeProductId!: string;
+  stripePriceId!: string;
   type!: BillingProductTypeEnum;
   amount!: number;
   currency!: string;

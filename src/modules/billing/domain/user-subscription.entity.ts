@@ -6,7 +6,7 @@ import { Model, RelationMappings } from 'objection';
 export class UserSubscription extends Model {
   id!: string;
   userId!: string;
-  productId!: number;
+  productId!: string;
   subscriptionId!: string;
   currentPeriodEnd!: Date;
   status!: SubscriptionStatusEnum;
@@ -32,7 +32,7 @@ export class UserSubscription extends Model {
       modelClass: () => StripeCustomer,
       join: {
         from: 'user_subscriptions.userId',
-        to: 'billing_customers.userId',
+        to: 'stripe_customers.userId',
       },
     },
   };

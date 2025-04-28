@@ -104,13 +104,38 @@ export class ResidenceMapper {
       residence.id,
       residence.name,
       residence.slug,
-      residence.description,
       residence.status,
       residence.developmentStatus,
+      residence.subtitle,
+      residence.description,
+      residence.budgetStartRange,
+      residence.budgetEndRange,
       residence.address,
-      residence.country ? new CountryResponse(residence.country.id, residence.country.name) : null,
-      residence.city
-        ? new CityResponse(residence.city.id, residence.city.name, residence.city.asciiName)
+      residence.latitude,
+      residence.longitude,
+      residence.country,
+      residence.city,
+      residence.createdAt,
+      residence.updatedAt,
+      residence.rentalPotential,
+      residence.websiteUrl,
+      residence.yearBuilt,
+      residence.floorSqft,
+      residence.staffRatio,
+      residence.avgPricePerUnit,
+      residence.avgPricePerSqft,
+      residence.petFriendly,
+      residence.disabledFriendly,
+      residence.videoTourUrl,
+      residence.videoTour
+        ? new MediaResponse(
+            residence.videoTour.id,
+            residence.videoTour.originalFileName,
+            residence.videoTour.mimeType,
+            residence.videoTour.uploadStatus,
+            residence.videoTour.size,
+            residence.videoTour.securedUrl
+          )
         : null,
       residence.featuredImage
         ? new MediaResponse(
@@ -122,9 +147,42 @@ export class ResidenceMapper {
             residence.featuredImage.securedUrl
           )
         : null,
-      residence.createdAt,
-      residence.updatedAt,
+      residence.keyFeatures
+        ? residence.keyFeatures.map((data) => KeyFeatureMapper.toResponse(data))
+        : [],
       residence.brand ? BrandMapper.toResponse(residence.brand) : null,
+      residence.units?.map((unit) => UnitMapper.toResponse(unit)) || [],
+      residence.amenities ? residence.amenities.map((data) => AmenityMapper.toResponse(data)) : [],
+      residence.company ? CompanyMapper.toResponse(residence.company) : null,
+      residence.mainGallery
+        ? residence.mainGallery.map(
+            (media) =>
+              new MediaResponse(
+                media.id,
+                media.originalFileName,
+                media.mimeType,
+                media.uploadStatus,
+                media.size,
+                media.securedUrl
+              )
+          )
+        : [],
+      residence.secondaryGallery
+        ? residence.secondaryGallery.map(
+            (media) =>
+              new MediaResponse(
+                media.id,
+                media.originalFileName,
+                media.mimeType,
+                media.uploadStatus,
+                media.size,
+                media.securedUrl
+              )
+          )
+        : [],
+      residence.highlightedAmenities
+        ? residence.highlightedAmenities.map((data) => HighlightedAmenityMapper.toResponse(data))
+        : [],
       residence.rankingCategories
     );
   }

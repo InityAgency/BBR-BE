@@ -13,6 +13,9 @@ export class StripeCustomerService {
     const existing = await this.customerRepo.findByUserId(userId);
     if (existing) return existing.stripeCustomerId;
 
+    const existingCustomer = await this.stripe.listCustomerByEmail(email);
+    if (existingCustomer.data.length > 0) return existingCustomer.data[0].id;
+
     const customer = await this.stripe.createCustomer({ email, metadata: { userId } });
     await this.customerRepo.create({ userId, stripeCustomerId: customer.id });
     return customer.id;

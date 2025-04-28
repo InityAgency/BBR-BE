@@ -7,6 +7,10 @@ import { IBillingProductRepository } from '../domain/interfaces/billing-product.
 export class BillingProductRepositoryImpl implements IBillingProductRepository {
   constructor(private readonly knexService: KnexService) {}
 
+  async create(billingProduct: Partial<BillingProduct>): Promise<BillingProduct> {
+    return await BillingProduct.query().insert(billingProduct);
+  }
+
   async findByBillingPriceId(priceId: string): Promise<BillingProduct | undefined> {
     return await BillingProduct.query().where('stripe_price_id', priceId).first();
   }

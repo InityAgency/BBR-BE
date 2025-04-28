@@ -4,22 +4,51 @@ import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
 import { CityResponse } from './city.response';
 import { CountryResponse } from './country.response';
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
+import { CompanyResponse } from 'src/modules/company/ui/response/company.response';
+import { AmenityResponse } from 'src/modules/residentmanagement/amenity/ui/response/amenity.response';
+import { KeyFeatureResponse } from 'src/modules/residentmanagement/key_feature/ui/response/key-feature.response';
+import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
+import { HighlightedAmenityResponse } from './highlighted-amenities.response';
+import { UnitResponse } from './unit.response';
 
 export class ResidencePublicResponse {
   constructor(
     public readonly id: string,
     public readonly name: string,
     public readonly slug: string,
-    public readonly description: string,
     public readonly status: ResidenceStatusEnum,
     public readonly developmentStatus: DevelopmentStatusEnum,
+    public readonly subtitle: string,
+    public readonly description: string,
+    public readonly budgetStartRange: number,
+    public readonly budgetEndRange: number,
     public readonly address: string,
-    public readonly country: CountryResponse | null,
-    public readonly city: CityResponse | null,
-    public readonly featuredImage: MediaResponse | null,
+    public readonly latitude: string,
+    public readonly longitude: string,
+    public readonly country: CountryResponse,
+    public readonly city: CityResponse,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
+    public readonly rentalPotential?: RentalPotentialEnum,
+    public readonly websiteUrl?: string,
+    public readonly yearBuilt?: string,
+    public readonly floorSqft?: number,
+    public readonly staffRatio?: number,
+    public readonly avgPricePerUnit?: number,
+    public readonly avgPricePerSqft?: number,
+    public readonly petFriendly?: boolean,
+    public readonly disabledFriendly?: boolean,
+    public readonly videoTourUrl?: string,
+    public readonly videoTour?: MediaResponse | null,
+    public readonly featuredImage?: MediaResponse | null,
+    public readonly keyFeatures?: KeyFeatureResponse[] | [],
     public readonly brand?: BrandResponse | null,
+    public readonly units?: UnitResponse[] | [],
+    public readonly amenities?: AmenityResponse[] | [],
+    public readonly company?: CompanyResponse | null,
+    public readonly mainGallery?: MediaResponse[] | [],
+    public readonly secondaryGallery?: MediaResponse[] | [],
+    public readonly highlightedAmenities?: HighlightedAmenityResponse[] | [],
     public readonly rankingCategories?: any[]
   ) {}
 }

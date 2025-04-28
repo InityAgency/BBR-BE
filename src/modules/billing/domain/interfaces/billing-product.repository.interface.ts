@@ -1,7 +1,8 @@
 import { BillingProduct } from '../billing-product.entity';
 
-export interface IBillingProductRepository {
-  findByBillingPriceId(priceId: string): Promise<BillingProduct | undefined>;
-  findByFeatureKey(key: string): Promise<BillingProduct | undefined>;
-  getActiveProducts(): Promise<BillingProduct[]>;
+export abstract class IBillingProductRepository {
+  abstract create(billingProduct: Partial<BillingProduct>): Promise<BillingProduct>;
+  abstract findByBillingPriceId(priceId: string): Promise<BillingProduct | undefined>;
+  abstract findByFeatureKey(key: string): Promise<BillingProduct | undefined>;
+  abstract getActiveProducts(): Promise<BillingProduct[]>;
 }
