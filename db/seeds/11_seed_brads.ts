@@ -35,9 +35,18 @@ export async function seed(knex: Knex): Promise<void> {
 
       if (!brandTypeId) return null; // Skip brands with unknown brand types
 
+      const slug = brand.brandName
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+
       return {
         id: knex.raw('uuid_generate_v4()'),
         name: brand.brandName,
+        slug,
         description: brand.brandDescription,
         brandTypeId,
         createdAt: knex.fn.now(),

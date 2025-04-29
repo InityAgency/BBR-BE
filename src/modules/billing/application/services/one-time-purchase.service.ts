@@ -69,7 +69,6 @@ export class OneTimePurchaseService {
     const invoiceId = (session as any).invoice as string | undefined;
 
     if (invoiceId) {
-      console.log('invoice found', invoiceId);
       const invoice = await this.stripe.getInvoice(invoiceId);
       const pdfUrl = invoice.invoice_pdf;
       const htmlUrl = invoice.hosted_invoice_url;
@@ -92,13 +91,6 @@ export class OneTimePurchaseService {
         htmlUrl!
       );
     } else {
-      console.log('No invoice found');
-
-      console.log('paymentIntentId', paymentIntent.id);
-      console.log('product.stripeProductId', product.stripeProductId);
-      console.log('priceId', priceId);
-      console.log(userId);
-
       await this.transactionRepo.create({
         userId,
         stripePaymentIntentId: paymentIntent.id,

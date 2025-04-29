@@ -32,9 +32,7 @@ export class ReviewRepositoryImpl implements IReviewRepository {
 
     const knex = this.knexService.connection;
 
-    const insertedReview = await knex('reviews')
-      .insert(reviewData)
-      .returning('*');
+    const insertedReview = await knex('reviews').insert(reviewData).returning('*');
 
     return this.findById(insertedReview[0].id);
   }
@@ -46,15 +44,18 @@ export class ReviewRepositoryImpl implements IReviewRepository {
       .withGraphFetched('[residence, user, unitType]');
   }
 
-  async findAll(query: FetchReviewsQuery): Promise<{ data: Review[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery, status, residenceId, userId, unitTypeId } = query;
-
-    console.log(query)
+  async findAll(
+    query: FetchReviewsQuery
+  ): Promise<{ data: Review[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery, status, residenceId, userId, unitTypeId } =
+      query;
 
     const columnsToSearchAndSort = ['status'];
 
     let reviewQuery = Review.query()
-      .modify((qb) => applyFilters(qb, { status, residenceId, userId, unitTypeId }, Review.tableName))
+      .modify((qb) =>
+        applyFilters(qb, { status, residenceId, userId, unitTypeId }, Review.tableName)
+      )
       .whereNull('deletedAt')
       .withGraphFetched('[residence, user, unitType]');
 
@@ -66,7 +67,11 @@ export class ReviewRepositoryImpl implements IReviewRepository {
       }
     }
 
-    const { paginatedQuery, totalCount, totalPages } = await applyPagination(reviewQuery, page, limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      reviewQuery,
+      page,
+      limit
+    );
 
     return {
       data: paginatedQuery,
@@ -80,8 +85,7 @@ export class ReviewRepositoryImpl implements IReviewRepository {
   }
 
   async update(id: string, data: Partial<Review>): Promise<Review | undefined> {
-    await Review.query()
-      .patchAndFetchById(id, data);
+    await Review.query().patchAndFetchById(id, data);
 
     return this.findById(id);
   }
@@ -89,9 +93,6 @@ export class ReviewRepositoryImpl implements IReviewRepository {
   async softDelete(id: string): Promise<void> {
     const knex = this.knexService.connection;
 
-    await Review.query()
-      .patch({ deletedAt: new Date() })
-      .where('id', id)
-      .whereNull('deletedAt');
+    await Review.query().patch({ deletedAt: new Date() }).where('id', id).whereNull('deletedAt');
   }
 }

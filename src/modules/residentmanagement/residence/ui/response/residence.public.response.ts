@@ -1,15 +1,17 @@
 import { BrandResponse } from 'src/modules/brand/ui/response/brand-response';
+import { MediaResponse } from 'src/modules/media/ui/response/media.response';
+import { AmenityResponse } from 'src/modules/residentmanagement/amenity/ui/response/amenity.response';
+import { KeyFeatureResponse } from 'src/modules/residentmanagement/key_feature/ui/response/key-feature.response';
 import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
+import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
 import { CityResponse } from './city.response';
 import { CountryResponse } from './country.response';
-import { MediaResponse } from 'src/modules/media/ui/response/media.response';
-import { CompanyResponse } from 'src/modules/company/ui/response/company.response';
-import { AmenityResponse } from 'src/modules/residentmanagement/amenity/ui/response/amenity.response';
-import { KeyFeatureResponse } from 'src/modules/residentmanagement/key_feature/ui/response/key-feature.response';
-import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { HighlightedAmenityResponse } from './highlighted-amenities.response';
+import { ResidenceTotalScoreResponse } from './residence-total-score.response';
 import { UnitResponse } from './unit.response';
+import { CompanyResponse } from './company.response';
+import { RankingCategoryResponse } from './ranking-category.response';
 
 export class ResidencePublicResponse {
   constructor(
@@ -49,6 +51,7 @@ export class ResidencePublicResponse {
     public readonly mainGallery?: MediaResponse[] | [],
     public readonly secondaryGallery?: MediaResponse[] | [],
     public readonly highlightedAmenities?: HighlightedAmenityResponse[] | [],
-    public readonly rankingCategories?: any[]
+    public readonly rankingCategories?: RankingCategoryResponse[],
+    public readonly totalScores?: ResidenceTotalScoreResponse[]
   ) {}
 }

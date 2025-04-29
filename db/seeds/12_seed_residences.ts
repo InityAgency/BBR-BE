@@ -101,7 +101,13 @@ export async function seed(knex: Knex): Promise<void> {
     const brandId = brandMap[residence.associated_brand];
     const cityId = cityMap[residence.city];
     const countryId = countryMap[residence.country];
-    const slug = residence.residence_name.toLowerCase().replace(/\s+/g, '-');
+    const slug = residence.residence_name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
 
     if (!brandId) continue;
 

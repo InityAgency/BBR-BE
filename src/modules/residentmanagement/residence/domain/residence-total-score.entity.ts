@@ -34,13 +34,4 @@ export class ResidenceTotalScore extends Model {
       },
     },
   };
-
-  $beforeInsert() {
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
-  }
-
-  $beforeUpdate() {
-    this.updatedAt = new Date();
-  }
 }

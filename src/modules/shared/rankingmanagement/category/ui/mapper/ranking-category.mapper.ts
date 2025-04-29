@@ -64,10 +64,12 @@ export class RankingCategoryMapper {
       rankingCategory.slug,
       rankingCategory.title,
       rankingCategory.description,
-      new RankingCategoryTypeResponse(
-        rankingCategory.rankingCategoryType.id,
-        rankingCategory.rankingCategoryType.name
-      ),
+      rankingCategory.rankingCategoryType
+        ? new RankingCategoryTypeResponse(
+            rankingCategory.rankingCategoryType.id,
+            rankingCategory.rankingCategoryType.name
+          )
+        : null,
       rankingCategory.residenceLimitation,
       rankingCategory.rankingPrice,
       rankingCategory.featuredImage

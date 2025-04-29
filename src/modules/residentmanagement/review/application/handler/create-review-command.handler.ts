@@ -13,7 +13,7 @@ export class CreateReviewCommandHandler {
     private readonly reviewRepository: IReviewRepository,
     private readonly residenceRepository: IResidenceRepository,
     private readonly userRepository: IUserRepository,
-    private readonly unitTypeRepository: IUnitTypeRepository,
+    private readonly unitTypeRepository: IUnitTypeRepository
   ) {}
 
   async handle(command: CreateReviewCommand): Promise<Review> {
@@ -32,7 +32,7 @@ export class CreateReviewCommandHandler {
       throw new NotFoundException('Unit type not found');
     }
 
-    const reviewData:Partial<Review> = {
+    const reviewData: Partial<Review> = {
       residence: residence,
       user: user,
       dateOfPurchase: command.dateOfPurchase,
@@ -46,15 +46,13 @@ export class CreateReviewCommandHandler {
       valueForMoney: command.valueForMoney,
       serviceQuality: command.serviceQuality,
       additionalFeedback: command.additionalFeedback,
-      status:ReviewStatusEnum.PENDING,
+      status: ReviewStatusEnum.PENDING,
     };
 
     const created = await this.reviewRepository.create(reviewData);
     if (!created) {
       throw new InternalServerErrorException('Review not created');
     }
-
-    console.log(created)
 
     return created;
   }

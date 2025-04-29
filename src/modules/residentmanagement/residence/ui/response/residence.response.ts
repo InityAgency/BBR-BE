@@ -1,5 +1,4 @@
 import { BrandResponse } from 'src/modules/brand/ui/response/brand-response';
-import { CompanyResponse } from 'src/modules/company/ui/response/company.response';
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 import { AmenityResponse } from 'src/modules/residentmanagement/amenity/ui/response/amenity.response';
 import { KeyFeatureResponse } from 'src/modules/residentmanagement/key_feature/ui/response/key-feature.response';
@@ -8,8 +7,10 @@ import { CountryResponse } from 'src/modules/shared/country/ui/response/country.
 import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
-import { UnitResponse } from './unit.response';
 import { HighlightedAmenityResponse } from './highlighted-amenities.response';
+import { ResidenceTotalScoreResponse } from './residence-total-score.response';
+import { UnitResponse } from './unit.response';
+import { CompanyResponse } from './company.response';
 
 export class ResidenceResponse {
   constructor(
@@ -48,6 +49,7 @@ export class ResidenceResponse {
     public readonly company?: CompanyResponse | null,
     public readonly mainGallery?: MediaResponse[] | [],
     public readonly secondaryGallery?: MediaResponse[] | [],
-    public readonly highlightedAmenities?: HighlightedAmenityResponse[] | []
+    public readonly highlightedAmenities?: HighlightedAmenityResponse[] | [],
+    public readonly totalScores?: ResidenceTotalScoreResponse[]
   ) {}
 }

@@ -4,12 +4,12 @@ import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 import { AmenityMapper } from 'src/modules/residentmanagement/amenity/ui/mapper/amenity.ui.mapper';
 import { KeyFeatureMapper } from 'src/modules/residentmanagement/key_feature/ui/mappers/key-feature.mapper';
 import { Residence } from '../../domain/residence.entity';
-import { CityResponse } from '../response/city.response';
-import { CountryResponse } from '../response/country.response';
 import { ResidencePublicResponse } from '../response/residence.public.response';
 import { ResidenceResponse } from '../response/residence.response';
 import { HighlightedAmenityMapper } from './highlighted-amenity.mapper';
 import { UnitMapper } from './unit.mapper';
+import { RankingCategoryMapper } from './ranking-category.mapper';
+import { ResidenceTotalScoreMapper } from './residence-total-score.mapper';
 
 export class ResidenceMapper {
   static toResponse(residence: Residence): ResidenceResponse {
@@ -95,6 +95,9 @@ export class ResidenceMapper {
         : [],
       residence.highlightedAmenities
         ? residence.highlightedAmenities.map((data) => HighlightedAmenityMapper.toResponse(data))
+        : [],
+      residence.totalScores
+        ? residence.totalScores.map((data) => ResidenceTotalScoreMapper.toResponse(data))
         : []
     );
   }
@@ -184,6 +187,11 @@ export class ResidenceMapper {
         ? residence.highlightedAmenities.map((data) => HighlightedAmenityMapper.toResponse(data))
         : [],
       residence.rankingCategories
+        ? residence.rankingCategories.map((data) => RankingCategoryMapper.toResponse(data))
+        : [],
+      residence.totalScores
+        ? residence.totalScores.map((data) => ResidenceTotalScoreMapper.toResponse(data))
+        : []
     );
   }
 }

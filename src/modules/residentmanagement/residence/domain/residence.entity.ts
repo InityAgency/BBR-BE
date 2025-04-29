@@ -10,11 +10,10 @@ import { Amenity } from '../../amenity/domain/amenity.entity';
 import { KeyFeature } from '../../key_feature/domain/key-feature.entity';
 import { ResidenceStatusEnum } from './residence-status.enum';
 import { Unit } from './unit.entity';
-import { RankingCategory } from 'src/modules/shared/rankingmanagement/category/domain/ranking-category.entity';
 import { ResidenceRankingScore } from '../../ranking_score/domain/residence-ranking-score.entity';
 import { ResidenceHighlightedAmenity } from './residence-highlighted-amenities.entity';
-import { RankingCriteria } from 'src/modules/shared/rankingmanagement/criteria/domain/ranking-criteria.entity';
 import { ResidenceTotalScore } from '../../ranking_score/domain/residence-total-score.entity';
+import { RankingCategory } from './ranking-category.entity';
 
 export class Residence extends Model {
   id!: string;

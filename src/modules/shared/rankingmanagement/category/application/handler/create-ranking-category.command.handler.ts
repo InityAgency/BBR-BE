@@ -49,8 +49,6 @@ export class CreateRankingCategoryCommandHandler {
       throw new ConflictException(`Ranking category with slug ${slug} already exists`);
     }
 
-    console.log(slug);
-
     const categoryData: Partial<RankingCategory> = {
       name: command.name,
       slug: slug,
