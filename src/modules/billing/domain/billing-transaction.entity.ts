@@ -9,6 +9,7 @@ export class BillingTransaction extends Model {
   stripeInvoiceId?: string;
   stripeProductId!: string;
   stripePriceId!: string;
+  stripeHostingInvoiceUrl!: string;
   type!: BillingProductTypeEnum;
   amount!: number;
   currency!: string;

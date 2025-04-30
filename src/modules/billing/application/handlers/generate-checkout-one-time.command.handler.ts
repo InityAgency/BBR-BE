@@ -27,6 +27,7 @@ export class GenerateCheckoutOneTimeCommandHandler {
         userId,
         ...metadata,
       },
+      invoice_creation: { enabled: true },
       line_items: [{ price: priceId, quantity: 1 }],
       payment_intent_data: {
         setup_future_usage: 'off_session',

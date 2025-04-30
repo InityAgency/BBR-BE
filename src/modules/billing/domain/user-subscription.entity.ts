@@ -16,14 +16,14 @@ export class UserSubscription extends Model {
   product?: BillingProduct;
   customer?: StripeCustomer;
 
-  static tableName = 'user_subscriptions';
+  static tableName = 'billing_subscriptions';
 
   static relationMappings: RelationMappings = {
     product: {
       relation: Model.BelongsToOneRelation,
       modelClass: () => BillingProduct,
       join: {
-        from: 'user_subscriptions.productId',
+        from: 'billing_subscriptions.productId',
         to: 'billing_products.id',
       },
     },
@@ -31,7 +31,7 @@ export class UserSubscription extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: () => StripeCustomer,
       join: {
-        from: 'user_subscriptions.userId',
+        from: 'billing_subscriptions.userId',
         to: 'stripe_customers.userId',
       },
     },

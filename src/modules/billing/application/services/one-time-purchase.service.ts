@@ -50,6 +50,7 @@ export class OneTimePurchaseService {
         'payment_intent',
         'subscription',
         'payment_intent.payment_method',
+        'invoice',
       ],
     });
 
@@ -66,30 +67,39 @@ export class OneTimePurchaseService {
     const product = await this.productRepo.findByBillingPriceId(priceId);
     if (!product) throw new NotFoundException('Product not found for provided priceId');
 
-    const invoiceId = (session as any).invoice as string | undefined;
+    const invoice = session.invoice;
+    let invoiceId;
+
+    if (typeof invoice === 'string') {
+      invoiceId = invoice;
+    } else if (typeof invoice == 'object' && invoice) {
+      invoiceId = invoice.id;
+    }
 
     if (invoiceId) {
       const invoice = await this.stripe.getInvoice(invoiceId);
       const pdfUrl = invoice.invoice_pdf;
-      const htmlUrl = invoice.hosted_invoice_url;
+      const hostedInvoiceUrl = invoice.hosted_invoice_url;
 
       await this.transactionRepo.create({
         userId,
         stripePaymentIntentId: paymentIntent.id,
         stripeProductId: product.stripeProductId,
         stripePriceId: priceId,
+        stripeInvoiceId: invoice.id,
+        stripeHostingInvoiceUrl: hostedInvoiceUrl!,
         type: BillingProductTypeEnum.ONE_TIME,
         amount: (session.amount_total ?? 0) / 100,
         currency: session.currency ?? 'USD',
         status: TransactionStatusEnum.SUCCESS,
       });
 
-      await this.emailRepository.sendInvoice(
-        'g8M5H@example.com',
-        'subject invoice',
-        pdfUrl!,
-        htmlUrl!
-      );
+      // await this.emailRepository.sendInvoice(
+      //   invoice.customer_email ?? '',
+      //   'subject invoice',
+      //   pdfUrl!,
+      //   hostedInvoiceUrl!
+      // );
     } else {
       await this.transactionRepo.create({
         userId,

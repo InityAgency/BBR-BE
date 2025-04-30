@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('stripe_invoice_id'); // stripe
     table.string('stripe_product_id').notNullable(); // stripe
     table.string('stripe_price_id').notNullable(); // stripe
+    table.string('stripe_hosting_invoice_url').nullable(); // stripe
     table.string('type').notNullable(); // one_time / subscription
     table.decimal('amount', 10, 2).notNullable();
     table.string('currency', 10).defaultTo('USD');

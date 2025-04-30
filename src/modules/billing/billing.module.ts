@@ -25,6 +25,7 @@ import { IEmailRepository } from '../email/domain/email.repository.interface';
 import { EmailRepository } from '../email/infrastructure/email.repository';
 import { IUserSubscriptionRepository } from './domain/interfaces/user-subscription.repository.interface';
 import { UserSubscriptionRepositoryImpl } from './infrastructure/user-subscription.repository';
+import { FetchAllTransactionsCommandQuery } from './application/query/fetch-all-transactions.command.query';
 
 @Module({
   controllers: [BillingController, StripeWebhookController],
@@ -60,6 +61,7 @@ import { UserSubscriptionRepositoryImpl } from './infrastructure/user-subscripti
     },
     FetchAllPaymentMethodsByUserCommandQuery,
     FetchAllProductsCommandQuery,
+    FetchAllTransactionsCommandQuery,
     AddPaymentMethodCommandHandler,
     GenerateCheckoutOneTimeCommandHandler,
     GenerateCheckoutSubscriptionCommandHandler,

@@ -9,9 +9,4 @@ export class TransactionService {
   async create(transaction: Partial<BillingTransaction>) {
     return this.repo.create(transaction);
   }
-
-  //   TODO PREBACITI U HANDLE
-  async getUserTransactions(userId: string) {
-    return this.repo.findByUser(userId);
-  }
 }

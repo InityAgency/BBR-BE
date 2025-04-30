@@ -106,6 +106,22 @@ xx - present order
 http://localhost:3000
 ```
 
+## 💳 Stripe
+
+### Configuration for local testing stripe webhooks
+
+Step 1: Login (only first time)
+
+```
+stripe login
+```
+
+Step 2: Start up listener for webhooks
+
+```
+stripe listen --forward-to localhost:3000/api/v1/webhooks/stripe
+```
+
 ### 📖 Swagger Documentation
 
 - Access the Swagger UI to explore and test the API endpoints interactively.

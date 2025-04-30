@@ -22,7 +22,7 @@ export class StripeCustomer extends Model {
       modelClass: () => UserSubscription,
       join: {
         from: 'stripe_customers.userId',
-        to: 'user_subscriptions.userId',
+        to: 'billing_subscriptions.userId',
       },
     },
     transactions: {

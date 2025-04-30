@@ -31,13 +31,9 @@ export class StripeWebhookController {
       return res.status(HttpStatus.BAD_REQUEST).send(`Webhook Error: ${err.message}`);
     }
 
-    console.log('event', event);
-
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-
-        console.log('Webook session', session);
 
         if (session.mode === 'payment') {
           await this.oneTimePurchaseService.handleCompletedSession(session.id);
@@ -50,7 +46,7 @@ export class StripeWebhookController {
       case 'invoice.paid': {
         const invoice = event.data.object as Stripe.Invoice;
         // await this.invoicePaidHandler.handle(invoice);
-        console.log('invoice', invoice);
+        console.log('invoice webhook');
         break;
       }
 

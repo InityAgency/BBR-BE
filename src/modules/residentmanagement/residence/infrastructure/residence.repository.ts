@@ -45,7 +45,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .findById(id)
       .whereNull('deleted_at')
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity.[icon, featuredImage], amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
       );
   }
 
@@ -91,7 +91,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .leftJoinRelated('company')
       .leftJoinRelated('brand')
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage], totalScores.[rankingCategory]]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
       );
 
     const columnsToSearch = [

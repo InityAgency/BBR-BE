@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from 'src/shared/decorators/permissions.decorator';
 import { RBACGuard } from 'src/shared/guards/rbac.guard';
@@ -13,6 +23,12 @@ import { CreateProductRequest } from './requests/create-product.request';
 import { CreateProductCommandHandler } from '../application/handlers/create-product.command.handler';
 import { GenerateCheckoutOneTimeRequest } from './requests/generate-checkout-one-time.request';
 import { GenerateCheckoutSubscriptionCommandHandler } from '../application/handlers/generate-checkout-subscription.command.handler';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { FetchAllTransactionsCommandQuery } from '../application/query/fetch-all-transactions.command.query';
+import { OrderByDirection } from 'objection';
+import { BillingProductTypeEnum } from 'src/shared/types/product-type.enum';
+import { BillingTransaction } from '../domain/billing-transaction.entity';
+import { FetchTransactionsQuery } from '../application/commands/fetch-transactions.query';
 
 @ApiTags('Billing')
 @UseGuards(RBACGuard)
@@ -21,6 +37,7 @@ export class BillingController {
   constructor(
     private readonly fetchAllPaymentMethodsByUserQuery: FetchAllPaymentMethodsByUserCommandQuery,
     private readonly fetchAllProductsCommandQuery: FetchAllProductsCommandQuery,
+    private readonly fetchAllTransactionsCommandQuery: FetchAllTransactionsCommandQuery,
     private readonly addPaymentMethodCommandHandler: AddPaymentMethodCommandHandler,
     private readonly generateCheckoutOneTimeCommandHandler: GenerateCheckoutOneTimeCommandHandler,
     private readonly generateCheckoutSubscriptionCommandHandler: GenerateCheckoutSubscriptionCommandHandler,
@@ -103,5 +120,37 @@ export class BillingController {
     const command = BillingMapper.toCreateProductCommand(createProductRequest);
 
     return await this.createProductCommandHandler.handle(command);
+  }
+
+  @Get('transactions')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.READ)
+  @ApiOperation({ summary: 'Get transactions' })
+  async fetchAllTransactions(
+    @Req() req,
+    @Query('query') query?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('type') type?: BillingProductTypeEnum[],
+    @Query('status') status?: string[]
+  ): Promise<{ data: BillingTransaction[]; pagination: PaginationResponse }> {
+    const userId = req.user.id;
+
+    const command = new FetchTransactionsQuery(
+      userId,
+      query,
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      type,
+      status
+    );
+
+    const { data, pagination } = await this.fetchAllTransactionsCommandQuery.handle(command);
+
+    return { data, pagination };
   }
 }

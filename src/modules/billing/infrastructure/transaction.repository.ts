@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { BillingTransaction } from '../domain/billing-transaction.entity';
 import { ITransactionRepository } from '../domain/interfaces/transaction.repository.interface';
+import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
+import { FetchTransactionsQuery } from '../application/commands/fetch-transactions.query';
+import { applyPagination } from 'src/shared/utils/pagination.util';
 @Injectable()
 export class TransactionRepositoryImpl implements ITransactionRepository {
   async create(transaction: Partial<BillingTransaction>): Promise<void> {
@@ -10,6 +15,7 @@ export class TransactionRepositoryImpl implements ITransactionRepository {
       stripeInvoiceId: transaction.stripeInvoiceId,
       stripeProductId: transaction.stripeProductId,
       stripePriceId: transaction.stripePriceId,
+      stripeHostingInvoiceUrl: transaction.stripeHostingInvoiceUrl,
       type: transaction.type,
       amount: transaction.amount,
       currency: transaction.currency,
@@ -17,7 +23,46 @@ export class TransactionRepositoryImpl implements ITransactionRepository {
     });
   }
 
-  async findByUser(userId: string) {
-    return await BillingTransaction.query().where('user_id', userId);
+  async findAllByUser(
+    userId: string,
+    query: FetchTransactionsQuery
+  ): Promise<{ data: BillingTransaction[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery, type, status } = query;
+
+    let transactionsQuery = BillingTransaction.query()
+      .modify((qb) => applyFilters(qb, { status, type }, BillingTransaction.tableName))
+      .where('user_id', userId);
+
+    const columnsToSearch = ['amount'];
+
+    if (sortBy && sortOrder) {
+      const columnsToSort = [
+        'billing_transactions.created_at',
+        'billing_transactions.status',
+        'billing_transactions.amount',
+        'billing_transactions.type',
+      ];
+      if (columnsToSort.includes(sortBy)) {
+        transactionsQuery = transactionsQuery.orderBy(sortBy, sortOrder);
+      }
+    }
+
+    transactionsQuery = applySearchFilter(transactionsQuery, searchQuery, columnsToSearch);
+
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      transactionsQuery,
+      page,
+      limit
+    );
+
+    return {
+      data: paginatedQuery,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page: page,
+        limit: limit,
+      },
+    };
   }
 }
