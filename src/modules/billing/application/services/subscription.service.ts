@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { StripeService } from 'src/shared/stripe/stripe.service';
-import { IUserSubscriptionRepository } from '../../domain/interfaces/user-subscription.repository.interface';
-import { IBillingProductRepository } from '../../domain/interfaces/billing-product.repository.interface';
-import { StripeCustomerService } from './stripe-customer.service';
 import { IEmailRepository } from 'src/modules/email/domain/email.repository.interface';
-import { ITransactionRepository } from '../../domain/interfaces/transaction.repository.interface';
+import { StripeService } from 'src/shared/stripe/stripe.service';
 import { BillingProductTypeEnum } from 'src/shared/types/product-type.enum';
+import { mapStripeSubscriptionStatusToEnum } from 'src/shared/types/subscription-status.enum';
 import Stripe from 'stripe';
+import { IBillingProductRepository } from '../../domain/interfaces/billing-product.repository.interface';
+import { ITransactionRepository } from '../../domain/interfaces/transaction.repository.interface';
+import { IUserSubscriptionRepository } from '../../domain/interfaces/user-subscription.repository.interface';
+import { StripeCustomerService } from './stripe-customer.service';
 
 @Injectable()
 export class SubscriptionService {
@@ -57,17 +58,18 @@ export class SubscriptionService {
     const periodEndUnix = sub.current_period_end ?? items[0]?.current_period_end;
     if (!periodEndUnix) return;
 
-    await this.subscriptionRepo.create({
+    await this.subscriptionRepo.upsert({
       userId,
       productId: product.id,
       subscriptionId: sub.id,
       currentPeriodEnd: new Date(periodEndUnix * 1000),
-      status: sub.status,
+      status: mapStripeSubscriptionStatusToEnum(sub.status),
     });
   }
 
-  async handleInvoicePaid(subscriptionId: string): Promise<void> {
-    const sub: any = await this.stripe.getSubscription(subscriptionId);
+  async handleInvoicePaid(invoice: Stripe.Invoice): Promise<void> {
+    const subscriptionId = (invoice as any).subscription as string;
+    const sub = await this.stripe.getSubscription(subscriptionId);
 
     const userId = sub.metadata?.userId;
     if (!userId) return;
@@ -75,28 +77,23 @@ export class SubscriptionService {
     const items = sub.items?.data;
     if (!items?.length) return;
 
-    const priceId = items[0]?.price?.id;
-    if (!priceId) return;
+    for (const item of items) {
+      const priceId = item.price?.id;
+      if (!priceId) continue;
 
-    const product = await this.productRepo.findByBillingPriceId(priceId);
-    if (!product) return;
+      const product = await this.productRepo.findByBillingPriceId(priceId);
+      if (!product) continue;
 
-    const periodEndUnix = sub.current_period_end ?? items[0]?.current_period_end;
-    if (!periodEndUnix) return;
+      const periodEndUnix = item.current_period_end;
+      if (!periodEndUnix) continue;
 
-    await this.subscriptionRepo.create({
-      userId,
-      productId: product.id,
-      subscriptionId: sub.id,
-      currentPeriodEnd: new Date(periodEndUnix * 1000),
-      status: sub.status,
-    });
-
-    const latestInvoiceId = sub.latest_invoice;
-    if (latestInvoiceId) {
-      const invoice = await this.stripe.getInvoice(latestInvoiceId);
-      const pdfUrl = invoice.invoice_pdf;
-      const htmlUrl = invoice.hosted_invoice_url;
+      await this.subscriptionRepo.upsert({
+        userId,
+        productId: product.id,
+        subscriptionId: sub.id,
+        currentPeriodEnd: new Date(periodEndUnix * 1000),
+        status: mapStripeSubscriptionStatusToEnum(sub.status),
+      });
 
       await this.transactionRepo.create({
         userId,
@@ -109,19 +106,39 @@ export class SubscriptionService {
         currency: invoice.currency,
         status: invoice.status!, // 'paid'
       });
+    }
 
-      await this.emailRepository.sendInvoice(
-        'g8M5H@example.com',
-        'subject invoice',
-        pdfUrl!,
-        htmlUrl!
-      );
+    const pdfUrl = invoice.invoice_pdf;
+    const htmlUrl = invoice.hosted_invoice_url;
+    if (pdfUrl && htmlUrl && invoice.customer_email) {
+      await this.emailRepository.sendInvoice(invoice.customer_email, 'Invoice', pdfUrl, htmlUrl);
     }
   }
 
-  //   TODO PREBACITI U HANDLE
-  async handleSubscriptionCanceled(subscriptionId: string) {
-    const sub = await this.stripe.getSubscription(subscriptionId);
-    await this.subscriptionRepo.markCanceled(sub.id);
+  async handleInvoiceFailed(invoice: Stripe.Invoice) {
+    const subscriptionId = (invoice as any).subscription as string;
+    if (!subscriptionId) return;
+    await this.subscriptionRepo.markFailed(subscriptionId);
+  }
+
+  async handleSubscriptionUpdated(sub: Stripe.Subscription) {
+    const userId = sub.metadata?.userId;
+    if (!userId) return;
+
+    for (const item of sub.items.data) {
+      const priceId = item.price.id;
+      const product = await this.productRepo.findByBillingPriceId(priceId);
+      if (!product) continue;
+
+      const currentPeriodEnd = item.current_period_end;
+
+      await this.subscriptionRepo.upsert({
+        userId,
+        subscriptionId: sub.id,
+        productId: product.id,
+        currentPeriodEnd: new Date(currentPeriodEnd * 1000),
+        status: mapStripeSubscriptionStatusToEnum(sub.status),
+      });
+    }
   }
 }

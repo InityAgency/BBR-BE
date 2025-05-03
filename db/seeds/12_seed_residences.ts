@@ -51,11 +51,17 @@ function toNumber(value: any): number {
 }
 
 export async function seed(knex: Knex): Promise<void> {
-  const filePath = `${__dirname}/../csv/residences_seed_1_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_1_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_2_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_3_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_4_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_5_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_6_new.csv`;
+  const filePath = `${__dirname}/../csv/residences_seed_7_new.csv`;
   const residences = await parseCSV(filePath);
 
   // Deletes ALL existing entries
-  await knex('residences').del();
+  // await knex('residences').del();
 
   const brands = await knex('brands').select('id', 'name');
   const city = await knex('cities').select('id', 'name');
@@ -101,13 +107,20 @@ export async function seed(knex: Knex): Promise<void> {
     const brandId = brandMap[residence.associated_brand];
     const cityId = cityMap[residence.city];
     const countryId = countryMap[residence.country];
-    const slug = residence.residence_name
+    let slug = residence.residence_name
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9\s]/g, '')
       .trim()
       .replace(/\s+/g, '-');
+
+    const existingResidence =
+      formattedResidences.find((res) => res.slug === slug) ||
+      (await knex('residences').where('slug', slug).first());
+    if (existingResidence) {
+      slug += `-${Math.random().toString(36).substring(2, 7)}`;
+    }
 
     if (!brandId) continue;
 

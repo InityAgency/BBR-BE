@@ -24,6 +24,10 @@ export class StripeService {
     return this.stripe.subscriptions.retrieve(subscriptionId);
   }
 
+  cancelSubscription(subscriptionId: string) {
+    return this.stripe.subscriptions.cancel(subscriptionId);
+  }
+
   getEventFromWebhookPayload(signature: string, payload: Buffer) {
     return this.stripe.webhooks.constructEvent(
       payload,

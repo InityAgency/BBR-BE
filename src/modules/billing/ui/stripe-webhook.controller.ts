@@ -43,17 +43,28 @@ export class StripeWebhookController {
         break;
       }
 
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        // await this.paymentIntentSucceededHandler.handle(paymentIntent);
+        console.log('payment intent webhook');
+        break;
+      }
+
+      case 'payment_intent.payment_failed': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        // await this.paymentIntentFailedHandler.handle(paymentIntent);
+        console.log('payment intent failed webhook');
+        break;
+      }
+
       case 'invoice.paid': {
-        const invoice = event.data.object as Stripe.Invoice;
-        // await this.invoicePaidHandler.handle(invoice);
+        await this.subscriptionService.handleInvoicePaid(event.data.object as Stripe.Invoice);
         console.log('invoice webhook');
         break;
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice;
-        console.log('invoice failed', invoice);
-        // await this.invoicePaymentFailedHandler.handle(invoice);
+        await this.subscriptionService.handleInvoiceFailed(event.data.object as Stripe.Invoice);
         break;
       }
 

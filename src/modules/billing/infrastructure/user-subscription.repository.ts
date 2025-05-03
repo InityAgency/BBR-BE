@@ -5,7 +5,7 @@ import { IUserSubscriptionRepository } from '../domain/interfaces/user-subscript
 
 @Injectable()
 export class UserSubscriptionRepositoryImpl implements IUserSubscriptionRepository {
-  async create(input: {
+  async upsert(input: {
     userId: string;
     productId: string;
     subscriptionId: string;
@@ -20,7 +20,7 @@ export class UserSubscriptionRepositoryImpl implements IUserSubscriptionReposito
         currentPeriodEnd: input.currentPeriodEnd,
         status: input.status,
       })
-      .onConflict(['user_id'])
+      .onConflict(['user_id', 'product_id'])
       .merge();
   }
 
@@ -28,6 +28,12 @@ export class UserSubscriptionRepositoryImpl implements IUserSubscriptionReposito
     await UserSubscription.query()
       .where('stripe_subscription_id', subscriptionId)
       .update({ status: SubscriptionStatusEnum.CANCELED, updatedAt: new Date() });
+  }
+
+  async markFailed(subscriptionId: string): Promise<void> {
+    await UserSubscription.query()
+      .where('stripe_subscription_id', subscriptionId)
+      .update({ status: SubscriptionStatusEnum.PAST_DUE, updatedAt: new Date() });
   }
 
   async findByUserId(userId: string): Promise<UserSubscription | undefined> {
