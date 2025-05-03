@@ -60,6 +60,7 @@ export class MediaRepositoryImpl implements IMediaRepository {
       .leftJoin('units', 'units.feature_image_id', 'media.id')
       .leftJoin('user_buyers', 'user_buyers.image_id', 'media.id')
       .leftJoin('contact_forms', 'contact_forms.attachmentId', 'media.id')
+      .leftJoin('claim_profile_contact_forms', 'claim_profile_contact_forms.cv_id', 'media.id')
       .whereNull('media.deleted_at')
       .whereNull('brands.logo_id')
       .whereNull('companies.image_id')
@@ -74,11 +75,11 @@ export class MediaRepositoryImpl implements IMediaRepository {
       .whereNull('units.feature_image_id')
       .whereNull('user_buyers.image_id')
       .whereNull('contact_forms.attachmentId')
-      .andWhere('media.created_at', '>', date);
+      .whereNull('claim_profile_contact_forms.cv_id')
+      .andWhere('media.created_at', '>', date)
+      .whereNull('media.deleted_at');
 
-    const mediaList = rawMediaList.map((data) => Media.fromJson(data));
-
-    return mediaList;
+    return rawMediaList.map((data) => Media.fromJson(data));
   }
 
   async deleteByIds(ids: string[]): Promise<void> {

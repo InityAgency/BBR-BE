@@ -15,7 +15,10 @@ export class PhoneCodeRepositoryImpl implements IPhoneCodeRepository {
 
   @LogMethod()
   async findById(id: string): Promise<PhoneCode | undefined> {
-    return PhoneCode.query().findById(id);
+    return PhoneCode.query()
+    .findById(id)
+    .withGraphFetched('country')
+    .whereNull('deleted_at');
   }
 
   @LogMethod()
@@ -73,9 +76,10 @@ export class PhoneCodeRepositoryImpl implements IPhoneCodeRepository {
   ): Promise<{ data: PhoneCode[]; pagination: PaginationResponse }> {
     const { page, limit } = fetchQuery;
 
-    let query = PhoneCode.query();
-
-    query = query.select('id', 'code', 'countryId', 'createdAt');
+    let query = PhoneCode.query()
+    .select('id', 'code', 'countryId', 'createdAt', 'updatedAt')
+    .withGraphFetched('country')
+    .whereNull('deleted_at');
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 
