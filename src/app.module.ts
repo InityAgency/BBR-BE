@@ -38,6 +38,8 @@ import { LeadModule } from './modules/requestmanagement/lead/lead.module';
 import { ReviewModule } from './modules/residentmanagement/review/review.module';
 import { ContactFormModule } from './modules/contactform/contactform/contact-form.module';
 import { BillingModule } from './modules/billing/billing.module';
+import { ClaimProfileModule } from './modules/contactform/claimprofile/claim-profile.module';
+import { PhoneCodeModule } from './modules/shared/phone_code/phone-code.module';
 
 @Module({
   imports: [
@@ -83,6 +85,8 @@ import { BillingModule } from './modules/billing/billing.module';
     ReviewModule,
     ContactFormModule,
     BillingModule,
+    ClaimProfileModule,
+    PhoneCodeModule
   ],
   providers: [],
 })

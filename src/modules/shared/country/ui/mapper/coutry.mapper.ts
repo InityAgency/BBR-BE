@@ -67,7 +67,7 @@ export class CountryMapper {
     return new PhoneCodeResponse(
       phoneCode.id,
       phoneCode.code,
-      phoneCode.countryId,
+      phoneCode.country,
       phoneCode.createdAt,
       phoneCode.updatedAt
     );

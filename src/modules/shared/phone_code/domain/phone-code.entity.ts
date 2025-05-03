@@ -8,6 +8,7 @@ export class PhoneCode extends Model {
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;
+  country: Country
 
   static tableName = 'phone_codes';
 

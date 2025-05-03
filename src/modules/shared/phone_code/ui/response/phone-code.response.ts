@@ -1,15 +1,11 @@
-export class PhoneCodeResponse {
-  id: string;
-  code: string;
-  countryId: string;
-  createdAt: Date;
-  updatedAt: Date;
+import { CountryResponse } from './country.response';
 
-  constructor(id: string, code: string, countryId: string, createdAt: Date, updatedAt: Date) {
-    this.id = id;
-    this.code = code;
-    this.countryId = countryId;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
+export class PhoneCodeResponse {
+  constructor(
+    public id: string,
+    public code: string,
+    public country: CountryResponse | null,
+    public createdAt: Date,
+    public updatedAt: Date
+  ) {}
 }

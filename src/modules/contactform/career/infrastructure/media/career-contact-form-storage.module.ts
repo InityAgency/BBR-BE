@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CareerContactFormStorageConfig } from './contact-form-storage-config.service';
+import { CareerContactFormStorageConfig } from './career-contact-form-storage-config.service';
 
 @Module({
   imports: [ConfigModule],

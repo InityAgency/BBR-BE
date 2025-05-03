@@ -43,7 +43,7 @@ import {
 } from '../residentmanagement/unit/infrastructure/media/residence-unit-media-storage.service';
 import {
   CareerContactFormStorageConfig
-} from '../contactform/career/infrastructure/media/contact-form-storage-config.service';
+} from '../contactform/career/infrastructure/media/career-contact-form-storage-config.service';
 import {
   CareerContactFormMediaStorageService
 } from '../contactform/career/infrastructure/media/career-contact-form-media-storage.service';
@@ -53,6 +53,12 @@ import {
 import {
   ContactFormMediaStorageService
 } from '../contactform/contactform/infrastructure/media/contact-form-media-storage.service';
+import {
+  ClaimProfileContactFormStorageConfig
+} from '../contactform/claimprofile/infrastructure/media/claim-profile-contact-form-storage-config.service';
+import {
+  ClaimProfileContactFormMediaStorageService
+} from '../contactform/claimprofile/infrastructure/media/claim-profile-contact-form-media-storage.service';
 @Global()
 @Module({
   imports: [DatabaseModule, EventEmitterModule.forRoot(), SizeConfigurationModule],
@@ -98,7 +104,8 @@ import {
         residenceStorage: ResidenceMediaStorageService,
         residenceUnitStorage: ResidenceUnitMediaStorageService,
         careerContactFormStorage: CareerContactFormMediaStorageService,
-        errorContactFormStorage: ContactFormMediaStorageService,
+        contactFormStorage: ContactFormMediaStorageService,
+        claimProfileContactFormStorage: ClaimProfileContactFormMediaStorageService,
       ) => [
         brandStorage,
         companyStorage,
@@ -109,7 +116,8 @@ import {
         residenceStorage,
         residenceUnitStorage,
         careerContactFormStorage,
-        errorContactFormStorage
+        contactFormStorage,
+        claimProfileContactFormStorage
       ],
       inject: [
         BrandMediaStorageService,
@@ -121,6 +129,7 @@ import {
         ResidenceUnitMediaStorageService,
         CareerContactFormMediaStorageService,
         ContactFormMediaStorageService,
+        ClaimProfileContactFormMediaStorageService,
       ],
     },
     BrandStorageConfig,
@@ -143,6 +152,8 @@ import {
     CareerContactFormMediaStorageService,
     ContactFormStorageConfig,
     ContactFormMediaStorageService,
+    ClaimProfileContactFormStorageConfig,
+    ClaimProfileContactFormMediaStorageService,
   ],
 
   exports: [
@@ -172,6 +183,8 @@ import {
     CareerContactFormMediaStorageService,
     ContactFormStorageConfig,
     ContactFormMediaStorageService,
+    ClaimProfileContactFormStorageConfig,
+    ClaimProfileContactFormMediaStorageService,
   ],
 })
 export class MediaModule {}
