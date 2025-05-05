@@ -87,9 +87,14 @@ export class ResidenceRepository implements IResidenceRepository {
           Residence.tableName
         )
       )
-      .joinRelated('city')
+      .joinRelated('[city, country]')
       .leftJoinRelated('company')
       .leftJoinRelated('brand')
+      .modify((qb) => {
+        if (fetchQuery.continentId) {
+          qb.where('country.continentId', fetchQuery.continentId);
+        }
+      })
       .withGraphFetched(
         '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
       );

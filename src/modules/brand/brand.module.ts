@@ -15,6 +15,7 @@ import { FindByIdBrandQueryHandler } from './application/query/find-by-id-brand.
 import { FetchAllBrandQueryHandler } from './application/query/fetch-all-brands.query.handler';
 import { BrandPublicController } from './ui/brand.public.controller';
 import { FindBySlugBrandQueryHandler } from './application/query/find-by-slug-brand.query.handler';
+import { FetchAllBrandPublicQueryHandler } from './application/query/fetch-all-brands.public.query.handler';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
@@ -31,6 +32,7 @@ import { FindBySlugBrandQueryHandler } from './application/query/find-by-slug-br
     CreateBrandCommandHandler,
     FindByIdBrandQueryHandler,
     FindBySlugBrandQueryHandler,
+    FetchAllBrandPublicQueryHandler,
     FetchAllBrandQueryHandler,
     UpdateBrandCommandHandler,
     DeleteBrandCommandHandler,

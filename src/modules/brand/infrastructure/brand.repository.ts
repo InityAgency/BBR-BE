@@ -9,6 +9,7 @@ import { FetchBrandsQuery } from '../application/command/fetch-brands.query';
 import { BrandStatus } from '../domain/brand-status.enum';
 import { Brand } from '../domain/brand.entity';
 import { IBrandRepository } from '../domain/brand.repository.interface';
+import { FetchBrandsPublicQuery } from '../application/command/fetch-brands.public.query';
 
 @Injectable()
 export class BrandRepositoryImpl implements IBrandRepository {
@@ -61,6 +62,62 @@ export class BrandRepositoryImpl implements IBrandRepository {
           Brand.tableName
         )
       )
+      .withGraphFetched('[brandType, logo]');
+
+    // sort
+    if (sortBy && sortOrder) {
+      const allowedColumns = ['name', 'status', 'registered_at', 'created_at', 'updated_at'];
+      if (allowedColumns.includes(sortBy)) {
+        baseQuery = baseQuery.orderBy(sortBy, sortOrder);
+      }
+    }
+
+    // search
+    const columnsToSearch = ['brands.name', 'brands.description', 'brands.status'];
+    baseQuery = applySearchFilter(baseQuery, searchQuery, columnsToSearch);
+
+    // now paginate
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      baseQuery,
+      page,
+      limit
+    );
+
+    return {
+      data: paginatedQuery,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page,
+        limit,
+      },
+    };
+  }
+
+  @LogMethod()
+  async findAllPublic(
+    fetchQuery: FetchBrandsPublicQuery
+  ): Promise<{ data: Brand[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery } = fetchQuery;
+
+    let baseQuery = Brand.query()
+      .whereNull('deleted_at')
+      .modify((qb) => {
+        if (fetchQuery.withResidences) {
+          qb.whereExists(function () {
+            this.select('*')
+              .from('residences')
+              .whereRaw('residences.brand_id = brands.id')
+              .whereNull('residences.deleted_at');
+          });
+        }
+
+        applyFilters(
+          qb,
+          { status: fetchQuery.status, brandTypeId: fetchQuery.brandTypeId },
+          Brand.tableName
+        );
+      })
       .withGraphFetched('[brandType, logo]');
 
     // sort

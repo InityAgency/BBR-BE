@@ -38,7 +38,8 @@ export class ResidencePublicController {
     @Query('developmentStatus') developmentStatus?: DevelopmentStatusEnum[],
     @Query('cityId') cityId?: string[],
     @Query('brandId') brandId?: string[],
-    @Query('address') address?: string[]
+    @Query('address') address?: string[],
+    @Query('continentId') continentId?: string[]
   ): Promise<{ data: ResidencePublicResponse[]; pagination: PaginationResponse }> {
     const fetchQuery = new FetchResidencesQuery(
       query,
@@ -50,7 +51,8 @@ export class ResidencePublicController {
       developmentStatus,
       cityId,
       brandId,
-      address
+      address,
+      continentId
     );
 
     const { data, pagination } = await this.findAllResidencesCommandQuery.handle(fetchQuery);
