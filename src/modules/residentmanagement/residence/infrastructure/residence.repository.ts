@@ -74,6 +74,7 @@ export class ResidenceRepository implements IResidenceRepository {
       status,
       developmentStatus,
       cityId,
+      countryId,
       brandId,
       address,
     } = fetchQuery;
@@ -83,7 +84,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .modify((qb) =>
         applyFilters(
           qb,
-          { status, cityId, brandId, address, developmentStatus },
+          { status, cityId, brandId, countryId, address, developmentStatus },
           Residence.tableName
         )
       )

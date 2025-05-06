@@ -37,6 +37,7 @@ export class ResidencePublicController {
     @Query('sortOrder') sortOrder?: OrderByDirection,
     @Query('developmentStatus') developmentStatus?: DevelopmentStatusEnum[],
     @Query('cityId') cityId?: string[],
+    @Query('countryId') countryId?: string[],
     @Query('brandId') brandId?: string[],
     @Query('address') address?: string[],
     @Query('continentId') continentId?: string[]
@@ -50,6 +51,7 @@ export class ResidencePublicController {
       [ResidenceStatusEnum.ACTIVE],
       developmentStatus,
       cityId,
+      countryId,
       brandId,
       address,
       continentId
