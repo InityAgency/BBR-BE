@@ -69,7 +69,7 @@ export class UserRepositoryImpl implements IUserRepository {
     const { page, limit, sortBy, sortOrder, searchQuery, status, roleId } = fetchQuery;
     const knex = this.knexService.connection;
 
-    const allowedColumns = ['full_name', 'email', 'createdAt', 'updatedAt'];
+    const allowedColumns = ['fullName', 'email', 'createdAt', 'updatedAt'];
 
     // base query with joins
     const baseQuery = User.query()
