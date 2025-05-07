@@ -19,7 +19,7 @@ export class LifestyleRepositoryIml implements ILifestyleRepository {
     let query = Lifestyle.query();
 
     if (sortBy && sortOrder) {
-      const allowedColumns = ['name', 'created_at', 'updated_at'];
+      const allowedColumns = ['name', 'createdAt', 'updatedAt'];
       if (allowedColumns.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }

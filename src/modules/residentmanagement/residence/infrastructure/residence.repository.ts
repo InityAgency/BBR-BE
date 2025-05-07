@@ -110,7 +110,7 @@ export class ResidenceRepository implements IResidenceRepository {
     const searchableQuery = applySearchFilter(baseQuery.clone(), searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
-      const allowedColumns = ['name', 'brand.name', 'created_at', 'updated_at'];
+      const allowedColumns = ['name', 'brand.name', 'createdAt', 'updatedAt'];
       if (allowedColumns.includes(sortBy)) {
         searchableQuery.orderBy(sortBy, sortOrder);
       }

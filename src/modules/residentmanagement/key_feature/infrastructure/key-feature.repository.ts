@@ -44,7 +44,7 @@ export class KeyFeatureRepository implements IKeyFeatureRepository {
     let query = KeyFeature.query();
 
     if (sortBy && sortOrder) {
-      const allowedColumns = ['name', 'created_at', 'updated_at'];
+      const allowedColumns = ['name', 'createdAt', 'updatedAt'];
       if (allowedColumns.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }

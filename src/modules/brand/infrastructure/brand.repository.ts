@@ -66,7 +66,7 @@ export class BrandRepositoryImpl implements IBrandRepository {
 
     // sort
     if (sortBy && sortOrder) {
-      const allowedColumns = ['name', 'status', 'registered_at', 'created_at', 'updated_at'];
+      const allowedColumns = ['name', 'status', 'registeredAt', 'createdAt', 'updatedAt'];
       if (allowedColumns.includes(sortBy)) {
         baseQuery = baseQuery.orderBy(sortBy, sortOrder);
       }
@@ -122,7 +122,7 @@ export class BrandRepositoryImpl implements IBrandRepository {
 
     // sort
     if (sortBy && sortOrder) {
-      const allowedColumns = ['name', 'status', 'registered_at', 'created_at', 'updated_at'];
+      const allowedColumns = ['name', 'status', 'registeredAt', 'createdAt', 'updatedAt'];
       if (allowedColumns.includes(sortBy)) {
         baseQuery = baseQuery.orderBy(sortBy, sortOrder);
       }

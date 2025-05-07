@@ -6,9 +6,8 @@ import { FetchUnitTypeQuery } from '../application/commands/fetch-unit-type.quer
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { IUnitTypeRepository } from '../domain/unit-type.repository.interface';
 
-
 @Injectable()
-export class UnitTypeRepositoryImpl implements IUnitTypeRepository{
+export class UnitTypeRepositoryImpl implements IUnitTypeRepository {
   constructor() {}
 
   async findAll(
@@ -19,7 +18,7 @@ export class UnitTypeRepositoryImpl implements IUnitTypeRepository{
     let query = UnitType.query().whereNull('deletedAt');
 
     if (sortBy && sortOrder) {
-      const allowedColumns = ['name', 'created_at', 'updated_at'];
+      const allowedColumns = ['name', 'createdAt', 'updatedAt'];
       if (allowedColumns.includes(sortBy)) {
         query = query.orderBy(sortBy, sortOrder);
       }
@@ -42,15 +41,11 @@ export class UnitTypeRepositoryImpl implements IUnitTypeRepository{
   }
 
   async findByName(name: string): Promise<UnitType | undefined> {
-    return await UnitType.query()
-      .findOne({ name })
-      .whereNull('deletedAt');
+    return await UnitType.query().findOne({ name }).whereNull('deletedAt');
   }
 
   async findById(id: string): Promise<UnitType | undefined> {
-    return await UnitType.query()
-      .findById(id)
-      .whereNull('deletedAt');
+    return await UnitType.query().findById(id).whereNull('deletedAt');
   }
 
   async create(unitType: Partial<UnitType>): Promise<UnitType> {
@@ -58,13 +53,10 @@ export class UnitTypeRepositoryImpl implements IUnitTypeRepository{
   }
 
   async update(id: string, data: Partial<UnitType>): Promise<UnitType> {
-    return await UnitType.query()
-      .patchAndFetchById(id, data);
+    return await UnitType.query().patchAndFetchById(id, data);
   }
 
   async delete(id: string): Promise<void> {
-    await UnitType.query()
-      .patch({ deletedAt: new Date() })
-      .where('id', id);
+    await UnitType.query().patch({ deletedAt: new Date() }).where('id', id);
   }
 }
