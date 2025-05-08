@@ -5,11 +5,14 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   Param,
   Patch,
   Post,
   Put,
   Query,
+  Req,
+  Res,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -131,10 +134,19 @@ export class UserController {
   // * Verify email
   @HttpCode(HttpStatus.OK)
   @Post(':token/verify-email')
-  async verifyEmail(@Param('token') token: string) {
+  async verifyEmail(@Param('token') token: string, @Res() res, @Req() req) {
     const command = new VerificationCommand(token);
 
-    await this.verifyEmailCommandHandler.handle(command);
+    const user = await this.verifyEmailCommandHandler.handle(command);
+
+    req.login(user, (err) => {
+      if (err) {
+        console.error('Login error:', err);
+        throw new InternalServerErrorException('Login error');
+      }
+
+      return res.status(200).json({ message: 'Logged in after verification' });
+    });
   }
 
   // * Profile update
