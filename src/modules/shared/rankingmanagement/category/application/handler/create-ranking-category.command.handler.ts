@@ -42,11 +42,12 @@ export class CreateRankingCategoryCommandHandler {
     }
 
     const rawSlug = command.slug?.trim() ?? command.name!;
-    const slug = RankingCategory.slugify(rawSlug);
+    let slug = RankingCategory.slugify(rawSlug);
 
     const existingSlug = await this.rankingCategoryRepository.findBySlug(slug);
     if (existingSlug) {
-      throw new ConflictException(`Ranking category with slug ${slug} already exists`);
+      // throw new ConflictException(`Ranking category with slug ${slug} already exists`);
+      slug += `-${Math.random().toString(36).substring(2, 7)}`;
     }
 
     const categoryData: Partial<RankingCategory> = {

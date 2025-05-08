@@ -35,12 +35,15 @@ export class UpdateBrandCommandHandler {
       throw new NotFoundException('Logo not found');
     }
 
-    const rawSlug = command.slug?.trim() ?? command.name!;
-    const slug = Brand.slugify(rawSlug);
+    let slug = existingBrand.slug;
+    if (command.slug && command.slug !== existingBrand.slug) {
+      const rawSlug = command.slug?.trim();
+      slug = Brand.slugify(rawSlug);
 
-    const existing = await this.brandRepository.findBySlug(slug);
-    if (existing && existing.id !== command.id) {
-      throw new ConflictException(`Brand with slug ${slug} already exists`);
+      const existing = await this.brandRepository.findBySlug(slug);
+      if (existing && existing.id !== command.id) {
+        throw new ConflictException(`Brand with slug ${slug} already exists`);
+      }
     }
 
     const updateData = {

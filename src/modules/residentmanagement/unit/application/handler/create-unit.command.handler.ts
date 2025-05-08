@@ -48,11 +48,12 @@ export class CreateUnitCommandHandler {
     }
 
     const rawSlug = command.slug?.trim() ?? command.name!;
-    const slug = Unit.slugify(rawSlug);
+    let slug = Unit.slugify(rawSlug);
 
     const existingSlug = await this.unitRepository.findBySlug(slug);
     if (existingSlug) {
-      throw new ConflictException(`Unit with slug ${slug} already exists`);
+      // throw new ConflictException(`Unit with slug ${slug} already exists`);
+      slug += `-${Math.random().toString(36).substring(2, 7)}`;
     }
 
     const unitData: Partial<Unit> = {

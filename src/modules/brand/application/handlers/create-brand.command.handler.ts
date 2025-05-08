@@ -40,11 +40,12 @@ export class CreateBrandCommandHandler {
     }
 
     const rawSlug = command.slug?.trim() ?? command.name!;
-    const slug = Brand.slugify(rawSlug);
+    let slug = Brand.slugify(rawSlug);
 
     const existingSlug = await this.brandRepository.findBySlug(slug);
     if (existingSlug) {
-      throw new ConflictException(`Brand with slug ${slug} already exists`);
+      // throw new ConflictException(`Brand with slug ${slug} already exists`);
+      slug += `-${Math.random().toString(36).substring(2, 7)}`;
     }
 
     const brandData = {
