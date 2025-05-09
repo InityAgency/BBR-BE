@@ -145,7 +145,7 @@ export class UserController {
         throw new InternalServerErrorException('Login error');
       }
 
-      return this.userMapper.toResponse(user);
+      res.status(HttpStatus.OK).json(this.userMapper.toResponse(user));
     });
   }
 
