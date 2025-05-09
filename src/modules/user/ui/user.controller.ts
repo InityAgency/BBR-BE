@@ -145,7 +145,7 @@ export class UserController {
         throw new InternalServerErrorException('Login error');
       }
 
-      return res.status(200).json({ message: 'Logged in after verification' });
+      return this.userMapper.toResponse(user);
     });
   }
 
