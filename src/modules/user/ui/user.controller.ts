@@ -134,19 +134,19 @@ export class UserController {
   // * Verify email
   @HttpCode(HttpStatus.OK)
   @Post(':token/verify-email')
-  async verifyEmail(@Param('token') token: string, @Res() res, @Req() req) {
+  async verifyEmail(@Param('token') token: string, @Req() req): Promise<UserResponse> {
     const command = new VerificationCommand(token);
 
     const user = await this.verifyEmailCommandHandler.handle(command);
 
-    req.login(user, (err) => {
-      if (err) {
-        console.error('Login error:', err);
-        throw new InternalServerErrorException('Login error');
-      }
-
-      res.status(HttpStatus.OK).json(this.userMapper.toResponse(user));
+    await new Promise<void>((resolve, reject) => {
+      req.login(user, (err) => {
+        if (err) return reject(new InternalServerErrorException('Login failed'));
+        resolve();
+      });
     });
+
+    return this.userMapper.toResponse(user);
   }
 
   // * Profile update
