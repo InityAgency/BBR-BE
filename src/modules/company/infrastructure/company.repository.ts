@@ -16,7 +16,7 @@ export class CompanyRepository implements ICompanyRepository {
     return createdCompany;
   }
 
-  async update(id: string, company: Company): Promise<Company> {
+  async update(id: string, company: Partial<Company>): Promise<Company> {
     const updatedCompany = await Company.query()
       .whereNull('deleted_at')
       .patchAndFetchById(id, company)

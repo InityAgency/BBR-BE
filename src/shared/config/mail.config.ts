@@ -7,6 +7,7 @@ const emailConfig = (configService: ConfigService) => {
     transport: {
       host: configService.get<string>('NODMAILER_HOST'),
       port: configService.get<number>('NODMAILER_PORT'),
+      secure: true,
       auth: {
         user: configService.get<string>('NODMAILER_USER'),
         pass: configService.get<string>('NODMAILER_PASS'),
