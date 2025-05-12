@@ -1,4 +1,4 @@
-import {  IsNotEmpty, IsString, MaxLength, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsUUID, IsEmail } from 'class-validator';
 
 export class CreateClaimProfileContactFormRequest {
   @IsNotEmpty()
@@ -10,6 +10,10 @@ export class CreateClaimProfileContactFormRequest {
   @IsString()
   @MaxLength(255)
   lastName: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
   @IsNotEmpty()
   @IsString()

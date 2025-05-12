@@ -69,7 +69,6 @@ async function parseCSV(filePath: string): Promise<ResidenceCSV[]> {
       // .on('data', (data) => results.push(data as ResidenceCSV))
       .pipe(csv({ mapHeaders: ({ header }) => header.trim() }))
       .on('data', (row) => {
-        console.log(row['123']);
         const cleanedRow: ResidenceCSV = {
           residence_name: row['residence_name'] ?? '',
           website_url: row['website_url'] ?? '',
@@ -122,8 +121,6 @@ export async function seed(knex: Knex): Promise<void> {
 
   // Deletes ALL existing entries
   // await knex('residences').del();
-
-  console.log(residences);
 
   const brands = await knex('brands').select('id', 'name');
   const city = await knex('cities').select('id', 'name');
@@ -236,8 +233,6 @@ export async function seed(knex: Knex): Promise<void> {
         .filter(Boolean),
     });
   }
-
-  console.log('formattedResidences', formattedResidences);
 
   const batchSize = 500;
   const residenceChunks = chunk(formattedResidences, batchSize);

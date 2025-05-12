@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, IsUUID, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsUUID, IsEnum, IsEmail } from 'class-validator';
 import { ClaimProfileContactFormStatus } from '../../domain/claim-profile-contact-form-status.enum';
 
 export class UpdateClaimProfileContactFormRequest {
@@ -11,6 +11,10 @@ export class UpdateClaimProfileContactFormRequest {
   @IsString()
   @MaxLength(255)
   lastName: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
   @IsNotEmpty()
   @IsString()
