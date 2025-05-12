@@ -14,13 +14,13 @@ interface ResidenceCSV {
   avg_price_per_sqft: number;
   budget_start_range: number;
   budget_end_range: number;
-  build_year: number;
-  rental_potential: string;
-  development_status: string;
   floor_area_sqft: number;
+  no_of_units: number;
+  build_year: number;
+  development_status: string;
+  rental_potential: string;
   pet_friendly: string;
   accessible: string;
-  no_of_units: number;
   city: string;
   country: string;
   associated_brand: string;
@@ -35,11 +35,70 @@ interface ResidenceCSV {
 }
 
 async function parseCSV(filePath: string): Promise<ResidenceCSV[]> {
+  const allowedKeys = [
+    'residence_name',
+    'website_url',
+    'avg_price_per_unit',
+    'avg_price_per_sqft',
+    'budget_start_range',
+    'budget_end_range',
+    'floor_area_sqft',
+    'no_of_units',
+    'build_year',
+    'development_status',
+    'rental_potential',
+    'pet_friendly',
+    'accessible',
+    'city',
+    'country',
+    'associated_brand',
+    'brief_subtitle',
+    'brief_description',
+    'feature_names',
+    'amenity_names',
+    'highlighted_amenity1',
+    'highlighted_amenity2',
+    'highlighted_amenity3',
+    'address',
+  ];
+
   return new Promise((resolve, reject) => {
     const results: ResidenceCSV[] = [];
     fs.createReadStream(filePath)
-      .pipe(csv())
-      .on('data', (data) => results.push(data as ResidenceCSV))
+      // .pipe(csv({ headers: true, skipLines: 1, mapHeaders: ({ header }) => header.trim() }))
+      // .on('data', (data) => results.push(data as ResidenceCSV))
+      .pipe(csv({ mapHeaders: ({ header }) => header.trim() }))
+      .on('data', (row) => {
+        console.log(row['123']);
+        const cleanedRow: ResidenceCSV = {
+          residence_name: row['residence_name'] ?? '',
+          website_url: row['website_url'] ?? '',
+          avg_price_per_unit: Number(row['avg_price_per_unit']) || 0,
+          avg_price_per_sqft: Number(row['avg_price_per_sqft']) || 0,
+          budget_start_range: Number(row['budget_start_range']) || 0,
+          budget_end_range: Number(row['budget_end_range']) || 0,
+          floor_area_sqft: Number(row['floor_area_sqft']) || 0,
+          no_of_units: Number(row['no_of_units']) || 0,
+          build_year: Number(row['build_year']) || 0,
+          development_status: row['development_status'] ?? '',
+          rental_potential: row['rental_potential'] ?? '',
+          pet_friendly: row['pet_friendly'] ?? '',
+          accessible: row['accessible'] ?? '',
+          city: row['city'] ?? '',
+          country: row['country'] ?? '',
+          associated_brand: row['associated_brand'] ?? '',
+          brief_subtitle: row['brief_subtitle'] ?? '',
+          brief_description: row['brief_description'] ?? '',
+          feature_names: row['feature_names'] ?? '',
+          amenity_names: row['amenity_names'] ?? '',
+          highlighted_amenity1: row['highlighted_amenity1'] ?? '',
+          highlighted_amenity2: row['highlighted_amenity2'] ?? '',
+          highlighted_amenity3: row['highlighted_amenity3'] ?? '',
+          address: row['address'] ?? '',
+        };
+
+        results.push(cleanedRow);
+      })
       .on('end', () => resolve(results))
       .on('error', (error) => reject(error));
   });
@@ -57,11 +116,14 @@ export async function seed(knex: Knex): Promise<void> {
   // const filePath = `${__dirname}/../csv/residences_seed_4_new.csv`;
   // const filePath = `${__dirname}/../csv/residences_seed_5_new.csv`;
   // const filePath = `${__dirname}/../csv/residences_seed_6_new.csv`;
-  const filePath = `${__dirname}/../csv/residences_seed_7_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_7_new.csv`;
+  const filePath = `${__dirname}/../csv/residences_seed_test.csv`;
   const residences = await parseCSV(filePath);
 
   // Deletes ALL existing entries
   // await knex('residences').del();
+
+  console.log(residences);
 
   const brands = await knex('brands').select('id', 'name');
   const city = await knex('cities').select('id', 'name');
@@ -174,6 +236,8 @@ export async function seed(knex: Knex): Promise<void> {
         .filter(Boolean),
     });
   }
+
+  console.log('formattedResidences', formattedResidences);
 
   const batchSize = 500;
   const residenceChunks = chunk(formattedResidences, batchSize);

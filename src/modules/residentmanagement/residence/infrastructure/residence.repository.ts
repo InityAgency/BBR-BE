@@ -88,12 +88,18 @@ export class ResidenceRepository implements IResidenceRepository {
           Residence.tableName
         )
       )
-      .joinRelated('[city, country]')
+      // .leftJoinRelated(['city', 'country'])/
+      .leftJoinRelated('city')
+      .leftJoinRelated('country')
       .leftJoinRelated('company')
       .leftJoinRelated('brand')
       .modify((qb) => {
         if (fetchQuery.continentId) {
           qb.where('country.continentId', fetchQuery.continentId);
+        }
+
+        if (fetchQuery.cityId) {
+          qb.where('city.id', fetchQuery.cityId);
         }
       })
       .withGraphFetched(
