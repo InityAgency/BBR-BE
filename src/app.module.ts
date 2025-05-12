@@ -46,6 +46,7 @@ import { PhoneCodeModule } from './modules/shared/phone_code/phone-code.module';
     PassportModule.register({ session: true }),
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
       // envFilePath will be handled by dotenv-cli, so no need to specify here
     }),
     BullModule.forRootAsync({
@@ -86,7 +87,7 @@ import { PhoneCodeModule } from './modules/shared/phone_code/phone-code.module';
     ContactFormModule,
     BillingModule,
     ClaimProfileModule,
-    PhoneCodeModule
+    PhoneCodeModule,
   ],
   providers: [],
 })
