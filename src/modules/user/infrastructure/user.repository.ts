@@ -141,6 +141,8 @@ export class UserRepositoryImpl implements IUserRepository {
         fullName: updateData.fullName,
         notifyBlogs: updateData.notifyBlogs,
         notifyMarketTrends: updateData.notifyMarketTrends,
+        receiveLuxuryInsights: updateData.receiveLuxuryInsights,
+        notifyLatestNews: updateData.notifyLatestNews,
         pushNotifications: updateData.pushNotifications,
         emailNotifications: updateData.emailNotifications,
         updatedAt: new Date(),
