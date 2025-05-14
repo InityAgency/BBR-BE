@@ -3,7 +3,6 @@ import { UserResponse } from '../response/user-response';
 
 export class UserMapper {
   public toResponse(user: User): UserResponse {
-
     return new UserResponse(
       user.id,
       user.fullName,
@@ -21,8 +20,6 @@ export class UserMapper {
       user.buyer,
       user.company,
       user.role,
-      user.buyer?.lifestyles,
-      user.buyer?.unitTypes,
       user.createdAt,
       user.updatedAt,
       user.deletedAt

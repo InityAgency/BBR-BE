@@ -26,11 +26,10 @@ export class AuthRepository implements IAuthRepository {
       .leftJoin(buildRoleJoin(knex))
       .leftJoin(buildCompanyJoin(knex))
       .leftJoin(buildBuyerJoin(knex))
-      .leftJoin(buildLifestylesJoin(knex))
-      .leftJoin(buildUnitTypesJoin(knex))
-      .leftJoin(buildPermissionsJoin(knex));
+      .leftJoin(buildPermissionsJoin(knex))
+      .select('users.*', 'role', 'company', 'buyer', 'permissions');
 
-    return query.select('users.*', 'role', 'company', 'buyer', 'permissions').first();
+    return query.first();
   }
 
   findRoleByName(name: string) {

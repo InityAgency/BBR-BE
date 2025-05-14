@@ -20,8 +20,6 @@ export class UserResponse {
     public readonly buyer?: UserBuyer,
     public readonly company?: Company,
     public readonly role?: any,
-    public readonly lifestyles?: any,
-    public readonly unitTypes?: any,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
     public readonly deletedAt?: Date
