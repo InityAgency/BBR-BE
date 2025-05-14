@@ -30,9 +30,7 @@ export class AuthRepository implements IAuthRepository {
       .leftJoin(buildUnitTypesJoin(knex))
       .leftJoin(buildPermissionsJoin(knex));
 
-    return query
-      .select('users.*', 'role', 'company', 'buyer', 'unitTypes', 'lifestyles', 'permissions')
-      .first();
+    return query.select('users.*', 'role', 'company', 'buyer', 'permissions').first();
   }
 
   findRoleByName(name: string) {
