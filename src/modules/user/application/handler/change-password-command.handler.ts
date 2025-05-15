@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from '../../domain/user.entity';
 import * as bcrypt from 'bcrypt';
 
@@ -16,7 +21,7 @@ export class ChangePasswordCommandHandler {
     const result = await User.verifyPassword(oldPassword, user.password);
 
     if (!result) {
-      throw new ConflictException('Invalid password');
+      throw new BadRequestException('Current password is incorrect');
     }
 
     await User.query().patch({ password: newPassword }).where({ id });

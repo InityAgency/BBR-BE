@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -21,7 +22,7 @@ export class VerifyPasswordCommandHandler {
     const result = await User.verifyPassword(password, user.password);
 
     if (!result) {
-      throw new ConflictException('Invalid password');
+      throw new BadRequestException('Current password is incorrect');
     }
   }
 }
