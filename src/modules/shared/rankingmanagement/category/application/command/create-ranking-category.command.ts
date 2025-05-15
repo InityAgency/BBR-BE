@@ -10,6 +10,7 @@ export class CreateRankingCategoryCommand {
     public readonly residenceLimitation: number,
     public readonly rankingPrice: number,
     public readonly featuredImageId: string,
-    public readonly status: RankingCategoryStatus
+    public readonly status: RankingCategoryStatus,
+    public readonly entityId?: string
   ) {}
 }

@@ -23,6 +23,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       rankingPrice: rankingCategory.rankingPrice,
       featuredImageId: rankingCategory.featuredImage?.id,
       status: rankingCategory.status,
+      entityId: rankingCategory.entityId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
