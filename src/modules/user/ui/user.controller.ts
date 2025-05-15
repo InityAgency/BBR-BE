@@ -131,6 +131,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @Post(':id/resend-verification-email')
   @UseGuards(SessionAuthGuard)
+  @Permissions(PermissionsEnum.ADMIN)
   async resendVerificationEmail(@Param('id') id: string) {
     const command = new SendVerificationCommand(id);
 
