@@ -45,7 +45,7 @@ export class UpdateRankingCategoryRequest {
   @IsEnum(RankingCategoryStatus)
   status: RankingCategoryStatus;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
   entityId?: string;
 }
