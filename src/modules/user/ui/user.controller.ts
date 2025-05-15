@@ -50,6 +50,10 @@ import { UpdateUserStatusRequest } from './request/update-user-status.request';
 import { UpdateUserRequest } from './request/update-user.request';
 import { UserResponse } from './response/user-response';
 import { FindByEmailUserQueryHandler } from '../application/query/find-by-email-user.command.query';
+import { VerifyPasswordRequest } from './request/verify-password.request';
+import { VerifyPasswordCommandHandler } from '../application/handler/verify-password-command.handler';
+import { ChangePasswordRequest } from './request/change-password.requst';
+import { ChangePasswordCommandHandler } from '../application/handler/change-password-command.handler';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -67,6 +71,8 @@ export class UserController {
     private readonly updateUserProfileCommandHandler: UpdateUserProfileCommandHandler,
     private readonly updateUserStatusCommandHandler: UpdateUserStatusCommandHandler,
     private readonly findByEmailUserQueryHandler: FindByEmailUserQueryHandler,
+    private readonly verifyPasswordCommandHandler: VerifyPasswordCommandHandler,
+    private readonly changePasswordCommandHandler: ChangePasswordCommandHandler,
     private readonly userMapper: UserMapper
   ) {}
 
@@ -147,6 +153,26 @@ export class UserController {
     });
 
     return this.userMapper.toResponse(user);
+  }
+
+  @Post('verify-password')
+  @UseGuards(SessionAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async verifyPassword(
+    @Body() body: VerifyPasswordRequest,
+    @CurrentUser() user: User
+  ): Promise<void> {
+    return await this.verifyPasswordCommandHandler.handle(user.id, body.oldPassword);
+  }
+
+  @Put('change-password')
+  @UseGuards(SessionAuthGuard)
+  async changePassword(@Body() body: ChangePasswordRequest, @CurrentUser() user: User) {
+    return await this.changePasswordCommandHandler.handle(
+      user.id,
+      body.oldPassword,
+      body.newPassword
+    );
   }
 
   // * Profile update

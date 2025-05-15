@@ -59,7 +59,6 @@ export class User extends Model {
       },
     },
   };
-  
 
   async $beforeInsert() {
     if (this.password) {
@@ -78,5 +77,9 @@ export class User extends Model {
 
   static async create(data: Partial<User>): Promise<User> {
     return await User.query().insert(data).returning('*');
+  }
+
+  static async verifyPassword(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
   }
 }

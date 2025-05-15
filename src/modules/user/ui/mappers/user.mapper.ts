@@ -1,5 +1,6 @@
 import { User } from '../../domain/user.entity';
 import { UserResponse } from '../response/user-response';
+import { CompanyMapper } from './company.mapper';
 
 export class UserMapper {
   public toResponse(user: User): UserResponse {
@@ -18,7 +19,7 @@ export class UserMapper {
       user.agreedTerms,
       user.status,
       user.buyer,
-      user.company,
+      user.company ? CompanyMapper.toResponse(user.company) : null,
       user.role,
       user.createdAt,
       user.updatedAt,

@@ -26,6 +26,8 @@ import { MediaModule } from '../media/media.module';
 import { UpdateUserStatusCommandHandler } from './application/handler/update-user-status.command.handler';
 import { UserMapper } from './ui/mappers/user.mapper';
 import { FindByEmailUserQueryHandler } from './application/query/find-by-email-user.command.query';
+import { VerifyPasswordCommandHandler } from './application/handler/verify-password-command.handler';
+import { ChangePasswordCommandHandler } from './application/handler/change-password-command.handler';
 
 @Module({
   imports: [DatabaseModule, EmailModule, MediaModule],
@@ -60,6 +62,8 @@ import { FindByEmailUserQueryHandler } from './application/query/find-by-email-u
     UpdateUserProfileCommandHandler,
     UpdateUserStatusCommandHandler,
     FindByEmailUserQueryHandler,
+    VerifyPasswordCommandHandler,
+    ChangePasswordCommandHandler,
     ConfigService,
     UserMapper,
   ],
