@@ -9,10 +9,18 @@ export class FindByEmailUserQueryHandler {
 
   @LogMethod()
   async handle(email: string): Promise<User> {
-    const user = await this.userRepository.findByEmail(email);
+    const findByEmail = await this.userRepository.findByEmail(email);
+
+    if (!findByEmail) {
+      throw new NotFoundException('User not found');
+    }
+
+    const user = await this.userRepository.findById(findByEmail.id);
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
     return user;
   }
 }
