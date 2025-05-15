@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 import { RankingCategoryStatus } from '../../domain/ranking-category-status.enum';
 
 export class UpdateRankingCategoryRequest {
@@ -36,4 +44,8 @@ export class UpdateRankingCategoryRequest {
 
   @IsEnum(RankingCategoryStatus)
   status: RankingCategoryStatus;
+
+  @IsNotEmpty()
+  @IsUUID()
+  entityId?: string;
 }
