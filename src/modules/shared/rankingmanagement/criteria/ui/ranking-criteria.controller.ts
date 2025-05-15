@@ -79,7 +79,7 @@ export class RankingCriteriaController {
   }
 
   @Post()
-  @UseGuards(SessionAuthGuard, RBACGuard) // ✅
+  @UseGuards(SessionAuthGuard, RBACGuard)
   @Permissions(PermissionsEnum.ADMIN)
   @ApiOperation({ summary: 'Create a new criteria' })
   @ApiResponse({
