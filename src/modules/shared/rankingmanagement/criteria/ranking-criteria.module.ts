@@ -8,6 +8,8 @@ import { RankingCriteriaRepositoryImpl } from './infrastructure/ranking-criteria
 import { RankingCriteriaController } from './ui/ranking-criteria.controller';
 import { IRankingCategoryRepository } from '../category/domain/ranking-category.repository.interface';
 import { RankingCategoryRepositoryImpl } from '../category/infrastructure/ranking-category.repository';
+import { CreateRankingCriteriaCommandHandler } from './application/handlers/create-ranking-criteria-command.handler';
+import { UpdateRankingCriteriaCommandHandler } from './application/handlers/update-ranking-criteria-command.handler';
 
 @Module({
   controllers: [RankingCriteriaController],
@@ -26,6 +28,8 @@ import { RankingCategoryRepositoryImpl } from '../category/infrastructure/rankin
     },
     FindAllRankingCriteriaForResidenceQueryHandler,
     FindAllRankingCriteriaQueryHandler,
+    CreateRankingCriteriaCommandHandler,
+    UpdateRankingCriteriaCommandHandler,
   ],
   exports: [],
 })

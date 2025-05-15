@@ -10,6 +10,8 @@ import { CreateRankingCategoryRequest } from '../request/create-ranking-category
 import { UpdateRankingCategoryStatusRequest } from '../request/update-ranking-category-status.request';
 import { UpdateRankingCategoryRequest } from '../request/update-ranking-category.request';
 import { RankingCategoryResponse } from '../response/ranking-category.response';
+import { RankingCriteriaResponse } from '../../../criteria/ui/response/ranking-criteria.response';
+import { RankingCriteriaMapper } from '../../../criteria/ui/mappers/ranking-criteria.mapper';
 
 export class RankingCategoryMapper {
   static toCreateCommand(request: CreateRankingCategoryRequest): CreateRankingCategoryCommand {
@@ -70,6 +72,11 @@ export class RankingCategoryMapper {
             rankingCategory.rankingCategoryType.name
           )
         : null,
+      rankingCategory.rankingCriteria
+        ? rankingCategory.rankingCriteria.map((criteria) =>
+            RankingCriteriaMapper.toResponse(criteria)
+          )
+        : [],
       rankingCategory.residenceLimitation,
       rankingCategory.rankingPrice,
       rankingCategory.featuredImage

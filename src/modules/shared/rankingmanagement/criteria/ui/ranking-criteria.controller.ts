@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RankingCriteriaResponse } from './response/ranking-criteria.response';
 import { FindAllRankingCriteriaForResidenceQueryHandler } from '../application/query/find-all-ranking-criteria-residence-category.query.handler';
@@ -8,13 +8,25 @@ import { FindAllRankingCriteriaQueryHandler } from '../application/query/find-al
 import { OrderByDirection } from 'objection';
 import { FetchRankingCriteriaQuery } from '../application/commands/fetch-ranking-criteria.query';
 import { RankingCriteria } from '../domain/ranking-criteria.entity';
+import { Permissions } from 'src/shared/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { CreateRankingCriteriaRequest } from './request/create-criteria.request';
+import { CreateRankingCriteriaCommandHandler } from '../application/handlers/create-ranking-criteria-command.handler';
+import { CreateRankingCriteriaCommand } from '../application/commands/create-ranking-criteria.command';
+import { RBACGuard } from 'src/shared/guards/rbac.guard';
+import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
+import { UpdateRankingCriteriaCommand } from '../application/commands/update-ranking-criteria.command';
+import { updateRankingCriteriaRequest } from './request/update-criteria.request';
+import { UpdateRankingCriteriaCommandHandler } from '../application/handlers/update-ranking-criteria-command.handler';
 
 @ApiTags('Ranking Criteria')
 @Controller('ranking-criteria')
 export class RankingCriteriaController {
   constructor(
     private readonly findAllRankingCriteriaForResidenceCommandQuery: FindAllRankingCriteriaForResidenceQueryHandler,
-    private readonly FindAllRankingCriteriaQueryHandler: FindAllRankingCriteriaQueryHandler
+    private readonly FindAllRankingCriteriaQueryHandler: FindAllRankingCriteriaQueryHandler,
+    private readonly createRankingCriteriaCommandHandler: CreateRankingCriteriaCommandHandler,
+    private readonly updateRankingCriteriaCommandHandler: UpdateRankingCriteriaCommandHandler
   ) {}
 
   @Get()
@@ -64,5 +76,48 @@ export class RankingCriteriaController {
     );
 
     return mappedCriteria;
+  }
+
+  @Get()
+  @Post()
+  @UseGuards(SessionAuthGuard, RBACGuard) // ✅
+  @Permissions(PermissionsEnum.ADMIN)
+  @ApiOperation({ summary: 'Create a new criteria' })
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+    type: RankingCriteriaResponse,
+  })
+  async create(
+    @Body() createRankingCriteriaRequest: CreateRankingCriteriaRequest
+  ): Promise<RankingCriteriaResponse> {
+    const command = new CreateRankingCriteriaCommand(
+      createRankingCriteriaRequest.name,
+      createRankingCriteriaRequest.description
+    );
+
+    const rankingCriteria = await this.createRankingCriteriaCommandHandler.handle(command);
+    return RankingCriteriaMapper.toResponse(rankingCriteria);
+  }
+
+  @Put(':id')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.ADMIN)
+  @ApiOperation({ summary: 'Update a criteria' })
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: RankingCriteriaResponse,
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() updateRankingCriteriaRequest: updateRankingCriteriaRequest
+  ) {
+    const command = new UpdateRankingCriteriaCommand(
+      updateRankingCriteriaRequest.name,
+      updateRankingCriteriaRequest.description
+    );
+
+    return await this.updateRankingCriteriaCommandHandler.handle(id, command);
   }
 }

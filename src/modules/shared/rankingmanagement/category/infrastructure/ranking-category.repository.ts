@@ -40,7 +40,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     return RankingCategory.query()
       .findById(id)
       .whereNull('deletedAt')
-      .withGraphFetched('[rankingCategoryType, featuredImage]');
+      .withGraphFetched('[rankingCategoryType, featuredImage, rankingCriteria]');
   }
 
   async findAll(

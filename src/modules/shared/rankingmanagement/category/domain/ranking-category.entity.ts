@@ -4,6 +4,7 @@ import { RankingCategoryType } from '../../categorytype/domain/ranking-category-
 import { Media } from '../../../../media/domain/media.entity';
 import { Residence } from 'src/modules/residentmanagement/residence/domain/residence.entity';
 import { RankingCategoryCriteria } from './ranking-category-criteria.entity';
+import { RankingCriteria } from '../../criteria/domain/ranking-criteria.entity';
 
 export class RankingCategory extends Model {
   id!: string;
@@ -21,6 +22,7 @@ export class RankingCategory extends Model {
   deletedAt?: Date;
 
   rankingCategoryTypeId!: string;
+  rankingCriteria?: RankingCriteria[];
 
   static tableName = 'ranking_categories';
 
@@ -42,11 +44,16 @@ export class RankingCategory extends Model {
       },
     },
     rankingCriteria: {
-      relation: Model.HasManyRelation,
-      modelClass: () => RankingCategoryCriteria,
+      relation: Model.ManyToManyRelation,
+      modelClass: () => RankingCriteria,
       join: {
         from: 'ranking_categories.id',
-        to: 'ranking_category_criteria.ranking_category_id',
+        through: {
+          from: 'ranking_category_criteria.rankingCategoryId',
+          to: 'ranking_category_criteria.rankingCriteriaId',
+          extra: ['weight', 'is_default', 'created_at', 'updated_at'],
+        },
+        to: 'ranking_criteria.id',
       },
     },
     residences: {
@@ -55,8 +62,8 @@ export class RankingCategory extends Model {
       join: {
         from: 'ranking_categories.id',
         through: {
-          from: 'residence_ranking_categories.ranking_category_id',
-          to: 'residence_ranking_categories.residence_id',
+          from: 'residence_ranking_categories.rankingCategoryId',
+          to: 'residence_ranking_categories.residenceId',
         },
         to: 'residences.id',
       },

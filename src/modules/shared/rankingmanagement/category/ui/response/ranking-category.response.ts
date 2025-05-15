@@ -1,5 +1,6 @@
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 import { RankingCategoryTypeResponse } from '../../../categorytype/ui/response/ranking-category-type.response';
+import { RankingCriteriaResponse } from '../../../criteria/ui/response/ranking-criteria.response';
 
 export class RankingCategoryResponse {
   constructor(
@@ -9,6 +10,7 @@ export class RankingCategoryResponse {
     public readonly title: string,
     public readonly description: string,
     public readonly rankingCategoryType: RankingCategoryTypeResponse | null,
+    public readonly rankingCriteria: RankingCriteriaResponse[] | [],
     public readonly residenceLimitation: number,
     public readonly rankingPrice: number,
     public readonly featuredImage: MediaResponse | null,
