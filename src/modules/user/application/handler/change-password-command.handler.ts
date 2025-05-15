@@ -11,14 +11,14 @@ import * as bcrypt from 'bcrypt';
 export class ChangePasswordCommandHandler {
   constructor() {}
 
-  async handle(id: string, oldPassword: string, newPassword: string) {
+  async handle(id: string, currentPassword: string, newPassword: string) {
     const user = await User.query().findById(id);
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const result = await User.verifyPassword(oldPassword, user.password);
+    const result = await User.verifyPassword(currentPassword, user.password);
 
     if (!result) {
       throw new BadRequestException('Current password is incorrect');

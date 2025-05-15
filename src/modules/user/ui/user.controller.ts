@@ -162,7 +162,7 @@ export class UserController {
     @Body() body: VerifyPasswordRequest,
     @CurrentUser() user: User
   ): Promise<void> {
-    return await this.verifyPasswordCommandHandler.handle(user.id, body.oldPassword);
+    return await this.verifyPasswordCommandHandler.handle(user.id, body.currentPassword);
   }
 
   @Put('change-password')
@@ -170,7 +170,7 @@ export class UserController {
   async changePassword(@Body() body: ChangePasswordRequest, @CurrentUser() user: User) {
     return await this.changePasswordCommandHandler.handle(
       user.id,
-      body.oldPassword,
+      body.currentPassword,
       body.newPassword
     );
   }
