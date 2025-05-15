@@ -8,6 +8,7 @@ import { PaginationResponse } from '../../../../../shared/ui/response/pagination
 import { applyPagination } from '../../../../../shared/utils/pagination.util';
 import { Amenity } from '../../../../residentmanagement/amenity/domain/amenity.entity';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 
 @Injectable()
 export class RankingCategoryTypeRepositoryImpl implements IRankingCategoryTypeRepository {
@@ -17,6 +18,7 @@ export class RankingCategoryTypeRepositoryImpl implements IRankingCategoryTypeRe
   async create(category: Partial<RankingCategoryType>): Promise<RankingCategoryType | undefined> {
     const categoryData = {
       name: category.name,
+      key: category.key,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

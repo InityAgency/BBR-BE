@@ -14,6 +14,8 @@ export class RankingCategoryResponse {
     public readonly residenceLimitation: number,
     public readonly rankingPrice: number,
     public readonly featuredImage: MediaResponse | null,
-    public readonly status: string
+    public readonly status: string,
+    public readonly entityId?: string,
+    public readonly entity?: any
   ) {}
 }

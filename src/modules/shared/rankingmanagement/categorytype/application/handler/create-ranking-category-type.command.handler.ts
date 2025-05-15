@@ -17,6 +17,7 @@ export class CreateRankingCategoryTypeCommandHandler {
 
     const result = await this.rankingCategoryTypeRepository.create({
       name: command.name,
+      key: command.key,
     });
 
     if (!result) {

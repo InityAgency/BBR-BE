@@ -69,7 +69,8 @@ export class RankingCategoryMapper {
       rankingCategory.rankingCategoryType
         ? new RankingCategoryTypeResponse(
             rankingCategory.rankingCategoryType.id,
-            rankingCategory.rankingCategoryType.name
+            rankingCategory.rankingCategoryType.name,
+            rankingCategory.rankingCategoryType.key
           )
         : null,
       rankingCategory.rankingCriteria
@@ -89,7 +90,9 @@ export class RankingCategoryMapper {
             rankingCategory.featuredImage.securedUrl
           )
         : null,
-      rankingCategory.status
+      rankingCategory.status,
+      rankingCategory.entityId ?? null,
+      rankingCategory.entity ?? null
     );
   }
 }

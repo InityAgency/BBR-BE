@@ -3,6 +3,7 @@ import { Model } from 'objection';
 export class RankingCategoryType extends Model {
   id!: string;
   name!: string;
+  key!: string;
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;

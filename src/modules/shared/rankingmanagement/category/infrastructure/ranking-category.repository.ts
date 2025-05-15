@@ -43,9 +43,52 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .withGraphFetched('[rankingCategoryType, featuredImage, rankingCriteria]');
   }
 
+  // async findAll(
+  //   query: FetchRankingCategoriesQuery
+  // ): Promise<{ data: RankingCategory[]; pagination: PaginationResponse }> {
+  //   const { page, limit, sortBy, sortOrder, searchQuery } = query;
+
+  //   let rankingCategoryQuery = RankingCategory.query()
+  //     .whereNull('deletedAt')
+  //     .modify((qb) =>
+  //       applyFilters(
+  //         qb,
+  //         { status: query.status, rankingCategoryTypeId: query.categoryTypeId },
+  //         RankingCategory.tableName
+  //       )
+  //     )
+  //     .withGraphFetched('[rankingCategoryType, featuredImage]');
+
+  //   const columnsToSearch = ['ranking_categories.name', 'ranking_categories.description'];
+
+  //   rankingCategoryQuery = applySearchFilter(rankingCategoryQuery, searchQuery, columnsToSearch);
+
+  //   if (sortBy && sortOrder) {
+  //     const columnsToSort = ['name', 'description', 'residence_limitation', 'ranking_price'];
+  //     if (columnsToSort.includes(sortBy)) {
+  //       rankingCategoryQuery = rankingCategoryQuery.orderBy(sortBy, sortOrder);
+  //     }
+  //   }
+
+  //   const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+  //     rankingCategoryQuery,
+  //     page,
+  //     limit
+  //   );
+
+  //   return {
+  //     data: paginatedQuery,
+  //     pagination: {
+  //       total: totalCount,
+  //       totalPages,
+  //       page: page,
+  //       limit: limit,
+  //     },
+  //   };
+  // }
   async findAll(
     query: FetchRankingCategoriesQuery
-  ): Promise<{ data: RankingCategory[]; pagination: PaginationResponse }> {
+  ): Promise<{ data: any[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery } = query;
 
     let rankingCategoryQuery = RankingCategory.query()
@@ -60,7 +103,6 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .withGraphFetched('[rankingCategoryType, featuredImage]');
 
     const columnsToSearch = ['ranking_categories.name', 'ranking_categories.description'];
-
     rankingCategoryQuery = applySearchFilter(rankingCategoryQuery, searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
@@ -76,13 +118,73 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       limit
     );
 
+    // -------------------------
+    // Dinamički fetch entiteta
+    // -------------------------
+    const tableEntityMap = new Map<string, string[]>();
+
+    for (const category of paginatedQuery) {
+      const table = category.rankingCategoryType?.key;
+      const entityId = category.entityId;
+      if (!table || !entityId) continue;
+
+      if (!tableEntityMap.has(table)) {
+        tableEntityMap.set(table, []);
+      }
+
+      tableEntityMap.get(table)!.push(entityId);
+    }
+
+    const resolvedEntities = new Map<string, Map<string, any>>();
+
+    for (const [table, ids] of tableEntityMap.entries()) {
+      // SPECIAL CASE: cities → include country
+      if (table === 'cities') {
+        const cities = await this.knexService.connection('cities').whereIn('id', ids).select('*');
+
+        const countryIds = cities.map((c) => c.countryId).filter(Boolean);
+
+        const countries = await this.knexService
+          .connection('countries')
+          .whereIn('id', countryIds)
+          .select('*');
+
+        const countryMap = new Map(countries.map((c) => [c.id, c]));
+
+        const enrichedCities = cities.map((city) => ({
+          ...city,
+          country: countryMap.get(city.countryId) ?? null,
+        }));
+
+        resolvedEntities.set(table, new Map(enrichedCities.map((c) => [c.id, c])));
+      } else {
+        // regular fetch
+        const entities = await this.knexService.connection(table).whereIn('id', ids).select('*');
+
+        resolvedEntities.set(table, new Map(entities.map((e) => [e.id, e])));
+      }
+    }
+
+    const enrichedData = paginatedQuery.map((category) => {
+      const table = category.rankingCategoryType?.key;
+      const entity =
+        table && category.entityId
+          ? (resolvedEntities.get(table)?.get(category.entityId) ?? null)
+          : null;
+
+      return {
+        ...category,
+        entity,
+      };
+    });
+
     return {
-      data: paginatedQuery,
+      data: enrichedData,
       pagination: {
         total: totalCount,
         totalPages,
-        page: page,
-        limit: limit,
+        page,
+        limit,
       },
     };
   }

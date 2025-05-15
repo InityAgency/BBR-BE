@@ -9,17 +9,17 @@ export class RankingCategoryTypeMapper {
   static toCreateCommand(
     request: CreateRankingCategoryTypeRequest
   ): CreateRankingCategoryTypeCommand {
-    return new CreateRankingCategoryTypeCommand(request.name);
+    return new CreateRankingCategoryTypeCommand(request.name, request.key!);
   }
 
   static toUpdateCommand(
     id: string,
     request: UpdateRankingCategoryTypeRequest
   ): UpdateRankingCategoryTypeCommand {
-    return new UpdateRankingCategoryTypeCommand(id, request.name);
+    return new UpdateRankingCategoryTypeCommand(id, request.name, request.key!);
   }
 
   static toResponse(categoryType: RankingCategoryType): RankingCategoryTypeResponse {
-    return new RankingCategoryTypeResponse(categoryType.id, categoryType.name);
+    return new RankingCategoryTypeResponse(categoryType.id, categoryType.name, categoryType.key);
   }
 }

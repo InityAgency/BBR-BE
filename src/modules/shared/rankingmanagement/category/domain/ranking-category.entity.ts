@@ -13,6 +13,7 @@ export class RankingCategory extends Model {
   title!: string;
   description!: string;
   rankingCategoryType!: RankingCategoryType;
+  entityId: string;
   residenceLimitation!: number;
   rankingPrice!: number;
   featuredImage!: Media;
@@ -23,6 +24,7 @@ export class RankingCategory extends Model {
 
   rankingCategoryTypeId!: string;
   rankingCriteria?: RankingCriteria[];
+  entity: any;
 
   static tableName = 'ranking_categories';
 
