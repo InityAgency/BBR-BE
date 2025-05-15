@@ -78,7 +78,6 @@ export class RankingCriteriaController {
     return mappedCriteria;
   }
 
-  @Get()
   @Post()
   @UseGuards(SessionAuthGuard, RBACGuard) // ✅
   @Permissions(PermissionsEnum.ADMIN)
