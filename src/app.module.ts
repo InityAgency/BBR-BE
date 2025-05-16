@@ -36,11 +36,12 @@ import { ResidenceRankingScoreModule } from './modules/residentmanagement/rankin
 import { RequestModule } from './modules/requestmanagement/request/request.module';
 import { LeadModule } from './modules/requestmanagement/lead/lead.module';
 import { ReviewModule } from './modules/residentmanagement/review/review.module';
-import { ContactFormModule } from './modules/contactform/contactform/contact-form.module';
+import {  ContactFormModule } from './modules/contactform/contactform/contact-form.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { ClaimProfileModule } from './modules/contactform/claimprofile/claim-profile.module';
 import { PhoneCodeModule } from './modules/shared/phone_code/phone-code.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
+import { B2BFormSubmissionModule } from './modules/contactform/b2bform/b2b-form-submission.module';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { FavoriteModule } from './modules/favorite/favorite.module';
     ClaimProfileModule,
     PhoneCodeModule,
     FavoriteModule,
+    B2BFormSubmissionModule
   ],
   providers: [],
 })
