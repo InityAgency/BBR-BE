@@ -40,6 +40,7 @@ import { ContactFormModule } from './modules/contactform/contactform/contact-for
 import { BillingModule } from './modules/billing/billing.module';
 import { ClaimProfileModule } from './modules/contactform/claimprofile/claim-profile.module';
 import { PhoneCodeModule } from './modules/shared/phone_code/phone-code.module';
+import { FavoriteModule } from './modules/favorite/favorite.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { PhoneCodeModule } from './modules/shared/phone_code/phone-code.module';
     BillingModule,
     ClaimProfileModule,
     PhoneCodeModule,
+    FavoriteModule,
   ],
   providers: [],
 })
