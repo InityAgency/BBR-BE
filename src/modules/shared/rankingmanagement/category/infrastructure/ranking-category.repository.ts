@@ -101,9 +101,22 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     }
 
     // STEP 2: Dohvati podatke za ID-eve
-    let dataQuery = Residence.query()
-      .whereIn('residences.id', residenceIds)
-      .withGraphFetched('[city, brand, highlightedAmenities, keyFeatures]');
+    let dataQuery = Residence.query().whereIn('residences.id', residenceIds).withGraphFetched(`
+    [
+      videoTour,
+      featuredImage,
+      brand.[logo],
+      keyFeatures,
+      city,
+      country,
+      mainGallery,
+      secondaryGallery,
+      highlightedAmenities.[amenity],
+      amenities.[icon, featuredImage],
+      units.[featureImage],
+      totalScores
+    ]
+  `);
 
     if (sortBy && sortOrder) {
       const allowedSort = ['residences.name', 'residences.yearBuilt', 'residences.avgPricePerUnit'];
@@ -123,12 +136,19 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .whereIn('residence_id', residenceIds)
       .andWhere('ranking_category_id', rankingCategoryId);
 
-    const scoreMap = new Map(scores.map((s) => [s.residence_id, s.total_score]));
+    const scoreMap = new Map(scores.map((s) => [s.residenceId, s.total_score]));
 
     // STEP 4: Dodaj totalScore u svaki rezultat
     const response = data.map((res) => ({
       ...res,
-      totalScore: scoreMap.get(res.id) ?? 0,
+      totalScore:
+        scoreMap.get(res.id) ??
+        res.totalScores?.find((t) => t.rankingCategoryId === rankingCategoryId)?.totalScore ??
+        0,
+      position:
+        scoreMap.get(res.id) ??
+        res.totalScores?.find((t) => t.rankingCategoryId === rankingCategoryId)?.position ??
+        0,
     }));
 
     return {
