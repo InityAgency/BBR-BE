@@ -66,6 +66,7 @@ export class UpdateRankingCategoryCommandHandler {
       rankingPrice: command.rankingPrice,
       status: command.status,
       featuredImage: featuredImage,
+      entityId: command.entityId,
     };
 
     const updatedCategory = await this.rankingCategoryRepository.update(

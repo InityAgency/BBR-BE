@@ -60,6 +60,7 @@ export class CreateRankingCategoryCommandHandler {
       rankingPrice: command.rankingPrice,
       status: command.status,
       featuredImage: featuredImage,
+      entityId: command.entityId,
     };
 
     const createdCategory = await this.rankingCategoryRepository.create(categoryData);

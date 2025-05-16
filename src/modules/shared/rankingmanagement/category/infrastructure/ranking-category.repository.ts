@@ -41,10 +41,19 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   }
 
   async findById(id: string): Promise<RankingCategory | undefined> {
-    return RankingCategory.query()
+    const category = await RankingCategory.query()
       .findById(id)
       .whereNull('deletedAt')
       .withGraphFetched('[rankingCategoryType, featuredImage, rankingCriteria]');
+
+    if (!category) return;
+
+    return this.resolveEntityForCategory(category);
+
+    // return RankingCategory.query()
+    //   .findById(id)
+    //   .whereNull('deletedAt')
+    //   .withGraphFetched('[rankingCategoryType, featuredImage, rankingCriteria]');
   }
 
   async findResidencesByCategory(
@@ -327,5 +336,42 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .patch({ deletedAt: new Date() })
       .where('id', id)
       .whereNull('deletedAt');
+  }
+
+  private async resolveEntityForCategory(
+    category: Partial<RankingCategory>
+  ): Promise<RankingCategory | undefined> {
+    const table = category.rankingCategoryType?.key;
+    const entityId = category.entityId;
+
+    if (!table || !entityId) {
+      return category as RankingCategory;
+    }
+
+    if (table === 'cities') {
+      const city = await this.knexService.connection('cities').where('id', entityId).first();
+
+      if (!city) return category as RankingCategory;
+
+      const country = await this.knexService
+        .connection('countries')
+        .where('id', city.countryId)
+        .first();
+
+      return {
+        ...category,
+        entity: {
+          ...city,
+          country: country ?? null,
+        },
+      } as RankingCategory;
+    }
+
+    const entity = await this.knexService.connection(table).where('id', entityId).first();
+
+    return {
+      ...category,
+      entity: entity ?? null,
+    } as RankingCategory;
   }
 }
