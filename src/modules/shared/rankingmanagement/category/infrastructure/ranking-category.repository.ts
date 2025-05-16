@@ -8,6 +8,8 @@ import { applyPagination } from '../../../../../shared/utils/pagination.util';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 import { randomUUID } from 'crypto';
+import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-cateogry.query';
+import { Residence } from 'src/modules/residentmanagement/residence/domain/residence.entity';
 
 @Injectable()
 export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository {
@@ -42,6 +44,37 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .findById(id)
       .whereNull('deletedAt')
       .withGraphFetched('[rankingCategoryType, featuredImage, rankingCriteria]');
+  }
+
+  async findResidencesByCategory(
+    slug: string,
+    query: FetchResidencesByCategoryQuery
+  ): Promise<any> {
+    //      const { page, limit, sortBy, sortOrder, searchQuery } = query;
+    // let residenceQuery = Residence.query()
+    //   .join('residence_ranking_categories', 'residences.id', 'residence_ranking_categories.residence_id')
+    //   .where('residence_ranking_categories.ranking_category_id', rankingCategoryId)
+    //   .whereNull('residences.deletedAt')
+    //   .modify((qb) => applyFilters(qb, { cityId, brandId, rentalPotential }, Residence.tableName))
+    //   .withGraphFetched('[city, brand, highlightedAmenities, keyFeatures]');
+    // const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
+    // if (sortBy && sortOrder) {
+    //   const allowedSort = ['residences.name', 'residences.yearBuilt', 'residences.avgPricePerUnit'];
+    //   if (allowedSort.includes(sortBy)) {
+    //     residenceQuery = residenceQuery.orderBy(sortBy, sortOrder);
+    //   }
+    // }
+    // residenceQuery = applySearchFilter(residenceQuery, searchQuery, searchableColumns);
+    // const { paginatedQuery, totalCount, totalPages } = await applyPagination(residenceQuery, page, limit);
+    // return {
+    //   data: paginatedQuery,
+    //   pagination: {
+    //     total: totalCount,
+    //     totalPages,
+    //     page,
+    //     limit,
+    //   },
+    // };
   }
 
   // async findAll(

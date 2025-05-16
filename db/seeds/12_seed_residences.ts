@@ -116,7 +116,11 @@ export async function seed(knex: Knex): Promise<void> {
   // const filePath = `${__dirname}/../csv/residences_seed_5_new.csv`;
   // const filePath = `${__dirname}/../csv/residences_seed_6_new.csv`;
   // const filePath = `${__dirname}/../csv/residences_seed_7_new.csv`;
-  const filePath = `${__dirname}/../csv/residences_seed_test.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_8_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_9_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_12_new.csv`;
+  const filePath = `${__dirname}/../csv/residences_seed_13_new.csv`;
+  // const filePath = `${__dirname}/../csv/residences_seed_test.csv`;
   const residences = await parseCSV(filePath);
 
   // Deletes ALL existing entries
@@ -274,6 +278,24 @@ export async function seed(knex: Knex): Promise<void> {
 
     if (inserts.length) {
       await knex('residence_highlighted_amenities').insert(inserts);
+    }
+  }
+
+  for (const relation of amenityRelations) {
+    const parts = relation.amenities
+      .split(',')
+      .map((a) => normalize(a))
+      .filter(Boolean);
+
+    const matchedIds = parts.map((p) => amenityMap.get(p)).filter(Boolean);
+
+    if (matchedIds.length) {
+      await knex('residence_amenity_relations').insert(
+        matchedIds.map((amenityId) => ({
+          residence_id: relation.residenceId,
+          amenity_id: amenityId,
+        }))
+      );
     }
   }
 }
