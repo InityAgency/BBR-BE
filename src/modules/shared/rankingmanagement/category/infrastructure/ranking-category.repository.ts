@@ -293,7 +293,15 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   }
 
   async findBySlug(slug: string): Promise<RankingCategory | undefined> {
-    return RankingCategory.query().findOne({ slug }).whereNull('deletedAt');
+    // return RankingCategory.query().findOne({ slug }).whereNull('deletedAt');
+    const category = await RankingCategory.query()
+      .findOne({ slug })
+      .whereNull('deletedAt')
+      .withGraphFetched('[rankingCategoryType, featuredImage, rankingCriteria]');
+
+    if (!category) return;
+
+    return this.resolveEntityForCategory(category);
   }
 
   async update(id: string, data: Partial<RankingCategory>): Promise<RankingCategory | undefined> {
