@@ -7,11 +7,12 @@ import { RankingCategory } from '../domain/ranking-category.entity';
 import { RankingCategoryMapper } from './mapper/ranking-category.mapper';
 import { RankingCategoryResponse } from './response/ranking-category.response';
 import { FetchRankingCategoriesCommandQuery } from '../application/query/fetch-ranking-categories.query';
+import { FetchResidencesByCategoryCommandQuery } from '../application/query/fetch-residences-by-category.query';
 
 @Controller('public/ranking-categories')
 export class RankingCategoryPublicController {
   constructor(
-    private readonly fetchRankingCategoriesCommandQuery: FetchRankingCategoriesCommandQuery
+    private readonly fetchResidencesByCategoryCommandQuery: FetchResidencesByCategoryCommandQuery
   ) {}
 
   @Get(':slug/residences')
@@ -23,20 +24,19 @@ export class RankingCategoryPublicController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: OrderByDirection,
-    @Query('status') status?: RankingCategoryStatus[],
-    @Query('categoryTypeId') categoryTypeId?: string[]
+    @Query('sortOrder') sortOrder?: OrderByDirection
   ) {
-    const { data, pagination } = await this.fetchRankingCategoriesCommandQuery.handle(
-      new FetchRankingCategoriesQuery(query, page, limit, sortBy, sortOrder, status, categoryTypeId)
+    const { data, pagination } = await this.fetchResidencesByCategoryCommandQuery.handle(
+      slug,
+      new FetchRankingCategoriesQuery(query, page, limit, sortBy, sortOrder)
     );
 
-    const mappedRankingCategories = data.map((category: RankingCategory) =>
-      RankingCategoryMapper.toResponse(category)
-    );
+    // const mappedRankingCategories = data.map((category: RankingCategory) =>
+    //   RankingCategoryMapper.toResponse(category)
+    // );
 
     return {
-      data: mappedRankingCategories,
+      data: data,
       pagination,
     };
   }

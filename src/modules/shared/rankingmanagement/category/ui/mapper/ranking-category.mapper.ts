@@ -24,7 +24,8 @@ export class RankingCategoryMapper {
       request.residenceLimitation,
       request.rankingPrice,
       request.featuredImageId,
-      request.status
+      request.status,
+      request.entityId
     );
   }
 
@@ -42,7 +43,8 @@ export class RankingCategoryMapper {
       request.residenceLimitation,
       request.rankingPrice,
       request.featuredImageId,
-      request.status
+      request.status,
+      request.entityId
     );
   }
 

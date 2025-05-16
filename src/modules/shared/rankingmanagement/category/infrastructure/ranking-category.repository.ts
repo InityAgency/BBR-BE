@@ -19,6 +19,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     const rankingCategoryData = {
       name: rankingCategory.name,
       slug: rankingCategory.slug,
+      title: rankingCategory.title,
       description: rankingCategory.description,
       rankingCategoryTypeId: rankingCategory.rankingCategoryType?.id,
       residenceLimitation: rankingCategory.residenceLimitation,
@@ -47,34 +48,89 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   }
 
   async findResidencesByCategory(
-    slug: string,
+    rankingCategoryId: string,
     query: FetchResidencesByCategoryQuery
   ): Promise<any> {
-    //      const { page, limit, sortBy, sortOrder, searchQuery } = query;
-    // let residenceQuery = Residence.query()
-    //   .join('residence_ranking_categories', 'residences.id', 'residence_ranking_categories.residence_id')
-    //   .where('residence_ranking_categories.ranking_category_id', rankingCategoryId)
-    //   .whereNull('residences.deletedAt')
-    //   .modify((qb) => applyFilters(qb, { cityId, brandId, rentalPotential }, Residence.tableName))
-    //   .withGraphFetched('[city, brand, highlightedAmenities, keyFeatures]');
-    // const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
-    // if (sortBy && sortOrder) {
-    //   const allowedSort = ['residences.name', 'residences.yearBuilt', 'residences.avgPricePerUnit'];
-    //   if (allowedSort.includes(sortBy)) {
-    //     residenceQuery = residenceQuery.orderBy(sortBy, sortOrder);
-    //   }
-    // }
-    // residenceQuery = applySearchFilter(residenceQuery, searchQuery, searchableColumns);
-    // const { paginatedQuery, totalCount, totalPages } = await applyPagination(residenceQuery, page, limit);
-    // return {
-    //   data: paginatedQuery,
-    //   pagination: {
-    //     total: totalCount,
-    //     totalPages,
-    //     page,
-    //     limit,
-    //   },
-    // };
+    const { page, limit, sortBy, sortOrder, searchQuery } = query;
+
+    const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
+
+    // STEP 1: Pripremi bazni query za ID-eve
+    const baseQuery = Residence.query()
+      .distinct('residences.id')
+      .join('residence_ranking_criteria_scores as scores', 'residences.id', 'scores.residence_id')
+      .join(
+        'ranking_category_criteria as criteria',
+        'scores.ranking_criteria_id',
+        'criteria.ranking_criteria_id'
+      )
+      .where('criteria.ranking_category_id', rankingCategoryId)
+      .whereNull('residences.deleted_at');
+
+    applySearchFilter(baseQuery, searchQuery, searchableColumns);
+
+    const idResults = await baseQuery
+      .limit(limit)
+      .offset((page - 1) * limit)
+      .select('residences.id');
+
+    const residenceIds = [...new Set(idResults.map((r) => r.id))];
+
+    const realCount = residenceIds.length;
+    const totalPages = Math.ceil(realCount / limit);
+
+    if (!residenceIds.length) {
+      return {
+        data: [],
+        pagination: {
+          total: 0,
+          totalPages: 0,
+          page,
+          limit,
+        },
+      };
+    }
+
+    // STEP 2: Dohvati podatke za ID-eve
+    let dataQuery = Residence.query()
+      .whereIn('residences.id', residenceIds)
+      .withGraphFetched('[city, brand, highlightedAmenities, keyFeatures]');
+
+    if (sortBy && sortOrder) {
+      const allowedSort = ['residences.name', 'residences.yearBuilt', 'residences.avgPricePerUnit'];
+      if (allowedSort.includes(sortBy)) {
+        dataQuery = dataQuery.orderBy(sortBy, sortOrder);
+      }
+    } else {
+      dataQuery = dataQuery.orderBy('residences.name', 'asc');
+    }
+
+    const data = await dataQuery;
+
+    // STEP 3: Dohvati totalScore vrednosti
+    const scores = await this.knexService
+      .connection('residence_total_scores')
+      .select('residence_id', 'total_score')
+      .whereIn('residence_id', residenceIds)
+      .andWhere('ranking_category_id', rankingCategoryId);
+
+    const scoreMap = new Map(scores.map((s) => [s.residence_id, s.total_score]));
+
+    // STEP 4: Dodaj totalScore u svaki rezultat
+    const response = data.map((res) => ({
+      ...res,
+      totalScore: scoreMap.get(res.id) ?? 0,
+    }));
+
+    return {
+      data: response,
+      pagination: {
+        total: realCount,
+        totalPages,
+        page,
+        limit,
+      },
+    };
   }
 
   // async findAll(

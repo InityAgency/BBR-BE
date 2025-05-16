@@ -11,7 +11,7 @@ export class FindRankingCategoryBySlugCommandQuery {
   async handle(slug: string): Promise<RankingCategory> {
     const rankingCategory = await this.rankingCategoryRespository.findBySlug(slug);
     if (!rankingCategory) {
-      throw new NotFoundException('Brand not found');
+      throw new NotFoundException('Ranking Category not found');
     }
     return rankingCategory;
   }

@@ -12,7 +12,7 @@ export abstract class IRankingCategoryRepository {
   abstract findByName(name: string): Promise<RankingCategory | undefined>;
   abstract findBySlug(slug: string): Promise<RankingCategory | undefined>;
   abstract findResidencesByCategory(
-    slug: string,
+    rankingCategoryId: string,
     query: FetchResidencesByCategoryQuery
   ): Promise<any>;
   abstract update(id: string, data: Partial<RankingCategory>): Promise<RankingCategory | undefined>;

@@ -20,9 +20,11 @@ import { AssignResidencesToRankingCategoryCommandHandler } from './application/h
 import { IRankingScoreRepository } from 'src/modules/residentmanagement/ranking_score/domain/residence-ranking-score.repository.interface';
 import { ResidenceRankingScoreRepositoryImpl } from 'src/modules/residentmanagement/ranking_score/infrastructure/residence-ranking-score.repository';
 import { FindRankingCategoryBySlugCommandQuery } from './application/query/find-by-slug-ranking-category.query';
+import { RankingCategoryPublicController } from './ui/ranking-category.public.controller';
+import { FetchResidencesByCategoryCommandQuery } from './application/query/fetch-residences-by-category.query';
 @Module({
   imports: [DatabaseModule, MediaModule],
-  controllers: [RankingCategoryController],
+  controllers: [RankingCategoryController, RankingCategoryPublicController],
   providers: [
     {
       provide: IRankingCategoryRepository,
@@ -44,6 +46,7 @@ import { FindRankingCategoryBySlugCommandQuery } from './application/query/find-
     FindRankingCategoryByIdCommandQuery,
     FetchRankingCategoriesCommandQuery,
     FindRankingCategoryBySlugCommandQuery,
+    FetchResidencesByCategoryCommandQuery,
     UpdateRankingCategoryCommandHandler,
     UpdateRankingCategoryStatusCommandHandler,
     DeleteRankingCategoryCommandHandler,
