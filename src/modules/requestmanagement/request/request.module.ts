@@ -15,6 +15,7 @@ import { CreateLeadCommandHandler } from '../lead/application/handler/create-lea
 import { FindRequestByIdCommandQuery } from './application/query/find-request-by-id.command.query';
 import { FetchRequestsCommandQuery } from './application/query/fetch-requests.command.query';
 import { RequestPublicController } from './ui/request.public.controller';
+import { UpdateLeadCommandHandler } from '../lead/application/handler/update-lead.command.handler';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
@@ -29,6 +30,7 @@ import { RequestPublicController } from './ui/request.public.controller';
       useClass: LeadRepositoryImpl,
     },
     CreateLeadCommandHandler,
+    UpdateLeadCommandHandler,
     CreateRequestCommandHandler,
     UpdateRequestStatusCommandHandler,
     UpdateRequestCommandHandler,

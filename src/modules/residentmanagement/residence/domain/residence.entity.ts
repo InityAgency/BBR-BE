@@ -63,6 +63,7 @@ export class Residence extends Model {
 
   rankingScores?: ResidenceRankingScore[];
   totalScores?: ResidenceTotalScore[];
+  developerId?: string;
 
   static tableName = 'residences';
 
