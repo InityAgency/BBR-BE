@@ -6,6 +6,7 @@ import {
   buildBuyerJoin,
   buildCompanyJoin,
   buildLifestylesJoin,
+  buildPermissionsJoin,
   buildRoleJoin,
   buildUnitTypesJoin,
 } from 'src/shared/user-query';
@@ -38,19 +39,41 @@ export class UserRepositoryImpl implements IUserRepository {
   }
 
   @LogMethod()
+  // async findById(id: string): Promise<User | null> {
+  //   const knex = this.knexService.connection;
+
+  //   let query = this.knexService
+  //     .connection(this.tableName)
+  //     .where('users.id', id)
+  //     .leftJoin(buildUnitTypesJoin(knex))
+  //     .leftJoin(buildLifestylesJoin(knex))
+  //     .leftJoin(buildRoleJoin(knex))
+  //     .leftJoin(buildCompanyJoin(knex))
+  //     .leftJoin(buildBuyerJoin(knex))
+  //     .leftJoin(buildPermissionsJoin(knex));
+
+  //   return query
+  //     .select(
+  //       'users.*',
+  //       'role_json as role',
+  //       'company',
+  //       'buyer',
+  //       'unitTypes',
+  //       'lifestyles',
+  //       'permissions'
+  //     )
+  //     .first();
+  // }
   async findById(id: string): Promise<User | null> {
-    const knex = this.knexService.connection;
+    const user = await User.query().findById(id).whereNull('users.deleted_at').withGraphFetched(`
+      [
+        role,
+        company.[image, contactPersonAvatar],
+        buyer.[unitTypes, lifestyles]
+      ]
+    `);
 
-    let query = this.knexService
-      .connection(this.tableName)
-      .where('users.id', id)
-      .leftJoin(buildUnitTypesJoin(knex))
-      .leftJoin(buildLifestylesJoin(knex))
-      .leftJoin(buildRoleJoin(knex))
-      .leftJoin(buildCompanyJoin(knex))
-      .leftJoin(buildBuyerJoin(knex));
-
-    return query.select('users.*', 'role', 'company', 'buyer', 'unitTypes', 'lifestyles').first();
+    return user ?? null;
   }
 
   @LogMethod()

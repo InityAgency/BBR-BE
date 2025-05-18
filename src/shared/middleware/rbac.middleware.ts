@@ -16,6 +16,8 @@ export class RBACMiddleware implements NestMiddleware {
       return next(); // ✅ Allow requests where no role exists (e.g., public routes like login)
     }
 
+    console.log('req.user.role: ', req.user.role);
+
     const userId = req.user.id;
     const knex = this.knexService.connection;
 
@@ -34,6 +36,8 @@ export class RBACMiddleware implements NestMiddleware {
           knex.raw(`
             json_build_object(
               'id', r.id,
+              'name', r.name,
+              'description', r.description,
               'permissions', COALESCE(
                 json_agg(DISTINCT p.name) 
                 FILTER (WHERE p.name IS NOT NULL), '[]'
@@ -53,8 +57,8 @@ export class RBACMiddleware implements NestMiddleware {
       }
 
       // Attach role and permissions to `req.user`
-      req.user.role = user.role.id;
-      req.user.permissions = user.role.permissions || [];
+      req.user.role = user.role;
+      // req.user.permissions = user.role.permissions || [];
 
       // Cache user permissions in Redis (1-hour expiration)
       await this.redisService.setCache(`user-permissions:${userId}`, user.permissions, 3600);

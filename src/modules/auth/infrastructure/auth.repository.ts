@@ -23,11 +23,12 @@ export class AuthRepository implements IAuthRepository {
       .connection(this.tableName)
       .where({ email })
       .whereNull('users.deleted_at')
+      .leftJoin(buildUnitTypesJoin(knex))
+      .leftJoin(buildLifestylesJoin(knex))
       .leftJoin(buildRoleJoin(knex))
       .leftJoin(buildCompanyJoin(knex))
       .leftJoin(buildBuyerJoin(knex))
-      .leftJoin(buildPermissionsJoin(knex))
-      .select('users.*', 'role', 'company', 'buyer', 'permissions');
+      .select('users.*', 'role', 'company', 'buyer', 'unitTypes', 'lifestyles');
 
     return query.first();
   }

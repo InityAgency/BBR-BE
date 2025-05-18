@@ -80,7 +80,7 @@ export class RankingCriteriaController {
 
   @Post()
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @ApiOperation({ summary: 'Create a new criteria' })
   @ApiResponse({
     status: 201,
@@ -101,7 +101,7 @@ export class RankingCriteriaController {
 
   @Put(':id')
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @ApiOperation({ summary: 'Update a criteria' })
   @ApiResponse({
     status: 200,

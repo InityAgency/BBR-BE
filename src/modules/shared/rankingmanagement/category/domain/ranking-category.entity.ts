@@ -17,6 +17,7 @@ export class RankingCategory extends Model {
   residenceLimitation!: number;
   rankingPrice!: number;
   featuredImage!: Media;
+  featuredImageId!: string;
   status!: RankingCategoryStatus;
   createdAt!: Date;
   updatedAt!: Date;

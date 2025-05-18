@@ -49,7 +49,7 @@ export class ClaimProfileContactFormController {
   @ApiOperation({ summary: 'Get all claim profile contact forms' })
   @ApiResponse({ type: [ClaimProfileContactFormResponse] })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async fetchAll(
     @Query('query') query?: string,
     @Query('page') page?: number,
@@ -75,7 +75,7 @@ export class ClaimProfileContactFormController {
   @ApiOperation({ summary: 'Get claim profile contact form by ID' })
   @ApiResponse({ type: ClaimProfileContactFormResponse })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async findById(@Param('id') id: string) {
     const contactForm = await this.findContactFormByIdCommandQuery.handle(id);
     return ClaimProfileContactFormMapper.toResponse(contactForm);
@@ -84,8 +84,7 @@ export class ClaimProfileContactFormController {
   @Post('public/claim-profile-contact-forms')
   @ApiOperation({ summary: 'Create a new claim profile contact form' })
   @ApiResponse({ type: ClaimProfileContactFormResponse })
-  @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.READ)
+  @UseGuards(SessionAuthGuard)
   async create(@Body() request: CreateClaimProfileContactFormRequest, @Req() req: Request) {
     const loggedUserEmail = (req.user as User).email;
     const command = ClaimProfileContactFormMapper.toCreateCommand(request, loggedUserEmail);
@@ -97,7 +96,7 @@ export class ClaimProfileContactFormController {
   @ApiOperation({ summary: 'Update the status of a claim profile contact form' })
   @ApiResponse({ type: ClaimProfileContactFormResponse })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async updateStatus(
     @Param('id') id: string,
     @Body() request: UpdateClaimProfileContactFormStatusRequest
@@ -111,7 +110,7 @@ export class ClaimProfileContactFormController {
   @ApiOperation({ summary: 'Update a claim profile contact form' })
   @ApiResponse({ type: ClaimProfileContactFormResponse })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.UPDATE)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async update(@Param('id') id: string, @Body() request: UpdateClaimProfileContactFormRequest) {
     const command = ClaimProfileContactFormMapper.toUpdateCommand(id, request);
     const updatedContactForm = await this.updateContactFormCommandHandler.handle(command);
@@ -121,7 +120,7 @@ export class ClaimProfileContactFormController {
   @Delete('claim-profile-contact-forms/:id')
   @ApiOperation({ summary: 'Delete a claim profile contact form' })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.DELETE)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async delete(@Param('id') id: string) {
     return this.deleteContactFormCommandHandler.handle(id);
   }

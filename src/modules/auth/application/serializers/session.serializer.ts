@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
 import { UserRepositoryImpl } from 'src/modules/user/infrastructure/user.repository';
 import { UserMapper } from 'src/modules/user/ui/mappers/user.mapper';
-import { UserResponse } from 'src/modules/user/ui/response/user-response';
-import { validate as isUUID } from 'uuid';
+import { IAuthRepository } from '../../domain/auth.repository.interface';
+import { IUserRepository } from 'src/modules/user/domain/user.repository.interface';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
-  constructor(private readonly userRepository: UserRepositoryImpl,
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly authRepository: IAuthRepository,
     private readonly userMapper: UserMapper
   ) {
     super();
@@ -19,7 +21,8 @@ export class SessionSerializer extends PassportSerializer {
 
   async deserializeUser(payload: any, done: Function) {
     try {
-      const user = await this.userRepository.findById(payload.id);
+      // const user = await this.userRepository.findById(payload.id);
+      const user = await this.authRepository.findByEmail(payload.email);
 
       if (!user) {
         return done(null, false);

@@ -84,7 +84,7 @@ export class UserController {
   @ApiResponse({ status: 409, description: 'Conflict - Email already exists.' })
   @ApiResponse({ status: 400, description: 'Not Saved - User could not be saved.' })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.USERS_CREATE)
   async create(
     @Body() request: CreateUserRequest,
     @CurrentUser() currentUser: User
@@ -107,7 +107,7 @@ export class UserController {
   @ApiOperation({ summary: 'Fetch all users' })
   @ApiResponse({ status: 200, description: 'List of users', type: [UserResponse] })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.USERS_READ)
   async findAll(
     @Query('query') query?: string,
     @Query('page') page?: number,
@@ -130,8 +130,8 @@ export class UserController {
   // * Resend verification email
   @HttpCode(HttpStatus.OK)
   @Post(':id/resend-verification-email')
-  @UseGuards(SessionAuthGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.USERS_UPDATE)
   async resendVerificationEmail(@Param('id') id: string) {
     const command = new SendVerificationCommand(id);
 
@@ -217,7 +217,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'User found', type: UserResponse })
   @ApiResponse({ status: 404, description: 'User not found' })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async findOne(@Param('id') id: string): Promise<UserResponse> {
     const user = await this.findByIdUserHandler.handle(id);
 
@@ -232,7 +232,7 @@ export class UserController {
   @ApiResponse({ status: 400, description: 'User not updatable.' })
   @ApiResponse({ status: 400, description: 'Not Updated - User could not be updated.' })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async update(@Param('id') id: string, @Body() request: UpdateUserRequest): Promise<UserResponse> {
     const command = new UpdateUserCommand(
       id,
@@ -255,7 +255,7 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'Not Updated - User could not be deleted.' })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async remove(@Param('id') id: string): Promise<void> {
     await this.deleteUserHandler.handle(id);
   }
@@ -263,7 +263,7 @@ export class UserController {
   @ApiOperation({ summary: 'Update user status' })
   @UsePipes(new ValidationPipe())
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.ADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @Patch(':id/status')
   async updateStatus(
     @Param('id') id: string,

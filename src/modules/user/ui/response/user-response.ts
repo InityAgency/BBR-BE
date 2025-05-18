@@ -2,6 +2,7 @@ import { Company } from 'src/modules/company/domain/company.entity';
 import { UserBuyer } from '../../domain/user-buyer.entity';
 import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 import { CompanyResponse } from './company.response';
+import { RoleResponse } from 'src/modules/role/ui/response/role-response';
 
 export class UserResponse {
   constructor(
@@ -20,7 +21,7 @@ export class UserResponse {
     public readonly status?: UserStatusEnum,
     public readonly buyer?: UserBuyer | null,
     public readonly company?: CompanyResponse | null,
-    public readonly role?: any,
+    public readonly role?: RoleResponse | null,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
     public readonly deletedAt?: Date

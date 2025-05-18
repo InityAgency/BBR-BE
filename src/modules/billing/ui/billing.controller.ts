@@ -46,7 +46,7 @@ export class BillingController {
 
   @Post('checkout/one-time')
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.READ)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @ApiOperation({ summary: 'Generate checkout one time' })
   async generateCheckoutOneTime(
     @Body(ValidationPipe) generateCheckoutOneTimeRequest: GenerateCheckoutOneTimeRequest,
@@ -60,8 +60,7 @@ export class BillingController {
   }
 
   @Post('checkout/subscription')
-  @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.READ)
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Generate checkout subscription' })
   async generateCheckoutSubscription(
     @Body(ValidationPipe) generateCheckoutOneTimeRequest: GenerateCheckoutOneTimeRequest,
@@ -85,8 +84,7 @@ export class BillingController {
   }
 
   @Get('payment-methods')
-  @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.READ)
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Get payment methods' })
   async fetchAllPaymentMethods(@Req() req) {
     const userId = req.user.id;
@@ -94,7 +92,7 @@ export class BillingController {
   }
 
   @Post('payment-method')
-  @UseGuards(SessionAuthGuard, RBACGuard)
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Add payment method' })
   async addPaymentMethod(@Req() req) {
     const userId = req.user.id;
@@ -104,7 +102,7 @@ export class BillingController {
 
   @Get('products')
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.READ)
+  @Permissions(PermissionsEnum.BILLING_READ)
   @ApiOperation({ summary: 'Get products' })
   async fetchAllProducts() {
     const result = await this.fetchAllProductsCommandQuery.handle();
@@ -114,7 +112,7 @@ export class BillingController {
 
   @Post('products')
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.READ)
+  @Permissions(PermissionsEnum.BILLING_READ)
   @ApiOperation({ summary: 'Get products' })
   async createProduct(@Body(ValidationPipe) createProductRequest: CreateProductRequest) {
     const command = BillingMapper.toCreateProductCommand(createProductRequest);
@@ -123,8 +121,7 @@ export class BillingController {
   }
 
   @Get('transactions')
-  @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.READ)
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Get transactions' })
   async fetchAllTransactions(
     @Req() req,

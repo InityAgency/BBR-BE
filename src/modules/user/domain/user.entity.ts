@@ -1,10 +1,10 @@
 import * as bcrypt from 'bcrypt';
 import { Model } from 'objection';
+import { Company } from 'src/modules/company/domain/company.entity';
+import { Role } from 'src/modules/role/domain/role.entity';
 import { SignupMethodEnum } from 'src/shared/types/signup-method.enum';
 import { UserStatusEnum } from 'src/shared/types/user-status.enum';
 import { UserBuyer } from './user-buyer.entity';
-import { Company } from 'src/modules/company/domain/company.entity';
-import { Role } from 'src/modules/role/domain/role.entity';
 
 export class User extends Model {
   id!: string;
@@ -14,7 +14,7 @@ export class User extends Model {
   signupMethod!: SignupMethodEnum;
   emailVerified?: boolean;
   status?: UserStatusEnum;
-  roleId?: string;
+  roleId: string;
   agreedTerms?: boolean;
   receiveLuxuryInsights?: boolean;
   notifyLatestNews?: boolean;
@@ -24,12 +24,12 @@ export class User extends Model {
   emailNotifications: boolean;
   buyer?: UserBuyer;
   company?: Company;
-  role?: Role;
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;
 
   companyName?: string; // need in case for developer
+  role!: Role;
 
   static tableName = 'users';
 
@@ -39,14 +39,14 @@ export class User extends Model {
       modelClass: () => UserBuyer,
       join: {
         from: 'users.id',
-        to: 'user_buyers.user_id',
+        to: 'user_buyers.userId',
       },
     },
     company: {
       relation: Model.BelongsToOneRelation,
       modelClass: () => Company,
       join: {
-        from: 'users.company_id',
+        from: 'users.companyId',
         to: 'companies.id',
       },
     },
@@ -54,10 +54,22 @@ export class User extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: () => Role,
       join: {
-        from: 'users.role_id',
+        from: 'users.roleId',
         to: 'roles.id',
       },
     },
+    // permissions: {
+    //   relation: Model.ManyToManyRelation,
+    //   modelClass: () => ,
+    //   join: {
+    //     from: 'users.id',
+    //     through: {
+    //       from: 'user_permissions.user_id',
+    //       to: 'user_permissions.permission_id',
+    //     },
+    //     to: 'permissions.id',
+    //   },
+    // },
   };
 
   async $beforeInsert() {

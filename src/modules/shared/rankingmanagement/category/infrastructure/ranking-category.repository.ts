@@ -325,7 +325,21 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   }
 
   async update(id: string, data: Partial<RankingCategory>): Promise<RankingCategory | undefined> {
-    return RankingCategory.query().patchAndFetchById(id, data).whereNull('deletedAt');
+    return RankingCategory.query()
+      .patchAndFetchById(id, {
+        name: data.name,
+        slug: data.slug,
+        title: data.title,
+        description: data.description,
+        residenceLimitation: data.residenceLimitation,
+        rankingPrice: data.rankingPrice,
+        status: data.status,
+        rankingCategoryTypeId: data.rankingCategoryType?.id,
+        featuredImageId: data.featuredImage?.id,
+        entityId: data.entityId,
+        updatedAt: new Date(),
+      })
+      .whereNull('deletedAt');
   }
 
   async assignWeights(
