@@ -10,6 +10,7 @@ import { IRankingCategoryRepository } from '../category/domain/ranking-category.
 import { RankingCategoryRepositoryImpl } from '../category/infrastructure/ranking-category.repository';
 import { CreateRankingCriteriaCommandHandler } from './application/handlers/create-ranking-criteria-command.handler';
 import { UpdateRankingCriteriaCommandHandler } from './application/handlers/update-ranking-criteria-command.handler';
+import { DeleteRankingCriteriaCommandHandler } from './application/handlers/delete-ranking-criteria-command.handler';
 
 @Module({
   controllers: [RankingCriteriaController],
@@ -30,6 +31,7 @@ import { UpdateRankingCriteriaCommandHandler } from './application/handlers/upda
     FindAllRankingCriteriaQueryHandler,
     CreateRankingCriteriaCommandHandler,
     UpdateRankingCriteriaCommandHandler,
+    DeleteRankingCriteriaCommandHandler,
   ],
   exports: [],
 })

@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RankingCriteriaResponse } from './response/ranking-criteria.response';
 import { FindAllRankingCriteriaForResidenceQueryHandler } from '../application/query/find-all-ranking-criteria-residence-category.query.handler';
@@ -18,6 +30,7 @@ import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
 import { UpdateRankingCriteriaCommand } from '../application/commands/update-ranking-criteria.command';
 import { updateRankingCriteriaRequest } from './request/update-criteria.request';
 import { UpdateRankingCriteriaCommandHandler } from '../application/handlers/update-ranking-criteria-command.handler';
+import { DeleteRankingCriteriaCommandHandler } from '../application/handlers/delete-ranking-criteria-command.handler';
 
 @ApiTags('Ranking Criteria')
 @Controller('ranking-criteria')
@@ -26,7 +39,8 @@ export class RankingCriteriaController {
     private readonly findAllRankingCriteriaForResidenceCommandQuery: FindAllRankingCriteriaForResidenceQueryHandler,
     private readonly FindAllRankingCriteriaQueryHandler: FindAllRankingCriteriaQueryHandler,
     private readonly createRankingCriteriaCommandHandler: CreateRankingCriteriaCommandHandler,
-    private readonly updateRankingCriteriaCommandHandler: UpdateRankingCriteriaCommandHandler
+    private readonly updateRankingCriteriaCommandHandler: UpdateRankingCriteriaCommandHandler,
+    private readonly deleteRankingCriteriaCommandHandler: DeleteRankingCriteriaCommandHandler
   ) {}
 
   @Get()
@@ -120,5 +134,18 @@ export class RankingCriteriaController {
     );
 
     return await this.updateRankingCriteriaCommandHandler.handle(id, command);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
+  @ApiOperation({ summary: 'Delete a criteria' })
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully deleted.',
+  })
+  async delete(@Param('id') id: string): Promise<void> {
+    await this.deleteRankingCriteriaCommandHandler.handle(id);
   }
 }
