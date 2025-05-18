@@ -34,8 +34,8 @@ export class RequestController {
     @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
-    @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('sortBy') sortBy: string = 'createdAt',
+    @Query('sortOrder') sortOrder: OrderByDirection = 'desc',
     @Query('leadId') leadId?: string[],
     @Query('type') type?: string[],
     @Query('status') status?: string[]

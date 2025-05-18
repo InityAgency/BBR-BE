@@ -9,7 +9,8 @@ import {
   Patch,
   Post,
   Put,
-  Query, Req,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderByDirection } from 'objection';
@@ -86,16 +87,16 @@ export class ResidenceController {
   @Post()
   @ApiOperation({ summary: 'Create a new residence' })
   @ApiResponse({ status: 201, description: 'Residence created', type: ResidenceResponse })
-  async create(@Body() request: CreateResidenceRequest,  @Req() req: Request): Promise<ResidenceResponse> {
+  async create(
+    @Body() request: CreateResidenceRequest,
+    @Req() req: Request
+  ): Promise<ResidenceResponse> {
     const user = req.user as User;
     let loggedDeveloperId: string | undefined = undefined;
-
-    console.log(user);
 
     if (user.role?.name?.toLowerCase() === 'developer') {
       loggedDeveloperId = user.id;
     }
-    console.log(user.role);
 
     const command = new CreateResidenceCommand(
       request.name,

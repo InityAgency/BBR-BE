@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-  Post,
-  Body,
-  Put,
-  Delete,
-  Patch,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query, Post, Body, Put, Delete, Patch } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DeleteLeadCommandHandler } from '../application/handler/delete-lead.command.handler';
 import { LeadMapper } from './mapper/lead.mapper';
@@ -34,7 +24,7 @@ export class LeadController {
     private readonly createLeadCommandHandler: CreateLeadCommandHandler,
     private readonly updateLeadStatusCommandHandler: UpdateLeadStatusCommandHandler,
     private readonly updateLeadCommandHandler: UpdateLeadCommandHandler,
-    private readonly deleteLeadCommandHandler: DeleteLeadCommandHandler,
+    private readonly deleteLeadCommandHandler: DeleteLeadCommandHandler
   ) {}
 
   @Get()
@@ -44,15 +34,15 @@ export class LeadController {
     @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
-    @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('sortBy') sortBy: string = 'createdAt',
+    @Query('sortOrder') sortOrder: OrderByDirection = 'desc',
     @Query('firstName') firstName?: string[],
     @Query('lastName') lastName?: string[],
     @Query('email') email?: string[],
-    @Query('status') status?: string[],
+    @Query('status') status?: string[]
   ) {
     const { data, pagination } = await this.fetchLeadsCommandQuery.handle(
-      new FetchLeadsQuery(query, page, limit, sortBy, sortOrder, firstName, lastName, email, status),
+      new FetchLeadsQuery(query, page, limit, sortBy, sortOrder, firstName, lastName, email, status)
     );
 
     const mappedLeads = data.map((lead: Lead) => LeadMapper.toResponse(lead));
@@ -85,10 +75,7 @@ export class LeadController {
   @Patch(':id/status')
   @ApiOperation({ summary: 'Update a lead status' })
   @ApiResponse({ type: LeadResponse })
-  async updateStatus(
-    @Param('id') id: string,
-    @Body() lead: UpdateLeadStatusRequest,
-  ) {
+  async updateStatus(@Param('id') id: string, @Body() lead: UpdateLeadStatusRequest) {
     const command = LeadMapper.toUpdateStatusCommand(id, lead);
     const updatedLead = await this.updateLeadStatusCommandHandler.handle(command);
 
@@ -98,10 +85,7 @@ export class LeadController {
   @Put(':id')
   @ApiOperation({ summary: 'Update a lead' })
   @ApiResponse({ type: LeadResponse })
-  async update(
-    @Param('id') id: string,
-    @Body() lead: UpdateLeadRequest,
-  ) {
+  async update(@Param('id') id: string, @Body() lead: UpdateLeadRequest) {
     const command = LeadMapper.toUpdateCommand(id, lead);
     const updatedLead = await this.updateLeadCommandHandler.handle(command);
 

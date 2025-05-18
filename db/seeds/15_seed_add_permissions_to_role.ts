@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
-const adminRoleId = '1810ad7b-d504-4576-ab96-c2f27328033e';
-const managerRoleId = '16627f92-6b84-48f1-8b72-658ffda59b86';
+const adminRoleId = 'e0f9da2d-daa9-4a29-aa26-6dd1619ee7b8';
+const managerRoleId = 'fa9a57fc-ade4-4e96-be36-570e269b7a9c';
 
 const allPermissions = [
   'users.create',

@@ -16,8 +16,6 @@ export class RBACMiddleware implements NestMiddleware {
       return next(); // ✅ Allow requests where no role exists (e.g., public routes like login)
     }
 
-    console.log('req.user.role: ', req.user.role);
-
     const userId = req.user.id;
     const knex = this.knexService.connection;
 
