@@ -9,7 +9,7 @@ import {
   Patch,
   Post,
   Put,
-  Query,
+  Query, Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderByDirection } from 'objection';
@@ -30,6 +30,8 @@ import { CreateResidenceRequest } from './request/create-residence.request';
 import { UpdateResidenceRequest } from './request/update-residence.request';
 import { ResidenceResponse } from './response/residence.response';
 import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
+import { Request } from 'express';
+import { User } from '../../../user/domain/user.entity';
 
 ApiTags('Residence');
 @Controller('residences')
@@ -84,7 +86,17 @@ export class ResidenceController {
   @Post()
   @ApiOperation({ summary: 'Create a new residence' })
   @ApiResponse({ status: 201, description: 'Residence created', type: ResidenceResponse })
-  async create(@Body() request: CreateResidenceRequest): Promise<ResidenceResponse> {
+  async create(@Body() request: CreateResidenceRequest,  @Req() req: Request): Promise<ResidenceResponse> {
+    const user = req.user as User;
+    let loggedDeveloperId: string | undefined = undefined;
+
+    console.log(user);
+
+    if (user.role?.name?.toLowerCase() === 'developer') {
+      loggedDeveloperId = user.id;
+    }
+    console.log(user.role);
+
     const command = new CreateResidenceCommand(
       request.name,
       request.slug,
@@ -116,7 +128,8 @@ export class ResidenceController {
       request.companyId,
       request.mainGallery,
       request.secondaryGallery,
-      request.highlightedAmenities
+      request.highlightedAmenities,
+      loggedDeveloperId
     );
 
     const created = await this.createResidenceCommandHandler.handle(command);

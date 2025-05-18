@@ -6,6 +6,8 @@ import { ILeadRepository } from '../../../lead/domain/ilead.repository.interface
 import { CreateLeadCommandHandler } from '../../../lead/application/handler/create-lead-command.handler';
 import { CreateLeadCommand } from '../../../lead/application/command/create-lead.command';
 import { RequestStatusEnum } from '../../domain/request-status.enum';
+import { UpdateLeadCommandHandler } from '../../../lead/application/handler/update-lead.command.handler';
+import { UpdateLeadCommand } from '../../../lead/application/command/update-lead.command';
 
 @Injectable()
 export class CreateRequestCommandHandler {
@@ -13,6 +15,7 @@ export class CreateRequestCommandHandler {
     private readonly leadRepository: ILeadRepository,
     private readonly requestRepository: IRequestRepository,
     private readonly createLeadHandler: CreateLeadCommandHandler,
+    private readonly updateLeadCommandHandler: UpdateLeadCommandHandler,
   ) {}
 
   async handle(command: CreateRequestCommand): Promise<Request> {
@@ -31,7 +34,19 @@ export class CreateRequestCommandHandler {
         command.preferredContactMethod,
       );
       lead = await this.createLeadHandler.handle(leadCommand);
+    } else {
+      const updateLeadCommand = new UpdateLeadCommand(
+        lead.id,
+        command.firstName,
+        command.lastName,
+        command.email,
+        command.phoneNumber,
+        command.preferredContactMethod,
+      );
+      lead = await this.updateLeadCommandHandler.handle(updateLeadCommand);
     }
+
+
 
     const requestData: Partial<Request> = {
         lead: lead,

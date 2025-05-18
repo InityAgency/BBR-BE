@@ -34,6 +34,7 @@ export class CreateResidenceCommand {
     public readonly companyId?: string,
     public readonly mainGallery?: { id: string; order: number }[],
     public readonly secondaryGallery?: { id: string; order: number }[],
-    public readonly highlightedAmenities?: HighlightedAmenityType[]
+    public readonly highlightedAmenities?: HighlightedAmenityType[],
+    public readonly developerId?: string
   ) {}
 }

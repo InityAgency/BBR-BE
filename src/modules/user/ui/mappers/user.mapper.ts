@@ -1,10 +1,11 @@
 import { User } from '../../domain/user.entity';
 import { UserResponse } from '../response/user-response';
 import { CompanyMapper } from './company.mapper';
+import { RoleResponse } from '../response/role.response';
 
 export class UserMapper {
   public toResponse(user: User): UserResponse {
-    return new UserResponse(
+    const asd =  new UserResponse(
       user.id,
       user.fullName,
       user.email,
@@ -20,10 +21,11 @@ export class UserMapper {
       user.status,
       user.buyer,
       user.company ? CompanyMapper.toResponse(user.company) : null,
-      user.role,
+      user.role ? new RoleResponse(user.role.id, user.role.name) : undefined,
       user.createdAt,
       user.updatedAt,
       user.deletedAt
     );
+      return asd;
   }
 }

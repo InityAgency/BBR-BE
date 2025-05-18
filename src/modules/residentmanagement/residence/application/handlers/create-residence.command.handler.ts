@@ -108,6 +108,7 @@ export class CreateResidenceCommandHandler {
       videoTourId: command.videoTourId,
       featuredImageId: command.featuredImageId,
       companyId: command.companyId,
+      developerId: command.developerId,
     };
 
     const residence = await this.residenceRepository.create(createResidence);
