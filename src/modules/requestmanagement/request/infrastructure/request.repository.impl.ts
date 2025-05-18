@@ -19,6 +19,7 @@ export class RequestRepositoryImpl implements IRequestRepository {
       type: data.type,
       subject: data.subject,
       message: data.message,
+      entityId: data.entityId,
       status: data.status,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -35,28 +36,38 @@ export class RequestRepositoryImpl implements IRequestRepository {
     return Request.query().findById(id).whereNull('deletedAt').withGraphFetched('[lead]');
   }
 
-  async findAll(
-    query: FetchRequestsQuery
-  ): Promise<{ data: Request[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery, leadId, type, status } = query;
+  async findAll(query: FetchRequestsQuery): Promise<{ data: Request[]; pagination: PaginationResponse }> {
+    const knex = this.knexService.connection;
+    const {
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      searchQuery,
+      leadId,
+      type,
+      status,
+      developerId,
+    } = query;
 
-    console.log(sortOrder, sortBy);
-
-    const columnsToSearch = ['subject', 'type'];
-
-    const columnsToSort = ['subject', 'type', 'createdAt', 'updatedAt'];
+    const searchableColumns = ['subject', 'type'];
+    const sortableColumns = ['subject', 'type', 'createdAt', 'updatedAt'];
 
     let requestQuery = Request.query()
-      .modify((qb) => applyFilters(qb, { leadId, type, status }, Request.tableName))
-      .whereNull('deletedAt')
-      .withGraphFetched('[lead]');
+      .whereNull('requests.deleted_at')
+      .withGraphFetched('[lead]')
+      .modify((qb) => applyFilters(qb, { leadId, type, status }, Request.tableName));
 
-    requestQuery = applySearchFilter(requestQuery.clone(), searchQuery, columnsToSearch);
+    if (developerId) {
+      requestQuery = requestQuery
+        .join('residences', 'requests.entity_id', 'residences.id')
+        .andWhere('residences.developer_id', developerId);
+    }
 
-    if (sortBy && sortOrder) {
-      if (columnsToSort.includes(sortBy)) {
-        requestQuery = requestQuery.orderBy(sortBy, sortOrder);
-      }
+    requestQuery = applySearchFilter(requestQuery, searchQuery, searchableColumns);
+
+    if (sortBy && sortOrder && sortableColumns.includes(sortBy)) {
+      requestQuery = requestQuery.orderBy(sortBy, sortOrder);
     }
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(
@@ -70,11 +81,12 @@ export class RequestRepositoryImpl implements IRequestRepository {
       pagination: {
         total: totalCount,
         totalPages,
-        page: page,
-        limit: limit,
+        page,
+        limit,
       },
     };
   }
+
 
   async update(id: string, data: Partial<Request>): Promise<Request | undefined> {
     const knex = this.knexService.connection;

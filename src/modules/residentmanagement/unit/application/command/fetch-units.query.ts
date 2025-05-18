@@ -4,6 +4,7 @@ import { UnitStatusEnum } from '../../domain/unit-status.enum';
 export class FetchUnitsQuery extends BaseFetchQuery {
   unitTypeId?: string[];
   status?: UnitStatusEnum[];
+  regularPrice?: { gt?: number; lt?: number };
   constructor(
     query?: string,
     page?: number,
@@ -11,10 +12,12 @@ export class FetchUnitsQuery extends BaseFetchQuery {
     sortBy?: string,
     sortOrder?,
     unitTypeId?: string[],
-    status?: UnitStatusEnum[]
+    status?: UnitStatusEnum[],
+    regularPrice?: { gt?: number; lt?: number }
   ) {
     super(query, page, limit, sortBy, sortOrder);
     this.unitTypeId = unitTypeId;
     this.status = status;
+    this.regularPrice = regularPrice;
   }
 }

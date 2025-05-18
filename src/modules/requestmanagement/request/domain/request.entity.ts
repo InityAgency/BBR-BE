@@ -2,6 +2,7 @@ import { Model, RelationMappings } from 'objection';
 import { RequestTypeEnum } from './request-type.enum';
 import { RequestStatusEnum } from './request-status.enum';
 import { Lead } from '../../lead/domain/lead.entity';
+import { Residence } from './residence.entity';
 
 export class Request extends Model {
   id!: string;
@@ -18,6 +19,8 @@ export class Request extends Model {
   updatedAt!: Date;
   deletedAt?: Date;
 
+  residence :Residence;
+
   static tableName = 'requests';
 
   static relationMappings: RelationMappings = {
@@ -27,6 +30,14 @@ export class Request extends Model {
       join: {
         from: 'requests.leadId',
         to: 'leads.id',
+      },
+    },
+    residence: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => Residence,
+      join: {
+        from: 'requests.entityId',
+        to: 'residences.id',
       },
     },
   };

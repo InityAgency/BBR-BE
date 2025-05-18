@@ -22,6 +22,7 @@ export class UpdateRequestCommandHandler {
       type: request.type,
       subject: request.subject,
       message: request.message,
+      entityId: request.entityId,
       status: command.status,
       note: command.note,
     };

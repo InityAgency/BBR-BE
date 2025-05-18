@@ -38,11 +38,11 @@ export class RequestController {
     @Query('sortOrder') sortOrder: OrderByDirection = 'desc',
     @Query('leadId') leadId?: string[],
     @Query('type') type?: string[],
-    @Query('status') status?: string[]
+    @Query('status') status?: string[],
+    @Query('developerId') developerId?: string
   ) {
-    console.log('TEST');
     const { data, pagination } = await this.fetchRequestsCommandQuery.handle(
-      new FetchRequestsQuery(query, page, limit, sortBy, sortOrder, leadId, type, status)
+      new FetchRequestsQuery(query, page, limit, sortBy, sortOrder, leadId, type, status, developerId)
     );
 
     const mappedRequests = data.map((request: Request) => RequestMapper.toResponse(request));

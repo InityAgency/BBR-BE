@@ -44,7 +44,6 @@ export class CreateRequestRequest {
 
   @IsOptional()
   @IsUUID()
-  @MaxLength(2048)
   entityId: string;
 
   @IsOptional()

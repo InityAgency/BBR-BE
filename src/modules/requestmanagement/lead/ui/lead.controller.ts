@@ -39,10 +39,11 @@ export class LeadController {
     @Query('firstName') firstName?: string[],
     @Query('lastName') lastName?: string[],
     @Query('email') email?: string[],
-    @Query('status') status?: string[]
+    @Query('status') status?: string[],
+    @Query('developerId') developerId?: string
   ) {
     const { data, pagination } = await this.fetchLeadsCommandQuery.handle(
-      new FetchLeadsQuery(query, page, limit, sortBy, sortOrder, firstName, lastName, email, status)
+      new FetchLeadsQuery(query, page, limit, sortBy, sortOrder, firstName, lastName, email, status, developerId)
     );
 
     const mappedLeads = data.map((lead: Lead) => LeadMapper.toResponse(lead));
