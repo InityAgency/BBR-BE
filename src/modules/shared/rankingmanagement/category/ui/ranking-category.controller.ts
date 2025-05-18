@@ -21,6 +21,8 @@ import { AssignResidencesToRankingCategoryCommand } from '../application/command
 import { AssignResidencesToRankingCategoryRequest } from './request/assign-residences-to-ranking-category.request';
 import { AssignResidencesToRankingCategoryCommandHandler } from '../application/handler/assign-residences-to-ranking-category.command.handler';
 import { FindRankingCategoryBySlugCommandQuery } from '../application/query/find-by-slug-ranking-category.query';
+import { FetchResidencesByCategoryCommandQuery } from '../application/query/fetch-residences-by-category.query';
+import { FetchResidencesByCategoryIdCommandQuery } from '../application/query/fetch-residences-by-category-id.query';
 
 @ApiTags('Ranking Categories')
 @Controller('ranking-categories')
@@ -34,7 +36,8 @@ export class RankingCategoryController {
     private readonly updateRankingCategoryStatusCommandHandler: UpdateRankingCategoryStatusCommandHandler,
     private readonly deleteRankingCategoryCommandHandler: DeleteRankingCategoryCommandHandler,
     private readonly assignWeightsToRankingCategoryCommandHandler: AssignWeightsToRankingCategoryCommandHandler,
-    private readonly assignResidencesToRankingCategoryCommandHandler: AssignResidencesToRankingCategoryCommandHandler
+    private readonly assignResidencesToRankingCategoryCommandHandler: AssignResidencesToRankingCategoryCommandHandler,
+    private readonly fetchResidencesByCategoryIdCommandQuery: FetchResidencesByCategoryIdCommandQuery
   ) {}
 
   @Get()
@@ -79,6 +82,28 @@ export class RankingCategoryController {
     const rankingCategory = await this.findRankingCategoryByIdCommandQuery.handle(id);
 
     return RankingCategoryMapper.toResponse(rankingCategory);
+  }
+
+  @Get(':id/residences')
+  @ApiOperation({ summary: 'Get all ranking categories' })
+  @ApiResponse({ type: [RankingCategoryResponse] })
+  async fetchResidencesByCategory(
+    @Param('id') id: string,
+    @Query('query') query?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection
+  ) {
+    const { data, pagination } = await this.fetchResidencesByCategoryIdCommandQuery.handle(
+      id,
+      new FetchRankingCategoriesQuery(query, page, limit, sortBy, sortOrder)
+    );
+
+    return {
+      data: data,
+      pagination,
+    };
   }
 
   @Post()

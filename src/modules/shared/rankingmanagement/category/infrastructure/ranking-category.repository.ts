@@ -8,8 +8,8 @@ import { applyPagination } from '../../../../../shared/utils/pagination.util';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 import { randomUUID } from 'crypto';
-import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-cateogry.query';
 import { Residence } from 'src/modules/residentmanagement/residence/domain/residence.entity';
+import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-category.query';
 
 @Injectable()
 export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository {

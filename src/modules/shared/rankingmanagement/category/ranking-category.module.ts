@@ -22,6 +22,7 @@ import { ResidenceRankingScoreRepositoryImpl } from 'src/modules/residentmanagem
 import { FindRankingCategoryBySlugCommandQuery } from './application/query/find-by-slug-ranking-category.query';
 import { RankingCategoryPublicController } from './ui/ranking-category.public.controller';
 import { FetchResidencesByCategoryCommandQuery } from './application/query/fetch-residences-by-category.query';
+import { FetchResidencesByCategoryIdCommandQuery } from './application/query/fetch-residences-by-category-id.query';
 @Module({
   imports: [DatabaseModule, MediaModule],
   controllers: [RankingCategoryController, RankingCategoryPublicController],
@@ -47,6 +48,7 @@ import { FetchResidencesByCategoryCommandQuery } from './application/query/fetch
     FetchRankingCategoriesCommandQuery,
     FindRankingCategoryBySlugCommandQuery,
     FetchResidencesByCategoryCommandQuery,
+    FetchResidencesByCategoryIdCommandQuery,
     UpdateRankingCategoryCommandHandler,
     UpdateRankingCategoryStatusCommandHandler,
     DeleteRankingCategoryCommandHandler,

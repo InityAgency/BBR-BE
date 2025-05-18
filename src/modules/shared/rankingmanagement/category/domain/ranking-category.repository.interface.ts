@@ -1,6 +1,6 @@
 import { PaginationResponse } from '../../../../../shared/ui/response/pagination.response';
 import { FetchRankingCategoriesQuery } from '../application/command/fetch-ranking.categories.query';
-import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-cateogry.query';
+import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-category.query';
 import { RankingCategory } from './ranking-category.entity';
 
 export abstract class IRankingCategoryRepository {

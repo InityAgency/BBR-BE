@@ -3,11 +3,11 @@ import { IRankingCategoryRepository } from '../../domain/ranking-category.reposi
 import { FetchResidencesByCategoryQuery } from '../command/fetch-residences-by-category.query';
 
 @Injectable()
-export class FetchResidencesByCategoryCommandQuery {
+export class FetchResidencesByCategoryIdCommandQuery {
   constructor(private readonly rankingCategoryRespository: IRankingCategoryRepository) {}
 
-  async handle(slug: string, query: FetchResidencesByCategoryQuery): Promise<any> {
-    const isCategoryExist = await this.rankingCategoryRespository.findBySlug(slug);
+  async handle(id: string, query: FetchResidencesByCategoryQuery): Promise<any> {
+    const isCategoryExist = await this.rankingCategoryRespository.findById(id);
 
     if (!isCategoryExist) {
       throw new NotFoundException('Ranking category not found');
