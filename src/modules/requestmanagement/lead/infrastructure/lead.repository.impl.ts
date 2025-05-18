@@ -40,15 +40,20 @@ export class LeadRepositoryImpl implements ILeadRepository {
   }
 
   async findAll(query: FetchLeadsQuery): Promise<{ data: Lead[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery, firstName, lastName, email, status } =
-      query;
+    const { page, limit, sortBy, sortOrder, searchQuery, firstName, lastName, email, status, developerId } = query;
 
     const columnsToSearch = ['first_name', 'last_name', 'email', 'status'];
     const columnsToSort = ['firstName', 'lastName', 'createdAt', 'updatedAt'];
 
     let leadQuery = Lead.query()
       .modify((qb) => applyFilters(qb, { firstName, lastName, email, status }, Lead.tableName))
-      .whereNull('deletedAt');
+      .whereNull('leads.deletedAt')
+      .leftJoin('requests', 'leads.id', 'requests.leadId')
+      .leftJoin('residences', 'requests.entityId', 'residences.id');
+
+    if (developerId) {
+      leadQuery.where('residences.developerId', developerId);
+    }
 
     leadQuery = applySearchFilter(leadQuery.clone(), searchQuery, columnsToSearch);
 
@@ -57,6 +62,9 @@ export class LeadRepositoryImpl implements ILeadRepository {
         leadQuery = leadQuery.orderBy(sortBy, sortOrder);
       }
     }
+
+    // Use distinct to avoid duplicate leads because of joins
+    leadQuery.distinct('leads.*');
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(
       leadQuery,
@@ -74,6 +82,7 @@ export class LeadRepositoryImpl implements ILeadRepository {
       },
     };
   }
+
 
   async update(id: string, data: Partial<Lead>): Promise<Lead | undefined> {
     const knex = this.knexService.connection;

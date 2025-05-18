@@ -72,24 +72,47 @@ export class UnitRepositoryImpl implements IUnitRepository {
   }
 
   async findAll(query: FetchUnitsQuery): Promise<{ data: Unit[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery, unitTypeId, status } = query;
+    const { page, limit, sortBy, sortOrder, searchQuery, unitTypeId, status, regularPrice } = query;
 
     let unitQuery = Unit.query()
-      .modify((qb) => applyFilters(qb, { status, unitTypeId }, Unit.tableName))
+      .modify((qb) => applyFilters(qb, { status, unitTypeId, regularPrice }, Unit.tableName))
       .joinRelated('unitType')
       .whereNull('units.deletedAt')
       .withGraphFetched('[residence, gallery, featureImage, unitType]');
 
-    const columnsToSearch = ['name', 'description', 'roomType'];
+    const columnsToSearch = [
+      'units.name',
+      'units.description',
+      'units.roomType',
+      'units.surface',
+      'units.status',
+      'units.regularPrice',
+      'units.exclusivePrice',
+      'units.serviceType',
+      'unitType.name'
+    ];
 
     if (sortBy && sortOrder) {
-      const columnsToSort = ['units.name', 'units.description', 'units.roomType', 'units.status'];
+      const columnsToSort = [
+        'units.name',
+        'units.description',
+        'units.roomType',
+        'units.status',
+        'units.surface',
+        'units.regularPrice',
+        'units.exclusivePrice',
+        'units.serviceType',
+        'units.createdAt',
+      ];
+
       if (columnsToSort.includes(sortBy)) {
         unitQuery = unitQuery.orderBy(sortBy, sortOrder);
       }
     }
 
     unitQuery = applySearchFilter(unitQuery, searchQuery, columnsToSearch);
+
+    console.log(query)
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(
       unitQuery,

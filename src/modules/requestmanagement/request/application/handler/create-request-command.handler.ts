@@ -52,6 +52,7 @@ export class CreateRequestCommandHandler {
         lead: lead,
         type: command.type,
         subject: command.subject,
+        entityId: command.entityId,
         message: command.message,
         status: RequestStatusEnum.NEW,
     };

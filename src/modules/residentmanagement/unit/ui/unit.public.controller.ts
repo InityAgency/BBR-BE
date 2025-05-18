@@ -26,12 +26,21 @@ export class UnitPublicController {
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
-    @Query('unitTypeId') unitTypeId?: string[]
+    @Query('unitTypeId') unitTypeId?: string[],
+    @Query('regularPrice.gt') regularPriceGt?: number,
+    @Query('regularPrice.lt') regularPriceLt?: number,
   ) {
+    const regularPrice = {
+      ...(regularPriceGt !== undefined && { gt: +regularPriceGt }),
+      ...(regularPriceLt !== undefined && { lt: +regularPriceLt }),
+    };
+
+    console.log(regularPrice)
     const { data, pagination } = await this.fetchUnitsCommandQuery.handle(
       new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, unitTypeId, [
         UnitStatusEnum.ACTIVE,
-      ])
+      ],
+        Object.keys(regularPrice).length > 0 ? regularPrice : undefined)
     );
 
     const mappedUnits = data.map((unit: Unit) => UnitMapper.toPublicResponse(unit));
