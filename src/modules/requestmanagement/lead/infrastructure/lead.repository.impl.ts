@@ -26,18 +26,13 @@ export class LeadRepositoryImpl implements ILeadRepository {
 
     const knex = this.knexService.connection;
 
-    const insertedLead = await knex('leads')
-      .insert(leadData)
-      .returning('*');
+    const insertedLead = await knex('leads').insert(leadData).returning('*');
 
     return this.findById(insertedLead[0].id);
   }
 
   async findById(id: string): Promise<Lead | undefined> {
-    return Lead.query()
-      .findById(id)
-      .whereNull('deletedAt')
-      .withGraphFetched('[requests]');
+    return Lead.query().findById(id).whereNull('deletedAt').withGraphFetched('[requests]');
   }
 
   async findByEmail(email: string): Promise<Lead | undefined> {
@@ -45,23 +40,29 @@ export class LeadRepositoryImpl implements ILeadRepository {
   }
 
   async findAll(query: FetchLeadsQuery): Promise<{ data: Lead[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery, firstName, lastName, email, status } = query;
+    const { page, limit, sortBy, sortOrder, searchQuery, firstName, lastName, email, status } =
+      query;
 
-    const columnsToSearchAndSort = ['first_name', 'last_name', 'email', 'status'];
+    const columnsToSearch = ['first_name', 'last_name', 'email', 'status'];
+    const columnsToSort = ['firstName', 'lastName', 'createdAt', 'updatedAt'];
 
     let leadQuery = Lead.query()
-      .modify((qb) => applyFilters(qb, { firstName,lastName, email,status }, Lead.tableName))
+      .modify((qb) => applyFilters(qb, { firstName, lastName, email, status }, Lead.tableName))
       .whereNull('deletedAt');
 
-    leadQuery = applySearchFilter(leadQuery, searchQuery, columnsToSearchAndSort);
+    leadQuery = applySearchFilter(leadQuery.clone(), searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
-      if (columnsToSearchAndSort.includes(sortBy)) {
+      if (columnsToSort.includes(sortBy)) {
         leadQuery = leadQuery.orderBy(sortBy, sortOrder);
       }
     }
 
-    const { paginatedQuery, totalCount, totalPages } = await applyPagination(leadQuery, page, limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      leadQuery,
+      page,
+      limit
+    );
 
     return {
       data: paginatedQuery,
@@ -95,9 +96,6 @@ export class LeadRepositoryImpl implements ILeadRepository {
   async softDelete(id: string): Promise<void> {
     const knex = this.knexService.connection;
 
-    await Lead.query()
-      .patch({ deletedAt: new Date() })
-      .where('id', id)
-      .whereNull('deletedAt');
+    await Lead.query().patch({ deletedAt: new Date() }).where('id', id).whereNull('deletedAt');
   }
 }

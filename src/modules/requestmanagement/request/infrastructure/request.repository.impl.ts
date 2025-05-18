@@ -26,39 +26,44 @@ export class RequestRepositoryImpl implements IRequestRepository {
 
     const knex = this.knexService.connection;
 
-    const insertedRequest = await knex('requests')
-      .insert(requestData)
-      .returning('*');
+    const insertedRequest = await knex('requests').insert(requestData).returning('*');
 
     return this.findById(insertedRequest[0].id);
   }
 
   async findById(id: string): Promise<Request | undefined> {
-    return Request.query().findById(id)
-      .whereNull('deletedAt')
-      .withGraphFetched('[lead]');
+    return Request.query().findById(id).whereNull('deletedAt').withGraphFetched('[lead]');
   }
 
-  async findAll(query: FetchRequestsQuery): Promise<{ data: Request[]; pagination: PaginationResponse }> {
+  async findAll(
+    query: FetchRequestsQuery
+  ): Promise<{ data: Request[]; pagination: PaginationResponse }> {
     const { page, limit, sortBy, sortOrder, searchQuery, leadId, type, status } = query;
 
-    const columnsToSearchAndSort = ['subject', 'type'];
+    console.log(sortOrder, sortBy);
+
+    const columnsToSearch = ['subject', 'type'];
+
+    const columnsToSort = ['subject', 'type', 'createdAt', 'updatedAt'];
 
     let requestQuery = Request.query()
       .modify((qb) => applyFilters(qb, { leadId, type, status }, Request.tableName))
       .whereNull('deletedAt')
       .withGraphFetched('[lead]');
 
-
-    requestQuery = applySearchFilter(requestQuery, searchQuery, columnsToSearchAndSort);
+    requestQuery = applySearchFilter(requestQuery.clone(), searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
-      if (columnsToSearchAndSort.includes(sortBy)) {
+      if (columnsToSort.includes(sortBy)) {
         requestQuery = requestQuery.orderBy(sortBy, sortOrder);
       }
     }
 
-    const { paginatedQuery, totalCount, totalPages } = await applyPagination(requestQuery, page, limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      requestQuery,
+      page,
+      limit
+    );
 
     return {
       data: paginatedQuery,
@@ -86,10 +91,6 @@ export class RequestRepositoryImpl implements IRequestRepository {
   }
 
   async softDelete(id: string): Promise<void> {
-
-    await Request.query()
-      .patch({ deletedAt: new Date() })
-      .where('id', id)
-      .whereNull('deletedAt');
+    await Request.query().patch({ deletedAt: new Date() }).where('id', id).whereNull('deletedAt');
   }
 }

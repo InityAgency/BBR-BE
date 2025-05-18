@@ -40,6 +40,7 @@ export class RequestController {
     @Query('type') type?: string[],
     @Query('status') status?: string[]
   ) {
+    console.log('TEST');
     const { data, pagination } = await this.fetchRequestsCommandQuery.handle(
       new FetchRequestsQuery(query, page, limit, sortBy, sortOrder, leadId, type, status)
     );
