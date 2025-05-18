@@ -4,6 +4,7 @@ export class Role extends Model {
   id!: string;
   name!: string;
   description!: string;
+  permissions?: string[];
   createdAt!: Date;
   updatedAt!: Date;
 
