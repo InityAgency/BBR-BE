@@ -19,6 +19,6 @@ export abstract class IRankingCategoryRepository {
   abstract softDelete(id: string): Promise<void>;
   abstract assignWeights(
     id: string,
-    data: { rankingCriteriaId: string; weight: number; isDefault: boolean }[]
+    data: { rankingCriteriaId: string; weight: number }[]
   ): Promise<void>;
 }

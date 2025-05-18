@@ -8,7 +8,7 @@ export class UpdateRankingCriteriaCommandHandler {
   constructor(private readonly rankingCriteriaRepository: IRankingCriteriaRepository) {}
 
   async handle(id: string, command: UpdateRankingCriteriaCommand) {
-    const { name, description } = command;
+    const { name, description, isDefault } = command;
 
     const existingCriteria = await this.rankingCriteriaRepository.findById(id);
 
@@ -19,6 +19,7 @@ export class UpdateRankingCriteriaCommandHandler {
     const criteria = await this.rankingCriteriaRepository.update(id, {
       name,
       description,
+      isDefault,
     });
 
     if (!criteria) {

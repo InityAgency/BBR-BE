@@ -344,7 +344,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
   async assignWeights(
     id: string,
-    data: { rankingCriteriaId: string; weight: number; isDefault: boolean }[]
+    data: { rankingCriteriaId: string; weight: number }[]
   ): Promise<void> {
     const trx = await this.knexService.connection.transaction();
 
@@ -362,7 +362,6 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
           ranking_category_id: id,
           ranking_criteria_id: c.rankingCriteriaId,
           weight: c.weight,
-          is_default: c.isDefault,
         }))
       );
 

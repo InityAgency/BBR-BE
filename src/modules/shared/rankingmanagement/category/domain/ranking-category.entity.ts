@@ -54,7 +54,7 @@ export class RankingCategory extends Model {
         through: {
           from: 'ranking_category_criteria.rankingCategoryId',
           to: 'ranking_category_criteria.rankingCriteriaId',
-          extra: ['weight', 'isDefault', 'createdAt', 'updatedAt'],
+          extra: ['weight', 'createdAt', 'updatedAt'],
         },
         to: 'ranking_criteria.id',
       },

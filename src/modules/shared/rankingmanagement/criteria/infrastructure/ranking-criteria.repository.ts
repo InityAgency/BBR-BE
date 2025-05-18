@@ -76,7 +76,7 @@ export class RankingCriteriaRepositoryImpl implements IRankingCriteriaRepository
     const knex = this.knexService.connection;
 
     const rows = await knex('ranking_category_criteria as rcc')
-      .select(['rc.id', 'rc.name', 'rc.description', 'rcc.weight', 'rcc.is_default', 'rrcs.score'])
+      .select(['rc.id', 'rc.name', 'rc.description', 'rc.is_default', 'rcc.weight', 'rrcs.score'])
       .join('ranking_criteria as rc', 'rc.id', 'rcc.ranking_criteria_id')
       .leftJoin('residence_ranking_criteria_scores as rrcs', function () {
         this.on('rrcs.ranking_criteria_id', '=', 'rc.id').andOn(

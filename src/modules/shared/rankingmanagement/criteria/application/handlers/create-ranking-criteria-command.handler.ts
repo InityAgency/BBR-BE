@@ -8,7 +8,7 @@ export class CreateRankingCriteriaCommandHandler {
   constructor(private readonly rankingCriteriaRepository: IRankingCriteriaRepository) {}
 
   async handle(command: CreateRankingCriteriaCommand): Promise<RankingCriteria> {
-    const { name, description } = command;
+    const { name, description, isDefault } = command;
 
     const existingCriteria = await this.rankingCriteriaRepository.findByName(name);
 

@@ -92,7 +92,8 @@ export class RankingCriteriaController {
   ): Promise<RankingCriteriaResponse> {
     const command = new CreateRankingCriteriaCommand(
       createRankingCriteriaRequest.name,
-      createRankingCriteriaRequest.description
+      createRankingCriteriaRequest.description,
+      createRankingCriteriaRequest.isDefault
     );
 
     const rankingCriteria = await this.createRankingCriteriaCommandHandler.handle(command);
@@ -114,7 +115,8 @@ export class RankingCriteriaController {
   ) {
     const command = new UpdateRankingCriteriaCommand(
       updateRankingCriteriaRequest.name,
-      updateRankingCriteriaRequest.description
+      updateRankingCriteriaRequest.description,
+      updateRankingCriteriaRequest.isDefault
     );
 
     return await this.updateRankingCriteriaCommandHandler.handle(id, command);

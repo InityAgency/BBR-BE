@@ -7,7 +7,6 @@ export class RankingCategoryCriteria extends Model {
   rankingCategoryId!: string;
   rankingCriteriaId!: string;
   weight!: number;
-  isDefault!: boolean;
 
   static tableName = 'ranking_category_criteria';
 
