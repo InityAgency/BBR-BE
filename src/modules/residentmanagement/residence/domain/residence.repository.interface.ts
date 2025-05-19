@@ -1,6 +1,7 @@
 import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { Residence } from './residence.entity';
 import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
+import { FetchResidencesUnassignedToCategoryQuery } from '../application/commands/fetch-residences-unassigned-to-category.query';
 
 export abstract class IResidenceRepository {
   abstract create(residence: Partial<Residence>): Promise<Residence | undefined>;
@@ -12,7 +13,10 @@ export abstract class IResidenceRepository {
   abstract findAll(
     query: FetchResidencesQuery
   ): Promise<{ data: Residence[]; pagination: PaginationResponse }>;
-
+  abstract findAllUnassignedToCategory(
+    rankingCategoryId: string,
+    fetchQuery: FetchResidencesUnassignedToCategoryQuery
+  ): Promise<{ data: Residence[]; pagination: PaginationResponse }>;
   abstract syncOrderedMediaGallery(
     residenceId: string,
     gallery: { id: string; order: number }[],

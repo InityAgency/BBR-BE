@@ -9,6 +9,7 @@ import { ResidenceStatusEnum } from '../domain/residence-status.enum';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 import { ResidenceHighlightedAmenity } from '../domain/residence-highlighted-amenities.entity';
+import { FetchResidencesUnassignedToCategoryQuery } from '../application/commands/fetch-residences-unassigned-to-category.query';
 
 @Injectable()
 export class ResidenceRepository implements IResidenceRepository {
@@ -60,6 +61,70 @@ export class ResidenceRepository implements IResidenceRepository {
 
   async findByName(name: string): Promise<Residence | undefined> {
     throw new Error('Method not implemented.');
+  }
+
+  async findAllUnassignedToCategory(
+    rankingCategoryId: string,
+    fetchQuery: FetchResidencesUnassignedToCategoryQuery
+  ): Promise<any> {
+    const { page, limit, sortBy, sortOrder, searchQuery, cityId, countryId, brandId, continentId } =
+      fetchQuery;
+
+    const subquery = Residence.query()
+      .distinct('residences.id')
+      .join('residence_ranking_criteria_scores as scores', 'residences.id', 'scores.residence_id')
+      .join(
+        'ranking_category_criteria as criteria',
+        'scores.ranking_criteria_id',
+        'criteria.ranking_criteria_id'
+      )
+      .where('criteria.ranking_category_id', rankingCategoryId)
+      .whereNull('residences.deleted_at');
+
+    const baseQuery = Residence.query()
+      .whereNotIn('residences.id', subquery)
+      .leftJoinRelated('city')
+      .leftJoinRelated('country')
+      .leftJoinRelated('company')
+      .modify((qb) => applyFilters(qb, { brandId, countryId }, Residence.tableName))
+      .modify((qb) => {
+        if (fetchQuery.continentId) {
+          qb.where('country.continentId', fetchQuery.continentId);
+        }
+
+        if (fetchQuery.cityId) {
+          qb.where('city.id', fetchQuery.cityId);
+        }
+      })
+      .whereNull('residences.deleted_at')
+      .withGraphFetched('[city, country, brand, company]');
+
+    const columnsToSearch = ['residences.name', 'city.name', 'country.name', 'company.name'];
+
+    let query = baseQuery.clone();
+
+    query = applySearchFilter(query, searchQuery, columnsToSearch);
+
+    if (sortBy && sortOrder) {
+      const allowedColumns = ['name', 'createdAt', 'updatedAt'];
+      if (allowedColumns.includes(sortBy)) {
+        query = query.orderBy(sortBy, sortOrder);
+      }
+    } else {
+      query = query.orderBy('residences.created_at', 'desc');
+    }
+
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
+
+    return {
+      data: paginatedQuery,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page: page,
+        limit: limit,
+      },
+    };
   }
 
   async findAll(

@@ -33,6 +33,8 @@ import { ResidenceResponse } from './response/residence.response';
 import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { Request } from 'express';
 import { User } from '../../../user/domain/user.entity';
+import { FetchResidencesUnassignedToCategoryQuery } from '../application/commands/fetch-residences-unassigned-to-category.query';
+import { FindAllUnassignedResidencesCommandQuery } from '../application/query/find-all-unassigned-residences.query';
 
 ApiTags('Residence');
 @Controller('residences')
@@ -44,7 +46,8 @@ export class ResidenceController {
     private readonly updateResidenceStatusCommandHandler: UpdateResidenceStatusCommandHandler,
     private readonly deleteResidenceCommandHandler: DeleteResidenceCommandHandler,
     private readonly findAllResidencesCommandQuery: FindAllResidencesCommandQuery,
-    private readonly findByIdResidenceCommandQuery: FindByIdResidenceCommandQuery
+    private readonly findByIdResidenceCommandQuery: FindByIdResidenceCommandQuery,
+    private readonly findAllUnassignedToCategoryCommandQuery: FindAllUnassignedResidencesCommandQuery
   ) {}
 
   @Get()
@@ -77,6 +80,49 @@ export class ResidenceController {
     );
 
     const { data, pagination } = await this.findAllResidencesCommandQuery.handle(fetchQuery);
+
+    return {
+      data: data.map((residence) => ResidenceMapper.toResponse(residence)),
+      pagination,
+    };
+  }
+
+  @Get('unassigned')
+  @ApiOperation({ summary: 'Get all residences' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of residences',
+    type: ResidenceResponse,
+    isArray: true,
+  })
+  async findAllUnassignedToCategory(
+    @Query('rankingCategoryId') rankingCategoryId: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('query') query?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('cityId') cityId?: string[],
+    @Query('countryId') countryId?: string[],
+    @Query('brandId') brandId?: string[],
+    @Query('continentId') continentId?: string[]
+  ): Promise<{ data: ResidenceResponse[]; pagination: PaginationResponse }> {
+    const fetchQuery = new FetchResidencesUnassignedToCategoryQuery(
+      query,
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      cityId,
+      countryId,
+      brandId,
+      continentId
+    );
+
+    const { data, pagination } = await this.findAllUnassignedToCategoryCommandQuery.handle(
+      rankingCategoryId,
+      fetchQuery
+    );
 
     return {
       data: data.map((residence) => ResidenceMapper.toResponse(residence)),

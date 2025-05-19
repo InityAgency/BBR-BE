@@ -9,21 +9,24 @@ import { ICityRepository } from 'src/modules/shared/city/domain/city.repository.
 import { CityRepositoryImpl } from 'src/modules/shared/city/infrastructure/city.repository';
 import { ICountryRepository } from 'src/modules/shared/country/domain/country.repository.interface';
 import { CountryRepositoryImpl } from 'src/modules/shared/country/infrastructure/country.repository';
+import { IRankingCategoryRepository } from 'src/modules/shared/rankingmanagement/category/domain/ranking-category.repository.interface';
+import { RankingCategoryRepositoryImpl } from 'src/modules/shared/rankingmanagement/category/infrastructure/ranking-category.repository';
 import { IAmenityRepository } from '../amenity/domain/amenity.repository.interface';
 import { AmenityRepositoryImpl } from '../amenity/infrastructure/amenity.repository';
 import { IKeyFeatureRepository } from '../key_feature/domain/key-feature.repository.interface';
 import { KeyFeatureRepository } from '../key_feature/infrastructure/key-feature.repository';
 import { CreateResidenceCommandHandler } from './application/handlers/create-residence.command.handler';
+import { DeleteResidenceCommandHandler } from './application/handlers/delete-residence.command.handler';
 import { UpdateResidenceCommandHandler } from './application/handlers/update-residence.command.handler';
+import { UpdateResidenceStatusCommandHandler } from './application/handlers/update-status-residence.command.handler';
 import { FindAllResidencesCommandQuery } from './application/query/find-all-residences.query';
+import { FindAllUnassignedResidencesCommandQuery } from './application/query/find-all-unassigned-residences.query';
 import { FindByIdResidenceCommandQuery } from './application/query/find-by-id-residence.query';
+import { FindBySlugResidenceCommandQuery } from './application/query/find-by-slug-residence.query';
 import { IResidenceRepository } from './domain/residence.repository.interface';
 import { ResidenceRepository } from './infrastructure/residence.repository';
 import { ResidenceController } from './ui/residence.controller';
-import { UpdateResidenceStatusCommandHandler } from './application/handlers/update-status-residence.command.handler';
-import { DeleteResidenceCommandHandler } from './application/handlers/delete-residence.command.handler';
 import { ResidencePublicController } from './ui/residence.public.controller';
-import { FindBySlugResidenceCommandQuery } from './application/query/find-by-slug-residence.query';
 
 @Module({
   controllers: [ResidenceController, ResidencePublicController],
@@ -31,6 +34,10 @@ import { FindBySlugResidenceCommandQuery } from './application/query/find-by-slu
     {
       provide: IResidenceRepository,
       useClass: ResidenceRepository,
+    },
+    {
+      provide: IRankingCategoryRepository,
+      useClass: RankingCategoryRepositoryImpl,
     },
     {
       provide: ICountryRepository,
@@ -61,6 +68,7 @@ import { FindBySlugResidenceCommandQuery } from './application/query/find-by-slu
       useClass: KeyFeatureRepository,
     },
     FindAllResidencesCommandQuery,
+    FindAllUnassignedResidencesCommandQuery,
     FindByIdResidenceCommandQuery,
     CreateResidenceCommandHandler,
     UpdateResidenceCommandHandler,
