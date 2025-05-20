@@ -128,11 +128,12 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
         'cat.id as categoryId',
         'cat.name as categoryName',
         'rcc.weight',
+        'rts.id as rtsId', // 👈 da znamo da li je veza validna
       ])
       .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
-      .join('ranking_category_criteria as rcc', 'rcc.ranking_criteria_id', 'rc.id')
-      .join('ranking_categories as cat', 'cat.id', 'rcc.ranking_category_id')
-      .join('residence_total_scores as rts', function () {
+      .leftJoin('ranking_category_criteria as rcc', 'rcc.ranking_criteria_id', 'rc.id')
+      .leftJoin('ranking_categories as cat', 'cat.id', 'rcc.ranking_category_id')
+      .leftJoin('residence_total_scores as rts', function () {
         this.on('rts.residence_id', '=', 'scores.residence_id').andOn(
           'rts.ranking_category_id',
           '=',
@@ -156,11 +157,14 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
         });
       }
 
-      grouped.get(row.criteriaId).rankingCategories.push({
-        id: row.categoryId,
-        name: row.categoryName,
-        weight: row.weight,
-      });
+      if (row.categoryId && row.rtsId) {
+        // 👈 samo ako je rezidencija deo te kategorije
+        grouped.get(row.criteriaId).rankingCategories.push({
+          id: row.categoryId,
+          name: row.categoryName,
+          weight: row.weight,
+        });
+      }
     }
 
     return Array.from(grouped.values());
