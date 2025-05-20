@@ -146,9 +146,17 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .pluck('ranking_criteria_id');
 
     const criteriaScores = await this.knexService
-      .connection('residence_ranking_criteria_scores')
-      .select(['residence_id', 'ranking_criteria_id', 'score'])
-      .whereIn('residence_id', residenceIds);
+      .connection('residence_ranking_criteria_scores as scores')
+      .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
+      .select([
+        'scores.residence_id',
+        'scores.ranking_criteria_id',
+        'scores.score',
+        'rc.name as criteria_name',
+        'rc.description as criteria_description',
+        'rc.is_default as criteria_is_default',
+      ])
+      .whereIn('scores.residence_id', residenceIds);
 
     const scoreGrouped = new Map();
 
@@ -165,6 +173,9 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       scoreGrouped.get(residenceId).push({
         rankingCriteriaId: rcId,
         score: row['score'],
+        name: row.criteriaName,
+        description: row.criteriaDescription,
+        isDefault: row.criteriaIsDefault,
       });
     }
 
@@ -236,6 +247,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   //     },
   //   };
   // }
+
   async findAll(
     query: FetchRankingCategoriesQuery
   ): Promise<{ data: any[]; pagination: PaginationResponse }> {

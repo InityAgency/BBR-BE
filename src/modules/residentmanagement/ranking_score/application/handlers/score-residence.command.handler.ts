@@ -26,6 +26,7 @@ export class ScoreResidenceCommandHandler {
     }
 
     await this.rankingScoreRepository.score(residenceId, scores);
-    await this.rankingScoreRepository.updateAllTotalScoresForResidence(residenceId);
+
+    // await this.rankingScoreRepository.updateAllTotalScoresForResidence(residenceId);
   }
 }
