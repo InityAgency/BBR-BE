@@ -10,4 +10,5 @@ export abstract class IRankingScoreRepository {
   abstract updateTotalScore(residenceId: string, rankingCategoryId: string): Promise<void>;
   abstract updateRankingPositionsForCategory(rankingCategoryId: string): Promise<void>;
   abstract updateAllTotalScoresForResidence(residenceId: string): Promise<void>;
+  abstract getCriteriaWithCategoriesForResidence(residenceId: string): Promise<any>;
 }

@@ -9,6 +9,7 @@ import { ScoreResidenceCommandHandler } from './application/handlers/score-resid
 import { IRankingScoreRepository } from './domain/residence-ranking-score.repository.interface';
 import { ResidenceRankingScoreRepositoryImpl } from './infrastructure/residence-ranking-score.repository';
 import { ResidenceRankingScoreController } from './ui/residence-ranking-score.controller';
+import { FetchScoresResidenceCommandQuery } from './application/query/fetch-scores-residence.command.query';
 
 @Module({
   controllers: [ResidenceRankingScoreController],
@@ -30,6 +31,7 @@ import { ResidenceRankingScoreController } from './ui/residence-ranking-score.co
       useClass: RankingCriteriaRepositoryImpl,
     },
     ScoreResidenceCommandHandler,
+    FetchScoresResidenceCommandQuery,
   ],
   exports: [],
 })

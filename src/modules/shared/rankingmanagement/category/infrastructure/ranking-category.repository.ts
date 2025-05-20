@@ -138,6 +138,36 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
     const scoreMap = new Map(scores.map((s) => [s.residenceId, s.total_score]));
 
+    // [RCS] STEP 4: Dohvati kriterijumske ocene za tu kategoriju
+    // [RCS] - novi deo za filtriranje kriterijuma po kategoriji
+    const validRankingCriteriaIds: string[] = await this.knexService
+      .connection('ranking_category_criteria')
+      .where('ranking_category_id', rankingCategoryId)
+      .pluck('ranking_criteria_id');
+
+    const criteriaScores = await this.knexService
+      .connection('residence_ranking_criteria_scores')
+      .select(['residence_id', 'ranking_criteria_id', 'score'])
+      .whereIn('residence_id', residenceIds);
+
+    const scoreGrouped = new Map();
+
+    for (const row of criteriaScores) {
+      const rcId = String(row.rankingCriteriaId);
+      const residenceId = String(row.residenceId);
+
+      if (!validRankingCriteriaIds.includes(rcId)) continue;
+
+      if (!scoreGrouped.has(residenceId)) {
+        scoreGrouped.set(residenceId, []);
+      }
+
+      scoreGrouped.get(residenceId).push({
+        rankingCriteriaId: rcId,
+        score: row['score'],
+      });
+    }
+
     // STEP 4: Dodaj totalScore u svaki rezultat
     const response = data.map((res) => ({
       ...res,
@@ -149,6 +179,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
         scoreMap.get(res.id) ??
         res.totalScores?.find((t) => t.rankingCategoryId === rankingCategoryId)?.position ??
         0,
+      rankingCriteriaScores: scoreGrouped.get(res.id) ?? [], // [RCS] dodato
     }));
 
     return {

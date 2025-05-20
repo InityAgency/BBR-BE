@@ -49,6 +49,50 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
     });
   }
 
+  async getCriteriaWithCategoriesForResidence(residenceId: string) {
+    const knex = this.knexService.connection;
+
+    const rows = await knex('residence_ranking_criteria_scores as scores')
+      .select([
+        'rc.id as criteriaId',
+        'rc.name as criteriaName',
+        'rc.description',
+        'rc.is_default',
+        'scores.score',
+        'cat.id as categoryId',
+        'cat.name as categoryName',
+        'rcc.weight',
+      ])
+      .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
+      .join('ranking_category_criteria as rcc', 'rcc.ranking_criteria_id', 'rc.id')
+      .join('ranking_categories as cat', 'cat.id', 'rcc.ranking_category_id')
+      .where('scores.residence_id', residenceId)
+      .orderBy(['rc.name', 'cat.name']);
+
+    const grouped = new Map();
+
+    for (const row of rows) {
+      if (!grouped.has(row.criteriaId)) {
+        grouped.set(row.criteriaId, {
+          id: row.criteriaId,
+          name: row.criteriaName,
+          description: row.description,
+          isDefault: row.is_default,
+          score: row.score,
+          rankingCategories: [],
+        });
+      }
+
+      grouped.get(row.criteriaId).rankingCategories.push({
+        id: row.categoryId,
+        name: row.categoryName,
+        weight: row.weight,
+      });
+    }
+
+    return Array.from(grouped.values());
+  }
+
   async updateTotalScore(residenceId: string, rankingCategoryId: string): Promise<void> {
     const scores = await this.knexService
       .connection('residence_ranking_criteria_scores as scores')
