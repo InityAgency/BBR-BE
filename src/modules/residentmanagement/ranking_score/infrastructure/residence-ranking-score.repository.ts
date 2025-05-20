@@ -150,7 +150,7 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
           id: row.criteriaId,
           name: row.criteriaName,
           description: row.description,
-          isDefault: row.is_default,
+          isDefault: row.isDefault,
           score: row.score,
           rankingCategories: [],
         });
