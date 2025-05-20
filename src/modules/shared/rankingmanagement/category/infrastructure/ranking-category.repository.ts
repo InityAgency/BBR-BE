@@ -139,7 +139,6 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     const scoreMap = new Map(scores.map((s) => [s.residenceId, s.total_score]));
 
     // [RCS] STEP 4: Dohvati kriterijumske ocene za tu kategoriju
-    // [RCS] - novi deo za filtriranje kriterijuma po kategoriji
     const validRankingCriteriaIds: string[] = await this.knexService
       .connection('ranking_category_criteria')
       .where('ranking_category_id', rankingCategoryId)
