@@ -142,7 +142,7 @@ export class ResidenceRepository implements IResidenceRepository {
       countryId,
       brandId,
       address,
-      companyId
+      companyId,
     } = fetchQuery;
 
     const baseQuery = Residence.query()
@@ -169,7 +169,7 @@ export class ResidenceRepository implements IResidenceRepository {
         }
       })
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory], rankingScores]'
       );
 
     const columnsToSearch = [

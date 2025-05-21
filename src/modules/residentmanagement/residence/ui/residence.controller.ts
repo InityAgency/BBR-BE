@@ -257,7 +257,7 @@ export class ResidenceController {
       request.companyId,
       request.mainGallery,
       request.secondaryGallery,
-      request.highlightedAmenities,
+      request.highlightedAmenities
     );
 
     const created = await this.updateResidenceCommandHandler.handle(command);

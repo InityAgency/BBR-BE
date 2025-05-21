@@ -5,11 +5,13 @@ import { IRankingCriteriaRepository } from 'src/modules/shared/rankingmanagement
 import { RankingCriteriaRepositoryImpl } from 'src/modules/shared/rankingmanagement/criteria/infrastructure/ranking-criteria.repository';
 import { IResidenceRepository } from '../residence/domain/residence.repository.interface';
 import { ResidenceRepositoryImpl } from '../unit/infrastructure/residence.repository';
+import { ScoreMultipleResidencesCommandHandler } from './application/handlers/score-residence-multiple.command.handler';
 import { ScoreResidenceCommandHandler } from './application/handlers/score-residence.command.handler';
+import { FetchScoresResidenceCommandQuery } from './application/query/fetch-scores-residence.command.query';
 import { IRankingScoreRepository } from './domain/residence-ranking-score.repository.interface';
 import { ResidenceRankingScoreRepositoryImpl } from './infrastructure/residence-ranking-score.repository';
 import { ResidenceRankingScoreController } from './ui/residence-ranking-score.controller';
-import { FetchScoresResidenceCommandQuery } from './application/query/fetch-scores-residence.command.query';
+import { RemoveResidenceScoreFromCategoryCommandHandler } from './application/handlers/remove-residence-score-from-category.command.handler';
 
 @Module({
   controllers: [ResidenceRankingScoreController],
@@ -31,6 +33,8 @@ import { FetchScoresResidenceCommandQuery } from './application/query/fetch-scor
       useClass: RankingCriteriaRepositoryImpl,
     },
     ScoreResidenceCommandHandler,
+    ScoreMultipleResidencesCommandHandler,
+    RemoveResidenceScoreFromCategoryCommandHandler,
     FetchScoresResidenceCommandQuery,
   ],
   exports: [],
