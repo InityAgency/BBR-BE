@@ -59,6 +59,7 @@ export class ResidenceController {
     isArray: true,
   })
   async findAll(
+    @Req() req,
     @Query('query') query?: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
@@ -66,8 +67,19 @@ export class ResidenceController {
     @Query('sortOrder') sortOrder?: OrderByDirection,
     @Query('status') status?: ResidenceStatusEnum[],
     @Query('developmentStatus') developmentStatus?: DevelopmentStatusEnum[],
-    @Query('cityId') cityId?: string[]
+    @Query('cityId') cityId?: string[],
+    @Query('countryId') countryId?: string[],
+    @Query('continentId') continentId?: string[],
+    @Query('brandId') brandId?: string[],
+    @Query('address') address?: string[]
   ): Promise<{ data: ResidenceResponse[]; pagination: PaginationResponse }> {
+    const user = req.user as User;
+    let loggedDeveloperCompanyId: string[] | undefined = undefined;
+
+    if (user.role?.name?.toLowerCase() === 'developer') {
+      loggedDeveloperCompanyId = [user.company!.id];
+    }
+
     const fetchQuery = new FetchResidencesQuery(
       query,
       page,
@@ -76,7 +88,12 @@ export class ResidenceController {
       sortOrder,
       status,
       developmentStatus,
-      cityId
+      cityId,
+      countryId,
+      brandId,
+      address,
+      continentId,
+      loggedDeveloperCompanyId
     );
 
     const { data, pagination } = await this.findAllResidencesCommandQuery.handle(fetchQuery);
@@ -184,6 +201,7 @@ export class ResidenceController {
     return ResidenceMapper.toResponse(created);
   }
 
+  //todo: zabraniti update ako je developer rola
   @Patch(':id/status')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Update a residence status' })
@@ -201,9 +219,13 @@ export class ResidenceController {
   @ApiResponse({ status: 200, description: 'Residence updated', type: ResidenceResponse })
   async update(
     @Param('id') id: string,
-    @Body() request: UpdateResidenceRequest
+    @Body() request: UpdateResidenceRequest,
+    @Req() req
   ): Promise<ResidenceResponse> {
+    const user = req.user as User;
+
     const command = new UpdateResidenceCommand(
+      user,
       id,
       request.name,
       request.slug,
@@ -235,7 +257,7 @@ export class ResidenceController {
       request.companyId,
       request.mainGallery,
       request.secondaryGallery,
-      request.highlightedAmenities
+      request.highlightedAmenities,
     );
 
     const created = await this.updateResidenceCommandHandler.handle(command);

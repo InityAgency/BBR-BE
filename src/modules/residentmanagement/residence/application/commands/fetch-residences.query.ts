@@ -11,6 +11,7 @@ export class FetchResidencesQuery extends BaseFetchQuery {
   brandId?: string[];
   address?: string[];
   continentId?: string[];
+  companyId?:  string[];
 
   constructor(
     searchQuery?: string,
@@ -24,7 +25,8 @@ export class FetchResidencesQuery extends BaseFetchQuery {
     countryId?: string[],
     brandId?: string[],
     address?: string[],
-    continentId?: string[]
+    continentId?: string[],
+    companyId?:  string[]
   ) {
     super(searchQuery, page, limit, sortBy, sortOrder);
     this.status = status;
@@ -34,5 +36,6 @@ export class FetchResidencesQuery extends BaseFetchQuery {
     this.brandId = brandId;
     this.address = address;
     this.continentId = continentId;
+    this.companyId = companyId;
   }
 }

@@ -15,7 +15,7 @@ export class Residence extends Model {
   longitude!: string;
   latitude!: string;
   deletedAt?: Date;
-
+  companyId?: string;
 
   static tableName = 'residences';
 }

@@ -1,7 +1,7 @@
 import {
   Injectable,
   NotFoundException,
-  InternalServerErrorException,
+  InternalServerErrorException, ForbiddenException,
 } from '@nestjs/common';
 import { Review } from '../../domain/review.entity';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';

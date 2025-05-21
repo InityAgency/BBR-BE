@@ -1,9 +1,11 @@
 import { DevelopmentStatusEnum } from 'src/shared/types/development-status.enum';
 import { RentalPotentialEnum } from 'src/shared/types/rental-potential.enum';
 import { HighlightedAmenityType } from '../../ui/types/highlighted-amenities.type';
+import { User } from '../../../../user/domain/user.entity';
 
 export class UpdateResidenceCommand {
   constructor(
+    public readonly loggedUser: User,
     public readonly id: string,
     public readonly name?: string,
     public readonly slug?: string,
@@ -35,6 +37,6 @@ export class UpdateResidenceCommand {
     public readonly companyId?: string,
     public readonly mainGallery?: { id: string; order: number }[],
     public readonly secondaryGallery?: { id: string; order: number }[],
-    public readonly highlightedAmenities?: HighlightedAmenityType[]
+    public readonly highlightedAmenities?: HighlightedAmenityType[],
   ) {}
 }

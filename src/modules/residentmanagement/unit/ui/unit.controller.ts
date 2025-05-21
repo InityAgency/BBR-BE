@@ -35,10 +35,11 @@ export class UnitController {
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
     @Query('unitTypeId') unitTypeId?: string[],
+    @Query('residenceId') residenceId?: string[],
     @Query('status') status?: UnitStatusEnum[]
   ) {
     const { data, pagination } = await this.fetchUnitsCommandQuery.handle(
-      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, unitTypeId, status)
+      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, residenceId, unitTypeId, status)
     );
 
     const mappedUnits = data.map((unit: Unit) => UnitMapper.toResponse(unit));

@@ -5,6 +5,7 @@ export class FetchReviewsQuery extends BaseFetchQuery {
   residenceId?: string[];
   userId?: string[];
   unitTypeId?: string[];
+  companyId?: string;
 
   constructor(
     searchQuery?: string,
@@ -15,12 +16,14 @@ export class FetchReviewsQuery extends BaseFetchQuery {
     status?: string[],
     residenceId?: string[],
     userId?: string[],
-    unitTypeId?: string[]
+    unitTypeId?: string[],
+    companyId?: string
   ) {
     super(searchQuery, page, limit, sortBy, sortOrder);
     this.status = status;
     this.residenceId = residenceId;
     this.userId = userId;
     this.unitTypeId = unitTypeId;
+    this.companyId = companyId;
   }
 }

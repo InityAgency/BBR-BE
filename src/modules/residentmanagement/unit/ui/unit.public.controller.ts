@@ -27,6 +27,7 @@ export class UnitPublicController {
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: OrderByDirection,
     @Query('unitTypeId') unitTypeId?: string[],
+    @Query('residenceId') residenceId?: string[],
     @Query('regularPrice.gt') regularPriceGt?: number,
     @Query('regularPrice.lt') regularPriceLt?: number,
   ) {
@@ -35,9 +36,8 @@ export class UnitPublicController {
       ...(regularPriceLt !== undefined && { lt: +regularPriceLt }),
     };
 
-    console.log(regularPrice)
     const { data, pagination } = await this.fetchUnitsCommandQuery.handle(
-      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, unitTypeId, [
+      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder,residenceId, unitTypeId, [
         UnitStatusEnum.ACTIVE,
       ],
         Object.keys(regularPrice).length > 0 ? regularPrice : undefined)

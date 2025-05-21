@@ -1,5 +1,5 @@
 import {
-  ConflictException,
+  ConflictException, ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -14,6 +14,9 @@ import { ICountryRepository } from 'src/modules/shared/country/domain/country.re
 import { Residence } from '../../domain/residence.entity';
 import { IResidenceRepository } from '../../domain/residence.repository.interface';
 import { UpdateResidenceCommand } from '../commands/update-residence.command';
+import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
+import { log } from 'console';
+import { logger } from 'handlebars';
 
 @Injectable()
 export class UpdateResidenceCommandHandler {
@@ -33,6 +36,10 @@ export class UpdateResidenceCommandHandler {
 
     if (!residence) {
       throw new NotFoundException('Residence not found');
+    }
+
+    if (!command.loggedUser || residence.company?.id !== command.loggedUser.company?.id) {
+      throw new ForbiddenException('You are not allowed to update this residence');
     }
 
     if (command.countryId) {
@@ -172,6 +179,7 @@ export class UpdateResidenceCommandHandler {
       videoTourId: command.videoTourId,
       featuredImageId: command.featuredImageId,
       companyId: command.companyId,
+      status: ResidenceStatusEnum.PENDING
     };
 
     const updated = await this.residenceRepository.update(command.id, updateResidence);

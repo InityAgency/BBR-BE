@@ -26,6 +26,7 @@ import { UpdateReviewStatusRequest } from './request/update-review-status.reques
 import { User } from 'src/modules/user/domain/user.entity';
 import { log } from 'console';
 import { OrderByDirection } from 'objection';
+import { UpdateReviewStatusCommand } from '../application/command/update-review-status.command';
 
 @ApiTags('Reviews')
 @Controller('reviews')
@@ -42,6 +43,7 @@ export class ReviewController {
   @ApiOperation({ summary: 'Get all reviews' })
   @ApiResponse({ type: [ReviewResponse] })
   async fetchAll(
+    @Req() req,
     @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -52,6 +54,13 @@ export class ReviewController {
     @Query('status') status?: string[],
     @Query('unitTypeId') unitTypeId?: string[]
   ) {
+    const user = req.user as User;
+    let loggedDeveloperCompanyId: string | undefined = undefined;
+
+    if (user.role?.name?.toLowerCase() === 'developer') {
+      loggedDeveloperCompanyId = user.company?.id;
+    }
+
     const { data, pagination } = await this.fetchReviewsCommandQuery.handle(
       new FetchReviewsQuery(
         query,
@@ -62,7 +71,8 @@ export class ReviewController {
         status,
         residenceId,
         userId,
-        unitTypeId
+        unitTypeId,
+        loggedDeveloperCompanyId
       )
     );
 
@@ -95,13 +105,13 @@ export class ReviewController {
     return ReviewMapper.toResponse(created);
   }
 
+  //todo: zabraniti update statusa developerima
   @Patch(':id/status')
   @ApiOperation({ summary: 'Update review status' })
-  async updateStatus(@Param('id') id: string, @Body() request: UpdateReviewStatusRequest) {
-    const result = await this.updateReviewStatusCommandHandler.handle({
-      id,
-      status: request.status,
-    });
+  async updateStatus(@Param('id') id: string, @Body() request: UpdateReviewStatusRequest, @Req() req) {
+    const result = await this.updateReviewStatusCommandHandler.handle(
+      new UpdateReviewStatusCommand(id, request.status)
+    );
 
     return ReviewMapper.toResponse(result);
   }

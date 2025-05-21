@@ -31,6 +31,7 @@ export class Unit extends Model {
   gallery: Media[];
   featureImage: Media;
   residence: Residence;
+  residenceId: string;
 
   createdAt!: Date;
   updatedAt!: Date;

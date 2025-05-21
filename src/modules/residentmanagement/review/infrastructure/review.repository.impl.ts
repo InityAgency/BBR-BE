@@ -47,7 +47,7 @@ export class ReviewRepositoryImpl implements IReviewRepository {
   async findAll(
     query: FetchReviewsQuery
   ): Promise<{ data: Review[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery, status, residenceId, userId, unitTypeId } =
+    const { page, limit, sortBy, sortOrder, searchQuery, status, residenceId, userId, unitTypeId, companyId } =
       query;
 
     const columnsToSearchAndSort = ['status'];
@@ -56,10 +56,16 @@ export class ReviewRepositoryImpl implements IReviewRepository {
       .modify((qb) =>
         applyFilters(qb, { status, residenceId, userId, unitTypeId }, Review.tableName)
       )
-      .whereNull('deletedAt')
+      .whereNull('reviews.deletedAt')
       .withGraphFetched('[residence, user, unitType]');
 
     reviewQuery = applySearchFilter(reviewQuery, searchQuery, columnsToSearchAndSort);
+
+    if (companyId) {
+  reviewQuery = reviewQuery
+    .joinRelated('residence')
+    .where('residence.companyId', companyId);
+}
 
     if (sortBy && sortOrder) {
       if (columnsToSearchAndSort.includes(sortBy)) {

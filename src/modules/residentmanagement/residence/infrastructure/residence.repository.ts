@@ -46,7 +46,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .findById(id)
       .whereNull('deleted_at')
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
+        '[company,videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
       );
   }
 
@@ -142,6 +142,7 @@ export class ResidenceRepository implements IResidenceRepository {
       countryId,
       brandId,
       address,
+      companyId
     } = fetchQuery;
 
     const baseQuery = Residence.query()
@@ -149,7 +150,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .modify((qb) =>
         applyFilters(
           qb,
-          { status, cityId, brandId, countryId, address, developmentStatus },
+          { status, cityId, brandId, countryId, address, developmentStatus, companyId },
           Residence.tableName
         )
       )
