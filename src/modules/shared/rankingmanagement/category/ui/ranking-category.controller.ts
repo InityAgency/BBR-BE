@@ -23,6 +23,7 @@ import { AssignResidencesToRankingCategoryCommandHandler } from '../application/
 import { FindRankingCategoryBySlugCommandQuery } from '../application/query/find-by-slug-ranking-category.query';
 import { FetchResidencesByCategoryCommandQuery } from '../application/query/fetch-residences-by-category.query';
 import { FetchResidencesByCategoryIdCommandQuery } from '../application/query/fetch-residences-by-category-id.query';
+import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-category.query';
 
 @ApiTags('Ranking Categories')
 @Controller('ranking-categories')
@@ -93,11 +94,12 @@ export class RankingCategoryController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: OrderByDirection
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('countryId') countryId?: string[]
   ) {
     const { data, pagination } = await this.fetchResidencesByCategoryIdCommandQuery.handle(
       id,
-      new FetchRankingCategoriesQuery(query, page, limit, sortBy, sortOrder)
+      new FetchResidencesByCategoryQuery(query, page, limit, sortBy, sortOrder, countryId)
     );
 
     return {

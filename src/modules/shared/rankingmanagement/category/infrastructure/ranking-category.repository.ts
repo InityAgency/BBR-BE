@@ -10,6 +10,7 @@ import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 import { randomUUID } from 'crypto';
 import { Residence } from 'src/modules/residentmanagement/residence/domain/residence.entity';
 import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-category.query';
+import { ResidenceStatusEnum } from 'src/modules/residentmanagement/residence/domain/residence-status.enum';
 
 @Injectable()
 export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository {
@@ -56,39 +57,179 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     //   .withGraphFetched('[rankingCategoryType, featuredImage, rankingCriteria]');
   }
 
+  //   async findResidencesByCategory(
+  //     rankingCategoryId: string,
+  //     query: FetchResidencesByCategoryQuery
+  //   ): Promise<any> {
+  //     const { page, limit, sortBy, sortOrder, searchQuery } = query;
+
+  //     const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
+
+  //     // // STEP 1: Pripremi bazni query za ID-eve
+  //     // const baseQuery = Residence.query()
+  //     //   .distinct('residences.id')
+  //     //   .join('residence_ranking_criteria_scores as scores', 'residences.id', 'scores.residence_id')
+  //     //   .join(
+  //     //     'ranking_category_criteria as criteria',
+  //     //     'scores.ranking_criteria_id',
+  //     //     'criteria.ranking_criteria_id'
+  //     //   )
+  //     //   .where('criteria.ranking_category_id', rankingCategoryId)
+  //     //   .whereNull('residences.deleted_at');
+  //     // STEP 1: Povuci ID-eve iz residence_total_scores direktno
+  // const totalScoreEntries = await this.knexService
+  //   .connection('residence_total_scores')
+  //   .select('residence_id')
+  //   .where('ranking_category_id', rankingCategoryId);
+
+  // const residenceIds = totalScoreEntries.map((r) => r.residence_id);
+
+  //     applySearchFilter(baseQuery, searchQuery, searchableColumns);
+
+  //     const idResults = await baseQuery
+  //       .limit(limit)
+  //       .offset((page - 1) * limit)
+  //       .select('residences.id');
+
+  //     const residenceIds = [...new Set(idResults.map((r) => r.id))];
+
+  //     const realCount = residenceIds.length;
+  //     const totalPages = Math.ceil(realCount / limit);
+
+  //     if (!residenceIds.length) {
+  //       return {
+  //         data: [],
+  //         pagination: {
+  //           total: 0,
+  //           totalPages: 0,
+  //           page,
+  //           limit,
+  //         },
+  //       };
+  //     }
+
+  //     // STEP 2: Dohvati podatke za ID-eve
+  //     let dataQuery = Residence.query().whereIn('residences.id', residenceIds).withGraphFetched(`
+  //     [
+  //       videoTour,
+  //       featuredImage,
+  //       brand.[logo],
+  //       keyFeatures,
+  //       city,
+  //       country,
+  //       mainGallery,
+  //       secondaryGallery,
+  //       highlightedAmenities.[amenity],
+  //       amenities.[icon, featuredImage],
+  //       units.[featureImage],
+  //       totalScores
+  //     ]
+  //   `);
+
+  //     if (sortBy && sortOrder) {
+  //       const allowedSort = ['residences.name', 'residences.yearBuilt', 'residences.avgPricePerUnit'];
+  //       if (allowedSort.includes(sortBy)) {
+  //         dataQuery = dataQuery.orderBy(sortBy, sortOrder);
+  //       }
+  //     } else {
+  //       dataQuery = dataQuery.orderBy('residences.name', 'asc');
+  //     }
+
+  //     const data = await dataQuery;
+
+  //     // STEP 3: Dohvati totalScore vrednosti
+  //     const scores = await this.knexService
+  //       .connection('residence_total_scores')
+  //       .select('residence_id', 'total_score')
+  //       .whereIn('residence_id', residenceIds)
+  //       .andWhere('ranking_category_id', rankingCategoryId);
+
+  //     const scoreMap = new Map(scores.map((s) => [s.residenceId, s.total_score]));
+
+  //     // [RCS] STEP 4: Dohvati kriterijumske ocene za tu kategoriju
+  //     const validRankingCriteriaIds: string[] = await this.knexService
+  //       .connection('ranking_category_criteria')
+  //       .where('ranking_category_id', rankingCategoryId)
+  //       .pluck('ranking_criteria_id');
+
+  //     const criteriaScores = await this.knexService
+  //       .connection('residence_ranking_criteria_scores as scores')
+  //       .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
+  //       .select([
+  //         'scores.residence_id',
+  //         'scores.ranking_criteria_id',
+  //         'scores.score',
+  //         'rc.name as criteria_name',
+  //         'rc.description as criteria_description',
+  //         'rc.is_default as criteria_is_default',
+  //       ])
+  //       .whereIn('scores.residence_id', residenceIds);
+
+  //     const scoreGrouped = new Map();
+
+  //     for (const row of criteriaScores) {
+  //       const rcId = String(row.rankingCriteriaId);
+  //       const residenceId = String(row.residenceId);
+
+  //       if (!validRankingCriteriaIds.includes(rcId)) continue;
+
+  //       if (!scoreGrouped.has(residenceId)) {
+  //         scoreGrouped.set(residenceId, []);
+  //       }
+
+  //       scoreGrouped.get(residenceId).push({
+  //         rankingCriteriaId: rcId,
+  //         score: row['score'],
+  //         name: row.criteriaName,
+  //         description: row.criteriaDescription,
+  //         isDefault: row.criteriaIsDefault,
+  //       });
+  //     }
+
+  //     // STEP 4: Dodaj totalScore u svaki rezultat
+  //     const response = data.map((res) => ({
+  //       ...res,
+  //       totalScore:
+  //         scoreMap.get(res.id) ??
+  //         res.totalScores?.find((t) => t.rankingCategoryId === rankingCategoryId)?.totalScore ??
+  //         0,
+  //       position:
+  //         scoreMap.get(res.id) ??
+  //         res.totalScores?.find((t) => t.rankingCategoryId === rankingCategoryId)?.position ??
+  //         0,
+  //       rankingCriteriaScores: scoreGrouped.get(res.id) ?? [], // [RCS] dodato
+  //     }));
+
+  //     return {
+  //       data: response,
+  //       pagination: {
+  //         total: realCount,
+  //         totalPages,
+  //         page,
+  //         limit,
+  //       },
+  //     };
+  //   }
+
   async findResidencesByCategory(
     rankingCategoryId: string,
     query: FetchResidencesByCategoryQuery
   ): Promise<any> {
-    const { page, limit, sortBy, sortOrder, searchQuery } = query;
+    const { page, limit, sortBy, sortOrder, searchQuery, countryId } = query;
 
     const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
 
-    // STEP 1: Pripremi bazni query za ID-eve
-    const baseQuery = Residence.query()
-      .distinct('residences.id')
-      .join('residence_ranking_criteria_scores as scores', 'residences.id', 'scores.residence_id')
-      .join(
-        'ranking_category_criteria as criteria',
-        'scores.ranking_criteria_id',
-        'criteria.ranking_criteria_id'
-      )
-      .where('criteria.ranking_category_id', rankingCategoryId)
-      .whereNull('residences.deleted_at');
+    // STEP 1: Dohvati sve residence_id koje su deo kategorije
+    const totalScoreEntries = await this.knexService
+      .connection('residence_total_scores')
+      .select('residence_id')
+      .where('ranking_category_id', rankingCategoryId);
 
-    applySearchFilter(baseQuery, searchQuery, searchableColumns);
-
-    const idResults = await baseQuery
-      .limit(limit)
-      .offset((page - 1) * limit)
-      .select('residences.id');
-
-    const residenceIds = [...new Set(idResults.map((r) => r.id))];
-
-    const realCount = residenceIds.length;
+    const allResidenceIds = totalScoreEntries.map((r) => r.residenceId);
+    const realCount = allResidenceIds.length;
     const totalPages = Math.ceil(realCount / limit);
 
-    if (!residenceIds.length) {
+    if (!realCount) {
       return {
         data: [],
         pagination: {
@@ -100,23 +241,34 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       };
     }
 
-    // STEP 2: Dohvati podatke za ID-eve
-    let dataQuery = Residence.query().whereIn('residences.id', residenceIds).withGraphFetched(`
-    [
-      videoTour,
-      featuredImage,
-      brand.[logo],
-      keyFeatures,
-      city,
-      country,
-      mainGallery,
-      secondaryGallery,
-      highlightedAmenities.[amenity],
-      amenities.[icon, featuredImage],
-      units.[featureImage],
-      totalScores
-    ]
-  `);
+    // STEP 2: Dohvati paginirane i sortirane rezidencije
+    let dataQuery = Residence.query()
+      .modify((qb) => {
+        qb.whereNull('residences.deleted_at');
+        qb.where('residences.status', ResidenceStatusEnum.ACTIVE);
+
+        if (countryId) {
+          qb.where('residences.country_id', countryId);
+        }
+      })
+      .whereIn('residences.id', allResidenceIds).withGraphFetched(`
+      [
+        videoTour,
+        featuredImage,
+        brand.[logo],
+        keyFeatures,
+        city,
+        country,
+        mainGallery,
+        secondaryGallery,
+        highlightedAmenities.[amenity],
+        amenities.[icon, featuredImage],
+        units.[featureImage],
+        totalScores
+      ]
+    `);
+
+    applySearchFilter(dataQuery, searchQuery, searchableColumns);
 
     if (sortBy && sortOrder) {
       const allowedSort = ['residences.name', 'residences.yearBuilt', 'residences.avgPricePerUnit'];
@@ -127,23 +279,29 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       dataQuery = dataQuery.orderBy('residences.name', 'asc');
     }
 
+    dataQuery.limit(limit).offset((page - 1) * limit);
+
     const data = await dataQuery;
+    const residenceIds = data.filter((r) => r?.id).map((r) => r.id);
 
     // STEP 3: Dohvati totalScore vrednosti
     const scores = await this.knexService
       .connection('residence_total_scores')
-      .select('residence_id', 'total_score')
+      .select('residence_id', 'total_score', 'position')
       .whereIn('residence_id', residenceIds)
       .andWhere('ranking_category_id', rankingCategoryId);
 
-    const scoreMap = new Map(scores.map((s) => [s.residenceId, s.total_score]));
+    const scoreMap = new Map(
+      scores.map((s) => [s.residence_id, { totalScore: s.total_score, position: s.position }])
+    );
 
-    // [RCS] STEP 4: Dohvati kriterijumske ocene za tu kategoriju
+    // STEP 4: Dohvati kriterijume koji su deo kategorije
     const validRankingCriteriaIds: string[] = await this.knexService
       .connection('ranking_category_criteria')
       .where('ranking_category_id', rankingCategoryId)
       .pluck('ranking_criteria_id');
 
+    // STEP 5: Dohvati ocene po kriterijumu za te rezidencije
     const criteriaScores = await this.knexService
       .connection('residence_ranking_criteria_scores as scores')
       .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
@@ -160,8 +318,8 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     const scoreGrouped = new Map();
 
     for (const row of criteriaScores) {
-      const rcId = String(row.rankingCriteriaId);
-      const residenceId = String(row.residenceId);
+      const rcId = String(row.ranking_criteria_id);
+      const residenceId = String(row.residence_id);
 
       if (!validRankingCriteriaIds.includes(rcId)) continue;
 
@@ -171,26 +329,24 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
       scoreGrouped.get(residenceId).push({
         rankingCriteriaId: rcId,
-        score: row['score'],
-        name: row.criteriaName,
-        description: row.criteriaDescription,
-        isDefault: row.criteriaIsDefault,
+        score: row.score,
+        name: row.criteria_name,
+        description: row.criteria_description,
+        isDefault: row.criteria_is_default,
       });
     }
 
-    // STEP 4: Dodaj totalScore u svaki rezultat
-    const response = data.map((res) => ({
-      ...res,
-      totalScore:
-        scoreMap.get(res.id) ??
-        res.totalScores?.find((t) => t.rankingCategoryId === rankingCategoryId)?.totalScore ??
-        0,
-      position:
-        scoreMap.get(res.id) ??
-        res.totalScores?.find((t) => t.rankingCategoryId === rankingCategoryId)?.position ??
-        0,
-      rankingCriteriaScores: scoreGrouped.get(res.id) ?? [], // [RCS] dodato
-    }));
+    // STEP 6: Pripremi finalni response
+    const response = data.map((res) => {
+      const scoreEntry = scoreMap.get(res.id);
+
+      return {
+        ...res,
+        totalScore: scoreEntry?.totalScore ?? 0,
+        position: scoreEntry?.position ?? 0,
+        rankingCriteriaScores: scoreGrouped.get(res.id) ?? [],
+      };
+    });
 
     return {
       data: response,
