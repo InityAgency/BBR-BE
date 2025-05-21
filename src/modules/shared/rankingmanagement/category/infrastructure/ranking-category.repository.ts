@@ -253,17 +253,11 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       })
       .whereIn('residences.id', allResidenceIds).withGraphFetched(`
       [
-        videoTour,
         featuredImage,
-        brand.[logo],
-        keyFeatures,
         city,
         country,
-        mainGallery,
-        secondaryGallery,
-        highlightedAmenities.[amenity],
-        amenities.[icon, featuredImage],
-        units.[featureImage],
+        company
+        units,
         totalScores
       ]
     `);
@@ -292,7 +286,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .andWhere('ranking_category_id', rankingCategoryId);
 
     const scoreMap = new Map(
-      scores.map((s) => [s.residence_id, { totalScore: s.total_score, position: s.position }])
+      scores.map((s) => [s.residenceId, { totalScore: s.totalScore, position: s.position }])
     );
 
     // STEP 4: Dohvati kriterijume koji su deo kategorije
@@ -306,20 +300,20 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .connection('residence_ranking_criteria_scores as scores')
       .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
       .select([
-        'scores.residence_id',
-        'scores.ranking_criteria_id',
+        'scores.residenceId',
+        'scores.rankingCriteriaId',
         'scores.score',
         'rc.name as criteria_name',
         'rc.description as criteria_description',
-        'rc.is_default as criteria_is_default',
+        'rc.isDefault as criteria_is_default',
       ])
       .whereIn('scores.residence_id', residenceIds);
 
     const scoreGrouped = new Map();
 
     for (const row of criteriaScores) {
-      const rcId = String(row.ranking_criteria_id);
-      const residenceId = String(row.residence_id);
+      const rcId = String(row.rankingCriteriaId);
+      const residenceId = String(row.residenceId);
 
       if (!validRankingCriteriaIds.includes(rcId)) continue;
 
@@ -330,9 +324,9 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       scoreGrouped.get(residenceId).push({
         rankingCriteriaId: rcId,
         score: row.score,
-        name: row.criteria_name,
-        description: row.criteria_description,
-        isDefault: row.criteria_is_default,
+        name: row.criteriaName,
+        description: row.criteriaDescription,
+        isDefault: row.criteriaIsDefault,
       });
     }
 
