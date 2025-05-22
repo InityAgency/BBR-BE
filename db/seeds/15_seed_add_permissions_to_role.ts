@@ -1,7 +1,12 @@
 import { Knex } from 'knex';
 
-const adminRoleId = 'e0f9da2d-daa9-4a29-aa26-6dd1619ee7b8';
-const managerRoleId = 'fa9a57fc-ade4-4e96-be36-570e269b7a9c';
+// * LIVE
+// const adminRoleId = 'e0f9da2d-daa9-4a29-aa26-6dd1619ee7b8';
+// const managerRoleId = 'fa9a57fc-ade4-4e96-be36-570e269b7a9c';
+
+// * LOCAL
+const adminRoleId = '1810ad7b-d504-4576-ab96-c2f27328033e';
+const managerRoleId = '16627f92-6b84-48f1-8b72-658ffda59b86';
 
 const allPermissions = [
   'users.create',
@@ -20,6 +25,10 @@ const allPermissions = [
   'residences.read',
   'residences.update',
   'residences.delete',
+  'residences.create.own',
+  'residences.read.own',
+  'residences.update.own',
+  'residences.delete.own',
   'units.create',
   'units.read',
   'units.update',
@@ -91,21 +100,27 @@ const allPermissions = [
   'system.delete',
 ];
 
-const managerPermissions = allPermissions.filter(
-  (p) =>
-    !p.startsWith('users.') &&
-    !p.startsWith('billing.') &&
-    !p.startsWith('brand.') &&
-    !p.startsWith('brand_type.') &&
-    !p.startsWith('roles.') &&
-    !p.startsWith('lifestyles.') &&
-    !p.startsWith('amenities.') &&
-    !p.startsWith('ranking_criteria.') &&
-    !p.startsWith('key_features.') &&
-    !p.startsWith('companies.') &&
-    !p.startsWith('email.') &&
-    !p.startsWith('system.')
-);
+const EXCLUDED_PREFIXES = [
+  'users.',
+  'billing.',
+  'brand.',
+  'brand_type.',
+  'roles.',
+  'lifestyles.',
+  'amenities.',
+  'ranking_criteria.',
+  'key_features.',
+  'companies.',
+  'email.',
+  'system.',
+  'residences.',
+];
+
+const managerPermissions = allPermissions.filter((p) => {
+  const isOwn = p.endsWith('.own');
+  const isExcludedPrefix = EXCLUDED_PREFIXES.some((prefix) => p.startsWith(prefix));
+  return isOwn || !isExcludedPrefix;
+});
 
 export async function seed(knex: Knex): Promise<void> {
   await knex('role_permissions').del();
@@ -128,6 +143,8 @@ export async function seed(knex: Knex): Promise<void> {
   const insertRolePermissions = async (roleId: string, perms: string[]) => {
     for (const permName of perms) {
       const permissionId = permissionMap.get(permName);
+
+      console.log(permissionId, permName);
       if (!permissionId) continue;
 
       const exists = await knex('role_permissions')
@@ -143,6 +160,12 @@ export async function seed(knex: Knex): Promise<void> {
     }
   };
 
-  await insertRolePermissions(adminRoleId, allPermissions);
+  await insertRolePermissions(adminRoleId, [
+    'system.superadmin',
+    'system.create',
+    'system.read',
+    'system.update',
+    'system.delete',
+  ]);
   await insertRolePermissions(managerRoleId, managerPermissions);
 }

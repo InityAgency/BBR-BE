@@ -24,6 +24,11 @@ export enum PermissionsEnum {
   RESIDENCES_UPDATE = 'residences.update',
   RESIDENCES_DELETE = 'residences.delete',
 
+  RESIDENCES_CREATE_OWN = 'residences.create.own',
+  RESIDENCES_UPDATE_OWN = 'residences.update.own',
+  RESIDENCES_READ_OWN = 'residences.read.own',
+  RESIDENCES_DELETE_OWN = 'residences.delete.own',
+
   // Units
   UNITS_CREATE = 'units.create',
   UNITS_READ = 'units.read',

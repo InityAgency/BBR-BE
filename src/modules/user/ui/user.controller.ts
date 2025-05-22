@@ -84,7 +84,7 @@ export class UserController {
   @ApiResponse({ status: 409, description: 'Conflict - Email already exists.' })
   @ApiResponse({ status: 400, description: 'Not Saved - User could not be saved.' })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.USERS_CREATE)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async create(
     @Body() request: CreateUserRequest,
     @CurrentUser() currentUser: User
@@ -107,7 +107,7 @@ export class UserController {
   @ApiOperation({ summary: 'Fetch all users' })
   @ApiResponse({ status: 200, description: 'List of users', type: [UserResponse] })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.USERS_READ)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async findAll(
     @Query('query') query?: string,
     @Query('page') page?: number,
@@ -131,7 +131,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @Post(':id/resend-verification-email')
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.USERS_UPDATE)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async resendVerificationEmail(@Param('id') id: string) {
     const command = new SendVerificationCommand(id);
 

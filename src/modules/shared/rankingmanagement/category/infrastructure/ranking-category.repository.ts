@@ -569,7 +569,11 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .withGraphFetched('[rankingCategoryType, featuredImage]');
 
     const columnsToSearch = ['ranking_categories.name', 'ranking_categories.description'];
-    rankingCategoryQuery = applySearchFilter(rankingCategoryQuery, searchQuery, columnsToSearch);
+    rankingCategoryQuery = applySearchFilter(
+      rankingCategoryQuery.clone(),
+      searchQuery,
+      columnsToSearch
+    );
 
     if (sortBy && sortOrder) {
       const columnsToSort = ['name', 'description', 'residence_limitation', 'ranking_price'];

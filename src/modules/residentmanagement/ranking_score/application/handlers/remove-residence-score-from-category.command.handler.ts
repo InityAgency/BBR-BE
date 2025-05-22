@@ -26,5 +26,7 @@ export class RemoveResidenceScoreFromCategoryCommandHandler {
     }
 
     await this.rankingScoreRepository.removeResidenceScoreFromCategory(residence.id, category.id);
+
+    await this.rankingScoreRepository.updateRankingPositionsForCategory(category.id);
   }
 }
