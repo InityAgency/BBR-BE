@@ -21,7 +21,6 @@ import { AssignResidencesToRankingCategoryCommand } from '../application/command
 import { AssignResidencesToRankingCategoryRequest } from './request/assign-residences-to-ranking-category.request';
 import { AssignResidencesToRankingCategoryCommandHandler } from '../application/handler/assign-residences-to-ranking-category.command.handler';
 import { FindRankingCategoryBySlugCommandQuery } from '../application/query/find-by-slug-ranking-category.query';
-import { FetchResidencesByCategoryCommandQuery } from '../application/query/fetch-residences-by-category.query';
 import { FetchResidencesByCategoryIdCommandQuery } from '../application/query/fetch-residences-by-category-id.query';
 import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-category.query';
 
