@@ -86,31 +86,42 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
 
   async updateTotalScore(residenceId: string, rankingCategoryId: string): Promise<void> {
     const knex = this.knexService.connection;
-    const scores = await knex('residence_ranking_criteria_scores as scores')
-      .join('ranking_category_criteria as weights', function () {
-        this.on('scores.ranking_criteria_id', '=', 'weights.ranking_criteria_id').andOnVal(
-          'weights.ranking_category_id',
-          '=',
-          rankingCategoryId
-        );
+
+    // 1) let Postgres do the math:
+    const subquery = knex('residence_ranking_criteria_scores')
+      .distinctOn('ranking_criteria_id')
+      .select('ranking_criteria_id', 'score')
+      .where('residence_id', residenceId)
+      .orderBy([
+        { column: 'ranking_criteria_id', order: 'asc' },
+        { column: 'created_at', order: 'desc' },
+      ]);
+
+    const result = await knex
+      .from(subquery.as('s'))
+      .join('ranking_category_criteria as w', 's.ranking_criteria_id', 'w.ranking_criteria_id')
+      .where('w.ranking_category_id', rankingCategoryId)
+      .sum<{ totalScore: string }>({
+        totalScore: knex.raw('s.score * w.weight / 100.0'),
       })
-      .where('scores.residence_id', residenceId)
-      .select('scores.ranking_criteria_id', 'scores.score', 'weights.weight');
+      .first();
 
-    if (!scores.length) return;
+    const totalScore = result?.totalScore;
 
-    const totalScore = scores.reduce((acc, row) => acc + row.score * (row.weight / 100), 0);
+    if (totalScore == null) return; // no scores
 
-    await this.knexService
-      .connection('residence_total_scores')
+    // 2) round and upsert
+    const rounded = Math.round(Number(totalScore) * 100) / 100;
+
+    await knex('residence_total_scores')
       .insert({
         residence_id: residenceId,
         ranking_category_id: rankingCategoryId,
-        total_score: Math.round(totalScore * 100) / 100,
+        total_score: rounded,
       })
       .onConflict(['residence_id', 'ranking_category_id'])
       .merge({
-        total_score: Math.round(totalScore * 100) / 100,
+        total_score: rounded,
         updated_at: new Date(),
       });
   }

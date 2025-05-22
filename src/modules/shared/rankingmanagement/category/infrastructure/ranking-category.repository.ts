@@ -50,312 +50,6 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     if (!category) return;
 
     return this.resolveEntityForCategory(category);
-
-    // return RankingCategory.query()
-    //   .findById(id)
-    //   .whereNull('deletedAt')
-    //   .withGraphFetched('[rankingCategoryType, featuredImage, rankingCriteria]');
-  }
-
-  //   async findResidencesByCategory(
-  //     rankingCategoryId: string,
-  //     query: FetchResidencesByCategoryQuery
-  //   ): Promise<any> {
-  //     const { page, limit, sortBy, sortOrder, searchQuery } = query;
-
-  //     const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
-
-  //     // // STEP 1: Pripremi bazni query za ID-eve
-  //     // const baseQuery = Residence.query()
-  //     //   .distinct('residences.id')
-  //     //   .join('residence_ranking_criteria_scores as scores', 'residences.id', 'scores.residence_id')
-  //     //   .join(
-  //     //     'ranking_category_criteria as criteria',
-  //     //     'scores.ranking_criteria_id',
-  //     //     'criteria.ranking_criteria_id'
-  //     //   )
-  //     //   .where('criteria.ranking_category_id', rankingCategoryId)
-  //     //   .whereNull('residences.deleted_at');
-  //     // STEP 1: Povuci ID-eve iz residence_total_scores direktno
-  // const totalScoreEntries = await this.knexService
-  //   .connection('residence_total_scores')
-  //   .select('residence_id')
-  //   .where('ranking_category_id', rankingCategoryId);
-
-  // const residenceIds = totalScoreEntries.map((r) => r.residence_id);
-
-  //     applySearchFilter(baseQuery, searchQuery, searchableColumns);
-
-  //     const idResults = await baseQuery
-  //       .limit(limit)
-  //       .offset((page - 1) * limit)
-  //       .select('residences.id');
-
-  //     const residenceIds = [...new Set(idResults.map((r) => r.id))];
-
-  //     const realCount = residenceIds.length;
-  //     const totalPages = Math.ceil(realCount / limit);
-
-  //     if (!residenceIds.length) {
-  //       return {
-  //         data: [],
-  //         pagination: {
-  //           total: 0,
-  //           totalPages: 0,
-  //           page,
-  //           limit,
-  //         },
-  //       };
-  //     }
-
-  //     // STEP 2: Dohvati podatke za ID-eve
-  //     let dataQuery = Residence.query().whereIn('residences.id', residenceIds).withGraphFetched(`
-  //     [
-  //       videoTour,
-  //       featuredImage,
-  //       brand.[logo],
-  //       keyFeatures,
-  //       city,
-  //       country,
-  //       mainGallery,
-  //       secondaryGallery,
-  //       highlightedAmenities.[amenity],
-  //       amenities.[icon, featuredImage],
-  //       units.[featureImage],
-  //       totalScores
-  //     ]
-  //   `);
-
-  //     if (sortBy && sortOrder) {
-  //       const allowedSort = ['residences.name', 'residences.yearBuilt', 'residences.avgPricePerUnit'];
-  //       if (allowedSort.includes(sortBy)) {
-  //         dataQuery = dataQuery.orderBy(sortBy, sortOrder);
-  //       }
-  //     } else {
-  //       dataQuery = dataQuery.orderBy('residences.name', 'asc');
-  //     }
-
-  //     const data = await dataQuery;
-
-  //     // STEP 3: Dohvati totalScore vrednosti
-  //     const scores = await this.knexService
-  //       .connection('residence_total_scores')
-  //       .select('residence_id', 'total_score')
-  //       .whereIn('residence_id', residenceIds)
-  //       .andWhere('ranking_category_id', rankingCategoryId);
-
-  //     const scoreMap = new Map(scores.map((s) => [s.residenceId, s.total_score]));
-
-  //     // [RCS] STEP 4: Dohvati kriterijumske ocene za tu kategoriju
-  //     const validRankingCriteriaIds: string[] = await this.knexService
-  //       .connection('ranking_category_criteria')
-  //       .where('ranking_category_id', rankingCategoryId)
-  //       .pluck('ranking_criteria_id');
-
-  //     const criteriaScores = await this.knexService
-  //       .connection('residence_ranking_criteria_scores as scores')
-  //       .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
-  //       .select([
-  //         'scores.residence_id',
-  //         'scores.ranking_criteria_id',
-  //         'scores.score',
-  //         'rc.name as criteria_name',
-  //         'rc.description as criteria_description',
-  //         'rc.is_default as criteria_is_default',
-  //       ])
-  //       .whereIn('scores.residence_id', residenceIds);
-
-  //     const scoreGrouped = new Map();
-
-  //     for (const row of criteriaScores) {
-  //       const rcId = String(row.rankingCriteriaId);
-  //       const residenceId = String(row.residenceId);
-
-  //       if (!validRankingCriteriaIds.includes(rcId)) continue;
-
-  //       if (!scoreGrouped.has(residenceId)) {
-  //         scoreGrouped.set(residenceId, []);
-  //       }
-
-  //       scoreGrouped.get(residenceId).push({
-  //         rankingCriteriaId: rcId,
-  //         score: row['score'],
-  //         name: row.criteriaName,
-  //         description: row.criteriaDescription,
-  //         isDefault: row.criteriaIsDefault,
-  //       });
-  //     }
-
-  //     // STEP 4: Dodaj totalScore u svaki rezultat
-  //     const response = data.map((res) => ({
-  //       ...res,
-  //       totalScore:
-  //         scoreMap.get(res.id) ??
-  //         res.totalScores?.find((t) => t.rankingCategoryId === rankingCategoryId)?.totalScore ??
-  //         0,
-  //       position:
-  //         scoreMap.get(res.id) ??
-  //         res.totalScores?.find((t) => t.rankingCategoryId === rankingCategoryId)?.position ??
-  //         0,
-  //       rankingCriteriaScores: scoreGrouped.get(res.id) ?? [], // [RCS] dodato
-  //     }));
-
-  //     return {
-  //       data: response,
-  //       pagination: {
-  //         total: realCount,
-  //         totalPages,
-  //         page,
-  //         limit,
-  //       },
-  //     };
-  //   }
-
-  async findResidencesByCategory(
-    rankingCategoryId: string,
-    query: FetchResidencesByCategoryQuery
-  ): Promise<any> {
-    const { page, limit, sortBy, sortOrder, searchQuery, countryId } = query;
-
-    const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
-
-    const totalScoreEntries = await this.knexService
-      .connection('residence_total_scores')
-      .select('residence_id')
-      .where('ranking_category_id', rankingCategoryId);
-
-    const allResidenceIds = totalScoreEntries.map((r) => r.residenceId);
-
-    let dataQuery = Residence.query()
-      .join('residence_total_scores as rts', 'residences.id', 'rts.residence_id')
-      .select('residences.*', 'rts.position')
-      .distinct('residences.id')
-      .modify((qb) => {
-        qb.whereNull('residences.deleted_at');
-        qb.where('residences.status', ResidenceStatusEnum.ACTIVE);
-
-        if (countryId) {
-          qb.where('residences.country_id', countryId);
-        }
-      })
-      .whereIn('residences.id', allResidenceIds)
-      .withGraphFetched(
-        `
-      [
-        featuredImage,
-        city,
-        country,
-        company,
-        units,
-        totalScores
-      ]
-    `
-      )
-      .orderBy('rts.position', 'asc')
-      .orderBy('residences.name', 'asc');
-
-    applySearchFilter(dataQuery, searchQuery, searchableColumns);
-
-    if (sortBy && sortOrder) {
-      const allowedSort = ['residences.name', 'residences.yearBuilt', 'residences.avgPricePerUnit'];
-      if (allowedSort.includes(sortBy)) {
-        dataQuery = dataQuery.orderBy(sortBy, sortOrder);
-      }
-    } else {
-      dataQuery = dataQuery.orderBy('residences.name', 'asc');
-    }
-
-    dataQuery.limit(limit).offset((page - 1) * limit);
-
-    const data = await dataQuery;
-
-    // 🔥 Pravi trenutak za računanje pagination.total
-    const realCount = data.length;
-    const totalPages = Math.ceil(realCount / limit);
-
-    if (!realCount) {
-      return {
-        data: [],
-        pagination: {
-          total: 0,
-          totalPages: 0,
-          page,
-          limit,
-        },
-      };
-    }
-
-    const residenceIds = data.filter((r) => r?.id).map((r) => r.id);
-
-    const scores = await this.knexService
-      .connection('residence_total_scores')
-      .select('residence_id', 'total_score', 'position')
-      .whereIn('residence_id', residenceIds)
-      .andWhere('ranking_category_id', rankingCategoryId);
-
-    const scoreMap = new Map(
-      scores.map((s) => [s.residenceId, { totalScore: s.totalScore, position: s.position }])
-    );
-
-    const validRankingCriteriaIds: string[] = await this.knexService
-      .connection('ranking_category_criteria')
-      .where('ranking_category_id', rankingCategoryId)
-      .pluck('ranking_criteria_id');
-
-    const criteriaScores = await this.knexService
-      .connection('residence_ranking_criteria_scores as scores')
-      .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
-      .select([
-        'scores.residenceId',
-        'scores.rankingCriteriaId',
-        'scores.score',
-        'rc.name as criteria_name',
-        'rc.description as criteria_description',
-        'rc.isDefault as criteria_is_default',
-      ])
-      .whereIn('scores.residence_id', residenceIds);
-
-    const scoreGrouped = new Map();
-
-    for (const row of criteriaScores) {
-      const rcId = String(row.rankingCriteriaId);
-      const residenceId = String(row.residenceId);
-
-      if (!validRankingCriteriaIds.includes(rcId)) continue;
-
-      if (!scoreGrouped.has(residenceId)) {
-        scoreGrouped.set(residenceId, []);
-      }
-
-      scoreGrouped.get(residenceId).push({
-        rankingCriteriaId: rcId,
-        score: row.score,
-        name: row.criteriaName,
-        description: row.criteriaDescription,
-        isDefault: row.criteriaIsDefault,
-      });
-    }
-
-    const response = data.map((res) => {
-      const scoreEntry = scoreMap.get(res.id);
-
-      return {
-        ...res,
-        totalScore: scoreEntry?.totalScore ?? 0,
-        position: scoreEntry?.position ?? 0,
-        rankingCriteriaScores: scoreGrouped.get(res.id) ?? [],
-      };
-    });
-
-    return {
-      data: response,
-      pagination: {
-        total: realCount,
-        totalPages,
-        page,
-        limit,
-      },
-    };
   }
 
   // async findResidencesByCategory(
@@ -366,31 +60,17 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
   //   const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
 
-  //   // STEP 1: Dohvati sve residence_id koje su deo kategorije
   //   const totalScoreEntries = await this.knexService
   //     .connection('residence_total_scores')
   //     .select('residence_id')
   //     .where('ranking_category_id', rankingCategoryId);
 
   //   const allResidenceIds = totalScoreEntries.map((r) => r.residenceId);
-  //   const realCount = allResidenceIds.length;
-  //   const totalPages = Math.ceil(realCount / limit);
 
-  //   if (!realCount) {
-  //     return {
-  //       data: [],
-  //       pagination: {
-  //         total: 0,
-  //         totalPages: 0,
-  //         page,
-  //         limit,
-  //       },
-  //     };
-  //   }
-
-  //   // STEP 2: Dohvati paginirane i sortirane rezidencije
   //   let dataQuery = Residence.query()
   //     .join('residence_total_scores as rts', 'residences.id', 'rts.residence_id')
+  //     .select('residences.*', 'rts.position')
+  //     .distinct('residences.id')
   //     .modify((qb) => {
   //       qb.whereNull('residences.deleted_at');
   //       qb.where('residences.status', ResidenceStatusEnum.ACTIVE);
@@ -406,13 +86,14 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   //       featuredImage,
   //       city,
   //       country,
-  //       company
+  //       company,
   //       units,
   //       totalScores
   //     ]
   //   `
   //     )
-  //     .orderBy('rts.position', 'asc');
+  //     .orderBy('rts.position', 'asc')
+  //     .orderBy('residences.name', 'asc');
 
   //   applySearchFilter(dataQuery, searchQuery, searchableColumns);
 
@@ -428,9 +109,25 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   //   dataQuery.limit(limit).offset((page - 1) * limit);
 
   //   const data = await dataQuery;
+
+  //   // 🔥 Pravi trenutak za računanje pagination.total
+  //   const realCount = data.length;
+  //   const totalPages = Math.ceil(realCount / limit);
+
+  //   if (!realCount) {
+  //     return {
+  //       data: [],
+  //       pagination: {
+  //         total: 0,
+  //         totalPages: 0,
+  //         page,
+  //         limit,
+  //       },
+  //     };
+  //   }
+
   //   const residenceIds = data.filter((r) => r?.id).map((r) => r.id);
 
-  //   // STEP 3: Dohvati totalScore vrednosti
   //   const scores = await this.knexService
   //     .connection('residence_total_scores')
   //     .select('residence_id', 'total_score', 'position')
@@ -441,13 +138,11 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   //     scores.map((s) => [s.residenceId, { totalScore: s.totalScore, position: s.position }])
   //   );
 
-  //   // STEP 4: Dohvati kriterijume koji su deo kategorije
   //   const validRankingCriteriaIds: string[] = await this.knexService
   //     .connection('ranking_category_criteria')
   //     .where('ranking_category_id', rankingCategoryId)
   //     .pluck('ranking_criteria_id');
 
-  //   // STEP 5: Dohvati ocene po kriterijumu za te rezidencije
   //   const criteriaScores = await this.knexService
   //     .connection('residence_ranking_criteria_scores as scores')
   //     .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
@@ -482,7 +177,6 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   //     });
   //   }
 
-  //   // STEP 6: Pripremi finalni response
   //   const response = data.map((res) => {
   //     const scoreEntry = scoreMap.get(res.id);
 
@@ -493,9 +187,6 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   //       rankingCriteriaScores: scoreGrouped.get(res.id) ?? [],
   //     };
   //   });
-
-  //   // ✅ Sortiraj po position pre vraćanja
-  //   response.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
 
   //   return {
   //     data: response,
@@ -508,49 +199,107 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
   //   };
   // }
 
-  // async findAll(
-  //   query: FetchRankingCategoriesQuery
-  // ): Promise<{ data: RankingCategory[]; pagination: PaginationResponse }> {
-  //   const { page, limit, sortBy, sortOrder, searchQuery } = query;
+  async findResidencesByCategory(
+    rankingCategoryId: string,
+    query: FetchResidencesByCategoryQuery
+  ): Promise<any> {
+    const { page, limit, sortBy, sortOrder, searchQuery, countryId } = query;
+    const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
 
-  //   let rankingCategoryQuery = RankingCategory.query()
-  //     .whereNull('deletedAt')
-  //     .modify((qb) =>
-  //       applyFilters(
-  //         qb,
-  //         { status: query.status, rankingCategoryTypeId: query.categoryTypeId },
-  //         RankingCategory.tableName
-  //       )
-  //     )
-  //     .withGraphFetched('[rankingCategoryType, featuredImage]');
+    const baseQuery = Residence.query()
+      .alias('residences')
+      .join('residence_total_scores as rts', 'residences.id', 'rts.residence_id')
+      .whereNull('residences.deleted_at')
+      .where('residences.status', ResidenceStatusEnum.ACTIVE)
+      .where('rts.ranking_category_id', rankingCategoryId)
+      .modify((qb) => {
+        if (countryId) qb.where('residences.country_id', countryId);
+        applySearchFilter(qb, searchQuery, searchableColumns);
+      });
 
-  //   const columnsToSearch = ['ranking_categories.name', 'ranking_categories.description'];
+    const { results, total } = await baseQuery
+      .select('residences.*', 'rts.position')
+      .withGraphFetched('[featuredImage, city, country, company, units, totalScores]')
+      .orderBy('rts.position', 'asc')
+      .modify((qb) => {
+        if (sortBy && sortOrder) {
+          const allowedSort = [
+            'residences.name',
+            'residences.yearBuilt',
+            'residences.avgPricePerUnit',
+          ];
+          if (allowedSort.includes(sortBy)) qb.orderBy(sortBy, sortOrder);
+        } else {
+          qb.orderBy('residences.name', 'asc');
+        }
+      })
+      .page(page - 1, limit);
 
-  //   rankingCategoryQuery = applySearchFilter(rankingCategoryQuery, searchQuery, columnsToSearch);
+    const totalPages = Math.ceil(total / limit);
+    const residenceIds = results.map((r) => r.id);
 
-  //   if (sortBy && sortOrder) {
-  //     const columnsToSort = ['name', 'description', 'residence_limitation', 'ranking_price'];
-  //     if (columnsToSort.includes(sortBy)) {
-  //       rankingCategoryQuery = rankingCategoryQuery.orderBy(sortBy, sortOrder);
-  //     }
-  //   }
+    const scores = await this.knexService
+      .connection('residence_total_scores')
+      .select('residence_id', 'total_score', 'position')
+      .whereIn('residence_id', residenceIds)
+      .andWhere('ranking_category_id', rankingCategoryId);
 
-  //   const { paginatedQuery, totalCount, totalPages } = await applyPagination(
-  //     rankingCategoryQuery,
-  //     page,
-  //     limit
-  //   );
+    const scoreMap = new Map(
+      scores.map((s) => [s.residenceId, { totalScore: s.totalScore, position: s.position }])
+    );
 
-  //   return {
-  //     data: paginatedQuery,
-  //     pagination: {
-  //       total: totalCount,
-  //       totalPages,
-  //       page: page,
-  //       limit: limit,
-  //     },
-  //   };
-  // }
+    const validRankingCriteriaIds = await this.knexService
+      .connection('ranking_category_criteria')
+      .where('ranking_category_id', rankingCategoryId)
+      .pluck('ranking_criteria_id');
+
+    const criteriaScores = await this.knexService
+      .connection('residence_ranking_criteria_scores as scores')
+      .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
+      .select([
+        'scores.residence_id as residenceId',
+        'scores.ranking_criteria_id as rankingCriteriaId',
+        'scores.score',
+        'rc.name as criteriaName',
+        'rc.description as criteriaDescription',
+        'rc.is_default as criteriaIsDefault',
+      ])
+      .whereIn('scores.residence_id', residenceIds);
+
+    const scoreGrouped = new Map<string, any[]>();
+    for (const row of criteriaScores) {
+      const rcId = row.rankingCriteriaId;
+      const residenceId = row.residenceId;
+      if (!validRankingCriteriaIds.includes(rcId)) continue;
+      if (!scoreGrouped.has(residenceId)) scoreGrouped.set(residenceId, []);
+      const existing = scoreGrouped.get(residenceId)!;
+      if (!existing.some((item) => item.rankingCriteriaId === rcId)) {
+        existing.push({
+          rankingCriteriaId: rcId,
+          score: row.score,
+          name: row.criteriaName,
+          description: row.criteriaDescription,
+          isDefault: row.criteriaIsDefault,
+        });
+      }
+    }
+
+    const data = results.map((res) => {
+      const scoreEntry = scoreMap.get(res.id);
+      console.log(scoreEntry);
+      return {
+        ...res,
+        totalScore: scoreEntry?.totalScore ?? 0,
+        position: scoreEntry?.position ?? 0,
+        rankingCriteriaScores: scoreGrouped.get(res.id) ?? [],
+      };
+    });
+
+    return {
+      data,
+      pagination: { total, totalPages, page, limit },
+    };
+  }
 
   async findAll(
     query: FetchRankingCategoriesQuery
