@@ -97,7 +97,7 @@ export class CompanyController {
   @Get(':id')
   @ApiOperation({ summary: 'Company Find By Id' })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.COMPANIES_READ)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async findById(@Param('id') id: string): Promise<CompanyResponse> {
     const company = await this.findByIdCompanyQueryHandler.handle(id);
 
@@ -107,7 +107,7 @@ export class CompanyController {
   @Put(':id')
   @ApiOperation({ summary: 'Company Update' })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.COMPANIES_UPDATE)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   async update(@Param('id') id: string, @Body() request: any): Promise<CompanyResponse> {
     const command: UpdateCompanyCommand = {
       id,
@@ -122,7 +122,7 @@ export class CompanyController {
   @Delete(':id')
   @ApiOperation({ summary: 'Company Delete' })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.COMPANIES_DELETE)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string) {
     await this.deleteCompanyCommandHandler.handle(id);

@@ -102,7 +102,7 @@ export class BillingController {
 
   @Get('products')
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.BILLING_READ)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @ApiOperation({ summary: 'Get products' })
   async fetchAllProducts() {
     const result = await this.fetchAllProductsCommandQuery.handle();
@@ -112,7 +112,7 @@ export class BillingController {
 
   @Post('products')
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.BILLING_READ)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @ApiOperation({ summary: 'Get products' })
   async createProduct(@Body(ValidationPipe) createProductRequest: CreateProductRequest) {
     const command = BillingMapper.toCreateProductCommand(createProductRequest);

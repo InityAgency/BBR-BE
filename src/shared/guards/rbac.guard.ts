@@ -16,7 +16,7 @@ export class RBACGuard implements CanActivate {
     if (!user || !user.role.permissions) return false;
 
     const userPermissions = new Set(user.role.permissions ?? []);
-    const hasPermission = requiredPermissions.every((perm) => userPermissions.has(perm));
+    const hasPermission = requiredPermissions.some((perm) => userPermissions.has(perm));
 
     if (!hasPermission) throw new ForbiddenException('You do not have permission for this action.');
 

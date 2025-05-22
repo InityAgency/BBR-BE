@@ -11,6 +11,7 @@ import {
   Put,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderByDirection } from 'objection';
@@ -35,6 +36,10 @@ import { Request } from 'express';
 import { User } from '../../../user/domain/user.entity';
 import { FetchResidencesUnassignedToCategoryQuery } from '../application/commands/fetch-residences-unassigned-to-category.query';
 import { FindAllUnassignedResidencesCommandQuery } from '../application/query/find-all-unassigned-residences.query';
+import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
+import { RBACGuard } from 'src/shared/guards/rbac.guard';
+import { Permissions } from 'src/shared/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
 
 ApiTags('Residence');
 @Controller('residences')
@@ -203,6 +208,8 @@ export class ResidenceController {
 
   //todo: zabraniti update ako je developer rola
   @Patch(':id/status')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Update a residence status' })
   @ApiResponse({ status: 200, description: 'Residence status updated', type: ResidenceResponse })
@@ -216,6 +223,8 @@ export class ResidenceController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a residence' })
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN, PermissionsEnum.RESIDENCES_UPDATE_OWN)
   @ApiResponse({ status: 200, description: 'Residence updated', type: ResidenceResponse })
   async update(
     @Param('id') id: string,

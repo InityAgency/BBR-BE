@@ -1,5 +1,6 @@
 import {
-  ConflictException, ForbiddenException,
+  ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -17,6 +18,7 @@ import { UpdateResidenceCommand } from '../commands/update-residence.command';
 import { ResidenceStatusEnum } from '../../domain/residence-status.enum';
 import { log } from 'console';
 import { logger } from 'handlebars';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
 
 @Injectable()
 export class UpdateResidenceCommandHandler {
@@ -34,12 +36,29 @@ export class UpdateResidenceCommandHandler {
   async handle(command: UpdateResidenceCommand): Promise<Residence> {
     const residence = await this.residenceRepository.findById(command.id);
 
+    const hasFullPermission = command.loggedUser?.role.permissions?.includes(
+      PermissionsEnum.RESIDENCES_UPDATE
+    );
+    const hasOwnPermission = command.loggedUser?.role.permissions?.includes(
+      PermissionsEnum.RESIDENCES_UPDATE_OWN
+    );
+
     if (!residence) {
       throw new NotFoundException('Residence not found');
     }
 
-    if (!command.loggedUser || residence.company?.id !== command.loggedUser.company?.id) {
-      throw new ForbiddenException('You are not allowed to update this residence');
+    let status = residence.status;
+
+    if (hasOwnPermission && !hasFullPermission) {
+      if (residence?.company?.id !== command.loggedUser?.company?.id) {
+        throw new ForbiddenException('You can only update your own residences.');
+      }
+
+      if (command.companyId && command.companyId !== residence.companyId) {
+        throw new ForbiddenException('Developers are not allowed to change companyId.');
+      }
+
+      status = ResidenceStatusEnum.PENDING;
     }
 
     if (command.countryId) {
@@ -179,7 +198,7 @@ export class UpdateResidenceCommandHandler {
       videoTourId: command.videoTourId,
       featuredImageId: command.featuredImageId,
       companyId: command.companyId,
-      status: ResidenceStatusEnum.PENDING
+      status,
     };
 
     const updated = await this.residenceRepository.update(command.id, updateResidence);
