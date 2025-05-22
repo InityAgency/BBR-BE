@@ -98,7 +98,8 @@ export class ResidenceMapper {
         : [],
       residence.totalScores
         ? residence.totalScores.map((data) => ResidenceTotalScoreMapper.toResponse(data))
-        : []
+        : [],
+      residence.rankingScores
     );
   }
 

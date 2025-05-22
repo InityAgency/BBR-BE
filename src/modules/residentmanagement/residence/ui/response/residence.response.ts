@@ -50,6 +50,7 @@ export class ResidenceResponse {
     public readonly mainGallery?: MediaResponse[] | [],
     public readonly secondaryGallery?: MediaResponse[] | [],
     public readonly highlightedAmenities?: HighlightedAmenityResponse[] | [],
-    public readonly totalScores?: ResidenceTotalScoreResponse[]
+    public readonly totalScores?: ResidenceTotalScoreResponse[],
+    public readonly rankingScores?: any[]
   ) {}
 }

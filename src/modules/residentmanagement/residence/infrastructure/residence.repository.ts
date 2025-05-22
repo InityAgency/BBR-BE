@@ -169,7 +169,7 @@ export class ResidenceRepository implements IResidenceRepository {
         }
       })
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory], rankingScores]'
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory], rankingScores.[criteria]]'
       );
 
     const columnsToSearch = [
