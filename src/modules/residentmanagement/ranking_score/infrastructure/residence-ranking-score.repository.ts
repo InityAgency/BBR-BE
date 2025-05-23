@@ -15,19 +15,6 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
     await this.knexService.connection.transaction(async (trx) => {
       const criteriaIds = scores.map((s) => s.rankingCriteriaId);
 
-      await this.knexService.connection.raw(`
-      WITH cte AS (
-        SELECT id,
-          ROW_NUMBER() OVER (
-            PARTITION BY residence_id, ranking_criteria_id
-            ORDER BY id
-          ) AS rn
-        FROM residence_ranking_criteria_scores
-      )
-      DELETE FROM residence_ranking_criteria_scores
-      WHERE id IN (SELECT id FROM cte WHERE rn > 1);
-    `);
-
       const existing = await trx('residence_ranking_criteria_scores')
         .where('residence_id', residenceId)
         .whereIn('ranking_criteria_id', criteriaIds);
