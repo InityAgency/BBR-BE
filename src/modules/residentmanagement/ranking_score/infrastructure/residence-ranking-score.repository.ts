@@ -15,6 +15,19 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
     await this.knexService.connection.transaction(async (trx) => {
       const criteriaIds = scores.map((s) => s.rankingCriteriaId);
 
+      await this.knexService.connection.raw(`
+      WITH cte AS (
+        SELECT id,
+          ROW_NUMBER() OVER (
+            PARTITION BY residence_id, ranking_criteria_id
+            ORDER BY id
+          ) AS rn
+        FROM residence_ranking_criteria_scores
+      )
+      DELETE FROM residence_ranking_criteria_scores
+      WHERE id IN (SELECT id FROM cte WHERE rn > 1);
+    `);
+
       const existing = await trx('residence_ranking_criteria_scores')
         .where('residence_id', residenceId)
         .whereIn('ranking_criteria_id', criteriaIds);
@@ -82,7 +95,10 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
       }
 
       // Upsert (insert nove ili ažurirane)
-      await trx('residence_ranking_criteria_scores').insert(insertData);
+      await trx('residence_ranking_criteria_scores')
+        .insert(insertData)
+        .onConflict(['residence_id', 'ranking_criteria_id'])
+        .merge(['score']);
 
       // Insert history
       if (history.length > 0) {
@@ -177,6 +193,33 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
 
     // 2) round and upsert
     const rounded = Math.round(Number(totalScore) * 100) / 100;
+
+    const existing = await knex('residence_total_scores')
+      .where({ residence_id: residenceId, ranking_category_id: rankingCategoryId })
+      .first();
+
+    const now = new Date();
+
+    if (existing) {
+      await knex('residence_total_score_history').insert({
+        residence_id: residenceId,
+        ranking_category_id: rankingCategoryId,
+        total_score: rounded,
+        position: existing.position,
+        operation_type: RankingHistoryOperationType.UPDATE,
+        changed_at: now,
+        changed_by: changedBy || null,
+      });
+    } else {
+      await knex('residence_total_score_history').insert({
+        residence_id: residenceId,
+        ranking_category_id: rankingCategoryId,
+        total_score: rounded,
+        operation_type: RankingHistoryOperationType.CREATE,
+        changed_at: now,
+        changed_by: changedBy || null,
+      });
+    }
 
     await knex('residence_total_scores')
       .insert({
