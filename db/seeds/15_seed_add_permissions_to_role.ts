@@ -144,7 +144,6 @@ export async function seed(knex: Knex): Promise<void> {
     for (const permName of perms) {
       const permissionId = permissionMap.get(permName);
 
-      console.log(permissionId, permName);
       if (!permissionId) continue;
 
       const exists = await knex('role_permissions')

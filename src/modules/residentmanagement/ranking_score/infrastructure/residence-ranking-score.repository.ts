@@ -92,6 +92,9 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
         await trx('residence_ranking_score_history').insert(history);
       }
     });
+
+    // * Update All Total Scores in Ranking Categories for Residence
+    this.updateAllTotalScoresForResidence(residenceId);
   }
 
   async getCriteriaWithCategoriesForResidence(residenceId: string) {

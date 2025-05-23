@@ -286,7 +286,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
     const data = results.map((res) => {
       const scoreEntry = scoreMap.get(res.id);
-      console.log(scoreEntry);
+
       return {
         ...res,
         totalScore: scoreEntry?.totalScore ?? 0,

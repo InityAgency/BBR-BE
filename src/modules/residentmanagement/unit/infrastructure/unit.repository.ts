@@ -72,10 +72,22 @@ export class UnitRepositoryImpl implements IUnitRepository {
   }
 
   async findAll(query: FetchUnitsQuery): Promise<{ data: Unit[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery,residenceId, unitTypeId, status, regularPrice } = query;
+    const {
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      searchQuery,
+      residenceId,
+      unitTypeId,
+      status,
+      regularPrice,
+    } = query;
 
     let unitQuery = Unit.query()
-      .modify((qb) => applyFilters(qb, { status, residenceId, unitTypeId, regularPrice }, Unit.tableName))
+      .modify((qb) =>
+        applyFilters(qb, { status, residenceId, unitTypeId, regularPrice }, Unit.tableName)
+      )
       .joinRelated('unitType')
       .whereNull('units.deletedAt')
       .withGraphFetched('[residence, gallery, featureImage, unitType]');
@@ -89,7 +101,7 @@ export class UnitRepositoryImpl implements IUnitRepository {
       'units.regularPrice',
       'units.exclusivePrice',
       'units.serviceType',
-      'unitType.name'
+      'unitType.name',
     ];
 
     if (sortBy && sortOrder) {
@@ -111,8 +123,6 @@ export class UnitRepositoryImpl implements IUnitRepository {
     }
 
     unitQuery = applySearchFilter(unitQuery, searchQuery, columnsToSearch);
-
-    console.log(query)
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(
       unitQuery,
