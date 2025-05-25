@@ -40,6 +40,7 @@ import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
 import { RBACGuard } from 'src/shared/guards/rbac.guard';
 import { Permissions } from 'src/shared/decorators/permissions.decorator';
 import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { FetchResidencesByUserCommandQuery } from '../application/query/fetch-residences-by-user.command.query';
 
 ApiTags('Residence');
 @Controller('residences')
@@ -52,7 +53,8 @@ export class ResidenceController {
     private readonly deleteResidenceCommandHandler: DeleteResidenceCommandHandler,
     private readonly findAllResidencesCommandQuery: FindAllResidencesCommandQuery,
     private readonly findByIdResidenceCommandQuery: FindByIdResidenceCommandQuery,
-    private readonly findAllUnassignedToCategoryCommandQuery: FindAllUnassignedResidencesCommandQuery
+    private readonly findAllUnassignedToCategoryCommandQuery: FindAllUnassignedResidencesCommandQuery,
+    private readonly fetchResidencesByUserCommandQuery: FetchResidencesByUserCommandQuery
   ) {}
 
   @Get()
@@ -102,6 +104,37 @@ export class ResidenceController {
     );
 
     const { data, pagination } = await this.findAllResidencesCommandQuery.handle(fetchQuery);
+
+    return {
+      data: data.map((residence) => ResidenceMapper.toResponse(residence)),
+      pagination,
+    };
+  }
+
+  @Get('me')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.RESIDENCES_READ_OWN)
+  @ApiOperation({ summary: 'Get all residences' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of residences',
+    type: ResidenceResponse,
+    isArray: true,
+  })
+  async findAllBadges(
+    @Req() req,
+    @Query('query') query?: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection
+  ): Promise<{ data: ResidenceResponse[]; pagination: PaginationResponse }> {
+    const user = req.user as User;
+
+    const { data, pagination } = await this.fetchResidencesByUserCommandQuery.handle(
+      user,
+      new FetchResidencesQuery(query, page, limit, sortBy, sortOrder)
+    );
 
     return {
       data: data.map((residence) => ResidenceMapper.toResponse(residence)),

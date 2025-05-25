@@ -248,9 +248,6 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
       .where({ residence_id: residenceId })
       .pluck('ranking_criteria_id');
 
-    console.log('criteriaIds', criteriaIds);
-    console.log('residenceId', residenceId);
-
     if (!criteriaIds.length) return;
 
     const categoryIds = await this.knexService

@@ -2,6 +2,7 @@ import { PaginationResponse } from 'src/shared/ui/response/pagination.response';
 import { Residence } from './residence.entity';
 import { FetchResidencesQuery } from '../application/commands/fetch-residences.query';
 import { FetchResidencesUnassignedToCategoryQuery } from '../application/commands/fetch-residences-unassigned-to-category.query';
+import { User } from 'src/modules/user/domain/user.entity';
 
 export abstract class IResidenceRepository {
   abstract create(residence: Partial<Residence>): Promise<Residence | undefined>;
@@ -11,6 +12,10 @@ export abstract class IResidenceRepository {
   abstract findBySlug(slug: string): Promise<Residence | undefined>;
   abstract findByName(name: string): Promise<Residence | undefined>;
   abstract findAll(
+    query: FetchResidencesQuery
+  ): Promise<{ data: Residence[]; pagination: PaginationResponse }>;
+  abstract findAllByUser(
+    user: User,
     query: FetchResidencesQuery
   ): Promise<{ data: Residence[]; pagination: PaginationResponse }>;
   abstract findAllUnassignedToCategory(

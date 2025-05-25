@@ -27,6 +27,7 @@ import { IResidenceRepository } from './domain/residence.repository.interface';
 import { ResidenceRepository } from './infrastructure/residence.repository';
 import { ResidenceController } from './ui/residence.controller';
 import { ResidencePublicController } from './ui/residence.public.controller';
+import { FetchResidencesByUserCommandQuery } from './application/query/fetch-residences-by-user.command.query';
 
 @Module({
   controllers: [ResidenceController, ResidencePublicController],
@@ -70,6 +71,7 @@ import { ResidencePublicController } from './ui/residence.public.controller';
     FindAllResidencesCommandQuery,
     FindAllUnassignedResidencesCommandQuery,
     FindByIdResidenceCommandQuery,
+    FetchResidencesByUserCommandQuery,
     CreateResidenceCommandHandler,
     UpdateResidenceCommandHandler,
     UpdateResidenceStatusCommandHandler,

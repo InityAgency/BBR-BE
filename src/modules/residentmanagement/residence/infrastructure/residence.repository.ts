@@ -10,6 +10,7 @@ import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 import { ResidenceHighlightedAmenity } from '../domain/residence-highlighted-amenities.entity';
 import { FetchResidencesUnassignedToCategoryQuery } from '../application/commands/fetch-residences-unassigned-to-category.query';
+import { User } from 'src/modules/user/domain/user.entity';
 
 @Injectable()
 export class ResidenceRepository implements IResidenceRepository {
@@ -183,6 +184,51 @@ export class ResidenceRepository implements IResidenceRepository {
 
     if (sortBy && sortOrder) {
       const allowedColumns = ['name', 'brand.name', 'createdAt', 'updatedAt'];
+      if (allowedColumns.includes(sortBy)) {
+        searchableQuery.orderBy(sortBy, sortOrder);
+      }
+    }
+
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      searchableQuery,
+      page,
+      limit
+    );
+
+    return {
+      data: paginatedQuery,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page: page,
+        limit: limit,
+      },
+    };
+  }
+
+  async findAllByUser(
+    user: User,
+    fetchQuery: FetchResidencesQuery
+  ): Promise<{ data: Residence[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
+
+    const baseQuery = Residence.query()
+      .whereNull('residences.deleted_at')
+      .where('residences.companyId', user.company!.id)
+      .withGraphFetched(
+        '[featuredImage, company, totalScores.[rankingCategory], rankingScores.[criteria]]'
+      );
+
+    const columnsToSearch = [
+      'residences.name',
+      'company.name',
+      'company.contact_person_full_name',
+      'company.contact_person_email',
+    ];
+    const searchableQuery = applySearchFilter(baseQuery.clone(), searchQuery, columnsToSearch);
+
+    if (sortBy && sortOrder) {
+      const allowedColumns = ['name', 'createdAt', 'updatedAt'];
       if (allowedColumns.includes(sortBy)) {
         searchableQuery.orderBy(sortBy, sortOrder);
       }
