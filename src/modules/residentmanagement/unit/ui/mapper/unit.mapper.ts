@@ -24,8 +24,7 @@ export class UnitMapper {
       request.roomType,
       request.roomAmount,
       request.unitTypeId,
-      request.serviceType,
-      request.serviceAmount,
+      request.services,
       request.featureImageId,
       request.residenceId,
       request.galleryMediaIds,
@@ -53,8 +52,7 @@ export class UnitMapper {
       request.roomType,
       request.roomAmount,
       request.unitTypeId,
-      request.serviceType,
-      request.serviceAmount,
+      request.services,
       request.featureImageId,
       request.residenceId,
       request.galleryMediaIds,
@@ -89,6 +87,7 @@ export class UnitMapper {
       ),
       unit.serviceType,
       unit.serviceAmount,
+      unit.services,
       unit.gallery
         ? unit.gallery.map(
             (media) =>
@@ -160,6 +159,7 @@ export class UnitMapper {
       ),
       unit.serviceType,
       unit.serviceAmount,
+      unit.services,
       unit.gallery
         ? unit.gallery.map(
             (media) =>

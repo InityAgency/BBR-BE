@@ -4,13 +4,16 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   IsUUID,
   MaxLength,
+  ValidateNested,
 } from 'class-validator';
 import { UnitStatusEnum } from '../../domain/unit-status.enum';
 import { UnitTransactionTypeEnum } from '../../domain/unit-transaction-type.enum';
+import { UnitServicesRequest } from './unit-services.request';
 
 export class CreateUnitRequest {
   @IsNotEmpty()
@@ -68,14 +71,19 @@ export class CreateUnitRequest {
   @IsUUID()
   unitTypeId: string;
 
-  @IsNotEmpty()
-  @IsString()
-  serviceType: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // serviceType: string;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @Type(() => Number)
-  serviceAmount: number;
+  // @IsNotEmpty()
+  // @IsNumber()
+  // @Type(() => Number)
+  // serviceAmount: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UnitServicesRequest)
+  services: UnitServicesRequest[];
 
   @IsArray()
   @IsUUID('all', { each: true })

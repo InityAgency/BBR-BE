@@ -1,6 +1,7 @@
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 import { ResidenceResponse } from './residence.response';
 import { UnitTypeResponse } from '../../../unit_type/ui/response/unit-type.response';
+import { UnitServicesResponse } from './unit-services.response';
 
 export class UnitPublicResponse {
   constructor(
@@ -19,6 +20,7 @@ export class UnitPublicResponse {
     public readonly unitType: UnitTypeResponse,
     public readonly serviceType: string,
     public readonly serviceAmount: number,
+    public readonly services: UnitServicesResponse[],
     public readonly gallery: MediaResponse[],
     public readonly featureImage: MediaResponse | null,
     public readonly residence: ResidenceResponse | null,

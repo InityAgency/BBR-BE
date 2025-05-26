@@ -1,5 +1,6 @@
 import { UnitStatusEnum } from '../../domain/unit-status.enum';
 import { UnitTransactionTypeEnum } from '../../domain/unit-transaction-type.enum';
+import { UnitServicesRequest } from '../../ui/request/unit-services.request';
 
 export class UpdateUnitCommand {
   constructor(
@@ -16,8 +17,7 @@ export class UpdateUnitCommand {
     public readonly roomType: string,
     public readonly roomAmount: number,
     public readonly unitTypeId: string,
-    public readonly serviceType: string,
-    public readonly serviceAmount: number,
+    public readonly services: UnitServicesRequest[],
     public readonly featureImageId: string,
     public readonly residenceId: string,
     public readonly galleryMediaIds: string[],

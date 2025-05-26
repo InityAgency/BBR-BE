@@ -28,6 +28,7 @@ export class Unit extends Model {
   unitType: UnitType;
   serviceType: string;
   serviceAmount: number;
+  services: any;
   gallery: Media[];
   featureImage: Media;
   residence: Residence;

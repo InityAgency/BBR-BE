@@ -8,13 +8,15 @@ import { FetchUnitsCommandQuery } from '../application/query/fetch-units.query';
 import { OrderByDirection } from 'objection';
 import { FetchUnitsQuery } from '../application/command/fetch-units.query';
 import { UnitStatusEnum } from '../domain/unit-status.enum';
+import { FindUnitBySlugCommandQuery } from '../application/query/find-by-slug-unit.query';
 
 @ApiTags('Units')
 @Controller('public/units')
 export class UnitPublicController {
   constructor(
     private readonly fetchUnitsCommandQuery: FetchUnitsCommandQuery,
-    private readonly findUnitByIdCommandQuery: FindUnitByIdCommandQuery
+    private readonly findUnitByIdCommandQuery: FindUnitByIdCommandQuery,
+    private readonly findUnitBySlugCommandQuery: FindUnitBySlugCommandQuery
   ) {}
 
   @Get()
@@ -29,7 +31,7 @@ export class UnitPublicController {
     @Query('unitTypeId') unitTypeId?: string[],
     @Query('residenceId') residenceId?: string[],
     @Query('regularPrice.gt') regularPriceGt?: number,
-    @Query('regularPrice.lt') regularPriceLt?: number,
+    @Query('regularPrice.lt') regularPriceLt?: number
   ) {
     const regularPrice = {
       ...(regularPriceGt !== undefined && { gt: +regularPriceGt }),
@@ -37,10 +39,17 @@ export class UnitPublicController {
     };
 
     const { data, pagination } = await this.fetchUnitsCommandQuery.handle(
-      new FetchUnitsQuery(query, page, limit, sortBy, sortOrder,residenceId, unitTypeId, [
-        UnitStatusEnum.ACTIVE,
-      ],
-        Object.keys(regularPrice).length > 0 ? regularPrice : undefined)
+      new FetchUnitsQuery(
+        query,
+        page,
+        limit,
+        sortBy,
+        sortOrder,
+        residenceId,
+        unitTypeId,
+        [UnitStatusEnum.ACTIVE],
+        Object.keys(regularPrice).length > 0 ? regularPrice : undefined
+      )
     );
 
     const mappedUnits = data.map((unit: Unit) => UnitMapper.toPublicResponse(unit));
@@ -56,6 +65,15 @@ export class UnitPublicController {
   @ApiResponse({ type: UnitResponse })
   async findById(@Param('id') id: string) {
     const unit = await this.findUnitByIdCommandQuery.handle(id);
+
+    return UnitMapper.toPublicResponse(unit);
+  }
+
+  @Get('slug/:slug')
+  @ApiOperation({ summary: 'Get unit by slug' })
+  @ApiResponse({ type: UnitResponse })
+  async findBySlug(@Param('slug') slug: string) {
+    const unit = await this.findUnitBySlugCommandQuery.handle(slug);
 
     return UnitMapper.toPublicResponse(unit);
   }

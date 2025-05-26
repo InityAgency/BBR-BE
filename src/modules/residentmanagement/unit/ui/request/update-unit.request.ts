@@ -8,9 +8,11 @@ import {
   IsString,
   IsUUID,
   MaxLength,
+  ValidateNested,
 } from 'class-validator';
 import { UnitStatusEnum } from '../../domain/unit-status.enum';
 import { UnitTransactionTypeEnum } from '../../domain/unit-transaction-type.enum';
+import { UnitServicesRequest } from './unit-services.request';
 
 export class UpdateUnitRequest {
   @IsNotEmpty()
@@ -68,14 +70,10 @@ export class UpdateUnitRequest {
   @IsUUID()
   unitTypeId: string;
 
-  @IsNotEmpty()
-  @IsString()
-  serviceType: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Type(() => Number)
-  serviceAmount: number;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UnitServicesRequest)
+  services: UnitServicesRequest[];
 
   @IsArray()
   @IsUUID('all', { each: true })

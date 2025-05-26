@@ -5,7 +5,7 @@ import { Unit } from '../../domain/unit.entity';
 import { IMediaService } from '../../../../../shared/media/media.service.interface';
 
 @Injectable()
-export class FindUnitByIdCommandQuery {
+export class FindUnitBySlugCommandQuery {
   constructor(
     private readonly unitRepository: IUnitRepository,
     private readonly mediaService: IMediaService

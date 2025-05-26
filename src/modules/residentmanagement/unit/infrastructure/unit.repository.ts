@@ -26,8 +26,7 @@ export class UnitRepositoryImpl implements IUnitRepository {
       roomType: unit.roomType,
       roomAmount: unit.roomAmount,
       unit_type_id: unit.unitType?.id,
-      serviceType: unit.serviceType,
-      serviceAmount: unit.serviceAmount,
+      services: JSON.stringify(unit.services ?? []),
       featureImageId: unit.featureImage?.id,
       residenceId: unit.residence?.id,
       about: unit.about,
@@ -95,26 +94,24 @@ export class UnitRepositoryImpl implements IUnitRepository {
     const columnsToSearch = [
       'units.name',
       'units.description',
-      'units.roomType',
+      'units.room_type',
       'units.surface',
       'units.status',
-      'units.regularPrice',
-      'units.exclusivePrice',
-      'units.serviceType',
-      'unitType.name',
+      'units.regular_price',
+      'units.exclusive_price',
+      'unit_type.name',
     ];
 
     if (sortBy && sortOrder) {
       const columnsToSort = [
-        'units.name',
-        'units.description',
-        'units.roomType',
-        'units.status',
-        'units.surface',
-        'units.regularPrice',
-        'units.exclusivePrice',
-        'units.serviceType',
-        'units.createdAt',
+        'name',
+        'description',
+        'roomType',
+        'status',
+        'surface',
+        'regularPrice',
+        'exclusivePrice',
+        'createdAt',
       ];
 
       if (columnsToSort.includes(sortBy)) {
@@ -122,7 +119,7 @@ export class UnitRepositoryImpl implements IUnitRepository {
       }
     }
 
-    unitQuery = applySearchFilter(unitQuery, searchQuery, columnsToSearch);
+    unitQuery = applySearchFilter(unitQuery.clone(), searchQuery, columnsToSearch);
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(
       unitQuery,
@@ -157,8 +154,7 @@ export class UnitRepositoryImpl implements IUnitRepository {
         roomType: data.roomType,
         roomAmount: data.roomAmount,
         unit_type_id: data.unitType?.id,
-        serviceType: data.serviceType,
-        serviceAmount: data.serviceAmount,
+        services: JSON.stringify(data.services ?? []),
         featureImageId: data.featureImage?.id,
         residenceId: data.residence?.id,
         about: data.about,
