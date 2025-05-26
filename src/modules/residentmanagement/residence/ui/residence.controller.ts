@@ -121,7 +121,7 @@ export class ResidenceController {
     type: ResidenceResponse,
     isArray: true,
   })
-  async findAllBadges(
+  async findAllByUser(
     @Req() req,
     @Query('query') query?: string,
     @Query('page') page: number = 1,
