@@ -317,7 +317,11 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       )
       .withGraphFetched('[rankingCategoryType, featuredImage]');
 
-    const columnsToSearch = ['ranking_categories.name', 'ranking_categories.description'];
+    const columnsToSearch = [
+      'ranking_categories.name',
+      'ranking_categories.description',
+      'ranking_categories.title',
+    ];
     rankingCategoryQuery = applySearchFilter(
       rankingCategoryQuery.clone(),
       searchQuery,
@@ -325,7 +329,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     );
 
     if (sortBy && sortOrder) {
-      const columnsToSort = ['name', 'description', 'residence_limitation', 'ranking_price'];
+      const columnsToSort = ['name', 'createdAt', 'updatedAt'];
       if (columnsToSort.includes(sortBy)) {
         rankingCategoryQuery = rankingCategoryQuery.orderBy(sortBy, sortOrder);
       }

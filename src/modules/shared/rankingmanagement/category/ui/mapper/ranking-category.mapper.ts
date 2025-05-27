@@ -12,6 +12,7 @@ import { UpdateRankingCategoryRequest } from '../request/update-ranking-category
 import { RankingCategoryResponse } from '../response/ranking-category.response';
 import { RankingCriteriaResponse } from '../../../criteria/ui/response/ranking-criteria.response';
 import { RankingCriteriaMapper } from '../../../criteria/ui/mappers/ranking-criteria.mapper';
+import { RankingCategoryPublicResponse } from '../response/ranking-category.public.response';
 
 export class RankingCategoryMapper {
   static toCreateCommand(request: CreateRankingCategoryRequest): CreateRankingCategoryCommand {
@@ -93,6 +94,35 @@ export class RankingCategoryMapper {
           )
         : null,
       rankingCategory.status,
+      rankingCategory.entityId ?? null,
+      rankingCategory.entity ?? null
+    );
+  }
+
+  static toPublicResponse(rankingCategory: RankingCategory): RankingCategoryPublicResponse {
+    return new RankingCategoryPublicResponse(
+      rankingCategory.id,
+      rankingCategory.name,
+      rankingCategory.slug,
+      rankingCategory.title,
+      rankingCategory.description,
+      rankingCategory.rankingCategoryType
+        ? new RankingCategoryTypeResponse(
+            rankingCategory.rankingCategoryType.id,
+            rankingCategory.rankingCategoryType.name,
+            rankingCategory.rankingCategoryType.key
+          )
+        : null,
+      rankingCategory.featuredImage
+        ? new MediaResponse(
+            rankingCategory.featuredImage.id,
+            rankingCategory.featuredImage.originalFileName,
+            rankingCategory.featuredImage.mimeType,
+            rankingCategory.featuredImage.uploadStatus,
+            rankingCategory.featuredImage.size,
+            rankingCategory.featuredImage.securedUrl
+          )
+        : null,
       rankingCategory.entityId ?? null,
       rankingCategory.entity ?? null
     );
