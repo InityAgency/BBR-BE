@@ -71,15 +71,6 @@ export class CreateUnitRequest {
   @IsUUID()
   unitTypeId: string;
 
-  // @IsNotEmpty()
-  // @IsString()
-  // serviceType: string;
-
-  // @IsNotEmpty()
-  // @IsNumber()
-  // @Type(() => Number)
-  // serviceAmount: number;
-
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => UnitServicesRequest)

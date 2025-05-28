@@ -32,8 +32,8 @@ export async function seed(knex: Knex): Promise<void> {
   const filePath = `${__dirname}/../csv/GeoData - Countries.csv`;
   const countries = await parseCSV(filePath);
 
-  await knex('cities').del(); 
-  await knex('phone_codes').del(); 
+  await knex('cities').del();
+  await knex('phone_codes').del();
   await knex('countries').del();
   await knex('continents').del();
 
@@ -44,7 +44,8 @@ export async function seed(knex: Knex): Promise<void> {
     { name: 'Europe', code: 'EU' },
     { name: 'North America', code: 'NA' },
     { name: 'Oceania', code: 'OC' },
-    { name: 'South America', code: 'SA' }
+    { name: 'South America', code: 'SA' },
+    { name: 'Worldwide', code: 'WORLDWIDE' },
   ];
 
   const insertedContinents = await knex('continents')
@@ -57,8 +58,7 @@ export async function seed(knex: Knex): Promise<void> {
     )
     .returning(['id', 'name']);
 
-  const continentMap = Object.fromEntries(insertedContinents.map(c => [c.name, c.id]));
-
+  const continentMap = Object.fromEntries(insertedContinents.map((c) => [c.name, c.id]));
 
   const formattedCountries = countries.map((country) => ({
     id: knex.raw('uuid_generate_v4()'),
@@ -78,11 +78,11 @@ export async function seed(knex: Knex): Promise<void> {
 
   const phoneCodes = insertedCountries.flatMap((country, index) => {
     const phoneCodeList = countries[index].phoneCode
-      .split(',') 
-      .map(code => code.trim())
-      .filter(code => code.length > 0);
+      .split(',')
+      .map((code) => code.trim())
+      .filter((code) => code.length > 0);
 
-    return phoneCodeList.map(code => ({
+    return phoneCodeList.map((code) => ({
       id: knex.raw('uuid_generate_v4()'),
       code: code,
       countryId: country.id,
