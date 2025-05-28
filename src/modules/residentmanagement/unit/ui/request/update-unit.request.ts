@@ -15,7 +15,7 @@ import { UnitTransactionTypeEnum } from '../../domain/unit-transaction-type.enum
 import { UnitServicesRequest } from './unit-services.request';
 
 export class UpdateUnitRequest {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MaxLength(126)
   name: string;
@@ -25,89 +25,92 @@ export class UpdateUnitRequest {
   @MaxLength(1024)
   slug: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MaxLength(1024)
   description: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   surface: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(UnitStatusEnum)
   status: UnitStatusEnum;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   regularPrice: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   exclusivePrice: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => Date)
   exclusiveOfferStartDate: Date;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => Date)
   exclusiveOfferEndDate: Date;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   roomType: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   roomAmount: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
   unitTypeId: string;
 
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => UnitServicesRequest)
   services: UnitServicesRequest[];
 
+  @IsOptional()
   @IsArray()
   @IsUUID('all', { each: true })
   @IsNotEmpty()
   galleryMediaIds: string[];
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
   featureImageId: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
   residenceId: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   about: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   bathrooms: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   bedroom: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   floor: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(UnitTransactionTypeEnum)
   transactionType: UnitTransactionTypeEnum = UnitTransactionTypeEnum.SALE;
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   characteristics: string[];
