@@ -4,6 +4,6 @@ export class UnitServicesRequest {
   @IsString()
   name: string;
 
-  @IsNumber()
+  @IsString()
   amount: string;
 }
