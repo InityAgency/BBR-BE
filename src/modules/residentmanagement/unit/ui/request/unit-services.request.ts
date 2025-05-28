@@ -5,5 +5,5 @@ export class UnitServicesRequest {
   name: string;
 
   @IsNumber()
-  amount: number;
+  amount: string;
 }
