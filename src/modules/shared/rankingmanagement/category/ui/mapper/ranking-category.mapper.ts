@@ -123,6 +123,7 @@ export class RankingCategoryMapper {
             rankingCategory.featuredImage.securedUrl
           )
         : null,
+      rankingCategory.residenceLimitation,
       rankingCategory.entityId ?? null,
       rankingCategory.entity ?? null
     );
