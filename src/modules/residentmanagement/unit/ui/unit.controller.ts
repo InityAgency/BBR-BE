@@ -1,18 +1,37 @@
-import { Controller, Get, Param, Query, Post, Body, Put, Delete, Patch } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { UnitResponse } from './response/unit.response';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OrderByDirection } from 'objection';
+import { Permissions } from 'src/shared/decorators/permissions.decorator';
+import { RBACGuard } from 'src/shared/guards/rbac.guard';
+import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { FetchUnitsQuery } from '../application/command/fetch-units.query';
+import { UpdateUnitStatusCommand } from '../application/command/update-unit-status.command';
 import { CreateUnitCommandHandler } from '../application/handler/create-unit.command.handler';
-import { UpdateUnitCommandHandler } from '../application/handler/update-unit.command.handler';
 import { DeleteUnitCommandHandler } from '../application/handler/delete-unit.command.handler';
-import { UnitMapper } from './mapper/unit.mapper';
+import { UpdateUnitStatusCommandHandler } from '../application/handler/update-unit-status.command.handler';
+import { UpdateUnitCommandHandler } from '../application/handler/update-unit.command.handler';
+import { FetchUnitsCommandQuery } from '../application/query/fetch-units.query';
+import { FindUnitByIdCommandQuery } from '../application/query/find-by-id-unit.query';
+import { UnitStatusEnum } from '../domain/unit-status.enum';
 import { Unit } from '../domain/unit.entity';
+import { UnitMapper } from './mapper/unit.mapper';
 import { CreateUnitRequest } from './request/create-unit.request';
 import { UpdateUnitRequest } from './request/update-unit.request';
-import { FindUnitByIdCommandQuery } from '../application/query/find-by-id-unit.query';
-import { FetchUnitsCommandQuery } from '../application/query/fetch-units.query';
-import { OrderByDirection } from 'objection';
-import { FetchUnitsQuery } from '../application/command/fetch-units.query';
-import { UnitStatusEnum } from '../domain/unit-status.enum';
+import { UnitResponse } from './response/unit.response';
 
 @ApiTags('Units')
 @Controller('units')
@@ -22,7 +41,8 @@ export class UnitController {
     private readonly findUnitByIdCommandQuery: FindUnitByIdCommandQuery,
     private readonly createUnitCommandHandler: CreateUnitCommandHandler,
     private readonly updateUnitCommandHandler: UpdateUnitCommandHandler,
-    private readonly deleteUnitCommandHandler: DeleteUnitCommandHandler
+    private readonly deleteUnitCommandHandler: DeleteUnitCommandHandler,
+    private readonly updateUnitStatusCommandHandler: UpdateUnitStatusCommandHandler
   ) {}
 
   @Get()
@@ -69,7 +89,18 @@ export class UnitController {
     return UnitMapper.toResponse(createdUnit);
   }
 
+  @Patch(':id/status')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Update a unit status' })
+  @ApiResponse({ type: UnitResponse })
+  async updateStatus(@Param('id') id: string, @Body('status') status: UnitStatusEnum) {
+    const command = new UpdateUnitStatusCommand(id, status);
+    await this.updateUnitStatusCommandHandler.handle(command);
+  }
+
   @Put(':id')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @ApiOperation({ summary: 'Update a unit' })
   @ApiResponse({ type: UnitResponse })
   async update(@Param('id') id: string, @Body() updateUnitRequest: UpdateUnitRequest) {

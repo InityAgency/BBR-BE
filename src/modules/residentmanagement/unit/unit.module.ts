@@ -18,6 +18,7 @@ import { UnitPublicController } from './ui/unit.public.controller';
 import { IUnitTypeRepository } from '../unit_type/domain/unit-type.repository.interface';
 import { UnitTypeRepositoryImpl } from '../unit_type/infrastructure/unit-type.repository';
 import { FindUnitBySlugCommandQuery } from './application/query/find-by-slug-unit.query';
+import { UpdateUnitStatusCommandHandler } from './application/handler/update-unit-status.command.handler';
 
 @Module({
   imports: [DatabaseModule, MediaModule],
@@ -42,6 +43,7 @@ import { FindUnitBySlugCommandQuery } from './application/query/find-by-slug-uni
     CreateUnitCommandHandler,
     UpdateUnitCommandHandler,
     DeleteUnitCommandHandler,
+    UpdateUnitStatusCommandHandler,
     FindUnitByIdCommandQuery,
     FindUnitBySlugCommandQuery,
     FetchUnitsCommandQuery,
