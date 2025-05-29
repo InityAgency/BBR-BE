@@ -44,16 +44,16 @@ export class CreateUnitRequest {
   @Type(() => Number)
   regularPrice: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   exclusivePrice: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => Date)
   exclusiveOfferStartDate: Date;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => Date)
   exclusiveOfferEndDate: Date;
 
