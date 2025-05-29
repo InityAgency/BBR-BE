@@ -5,6 +5,7 @@ import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { IPhoneCodeRepository } from '../domain/phone-code.repository.interface';
 import { PhoneCode } from '../domain/phone-code.entity';
 import { FetchPhoneCodesQuery } from '../application/command/fetch-phone-codes.query';
+import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 
 @Injectable()
 export class PhoneCodeRepositoryImpl implements IPhoneCodeRepository {
@@ -15,10 +16,7 @@ export class PhoneCodeRepositoryImpl implements IPhoneCodeRepository {
 
   @LogMethod()
   async findById(id: string): Promise<PhoneCode | undefined> {
-    return PhoneCode.query()
-    .findById(id)
-    .withGraphFetched('country')
-    .whereNull('deleted_at');
+    return PhoneCode.query().findById(id).withGraphFetched('country').whereNull('deleted_at');
   }
 
   @LogMethod()
@@ -74,12 +72,16 @@ export class PhoneCodeRepositoryImpl implements IPhoneCodeRepository {
   async findAll(
     fetchQuery: FetchPhoneCodesQuery
   ): Promise<{ data: PhoneCode[]; pagination: PaginationResponse }> {
-    const { page, limit } = fetchQuery;
+    const { page, limit, searchQuery } = fetchQuery;
 
     let query = PhoneCode.query()
-    .select('id', 'code', 'countryId', 'createdAt', 'updatedAt')
-    .withGraphFetched('country')
-    .whereNull('deleted_at');
+      .joinRelated('country')
+      .whereNull('phone_codes.deleted_at')
+      .withGraphFetched('country');
+
+    const columnsToSearch = ['phone_codes.code', 'country.name'];
+
+    query = applySearchFilter(query.clone(), searchQuery, columnsToSearch);
 
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 
