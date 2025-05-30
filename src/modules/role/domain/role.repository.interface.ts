@@ -6,6 +6,7 @@ export abstract class IRoleRepository {
   abstract createRole(name: string): Promise<Role>;
   abstract assignPermission(roleId: string, permissionId: string): Promise<void>;
   abstract getPermissions(roleId: string): Promise<string[]>;
+  abstract findById(id: string): Promise<Role | null>;
   abstract findAll(
     page: number,
     limit: number

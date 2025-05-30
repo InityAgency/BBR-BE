@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderByDirection } from 'objection';
 import { FetchRankingCategoriesQuery } from '../application/command/fetch-ranking.categories.query';
@@ -23,12 +23,14 @@ import { AssignResidencesToRankingCategoryCommandHandler } from '../application/
 import { FindRankingCategoryBySlugCommandQuery } from '../application/query/find-by-slug-ranking-category.query';
 import { FetchResidencesByCategoryIdCommandQuery } from '../application/query/fetch-residences-by-category-id.query';
 import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-category.query';
+import { FetchRankingCategoriesByUserCommandQuery } from '../application/query/fetch-ranking-categories-by-user.query';
 
 @ApiTags('Ranking Categories')
 @Controller('ranking-categories')
 export class RankingCategoryController {
   constructor(
     private readonly fetchRankingCategoriesCommandQuery: FetchRankingCategoriesCommandQuery,
+    private readonly fetchRankingCategoriesByUserCommandQuery: FetchRankingCategoriesByUserCommandQuery,
     private readonly findRankingCategoryByIdCommandQuery: FindRankingCategoryByIdCommandQuery,
     private readonly findRankingCategoryBySlugCommandQuery: FindRankingCategoryBySlugCommandQuery,
     private readonly createRankingCategoryCommandHandler: CreateRankingCategoryCommandHandler,
@@ -62,6 +64,36 @@ export class RankingCategoryController {
 
     return {
       data: mappedRankingCategories,
+      pagination,
+    };
+  }
+
+  @Get('me')
+  @ApiOperation({ summary: 'Get all ranking categories' })
+  @ApiResponse({ type: [RankingCategoryResponse] })
+  async fetchAllByUser(
+    @Req() req,
+    @Query('query') query?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('status') status?: RankingCategoryStatus[],
+    @Query('categoryTypeId') categoryTypeId?: string[]
+  ) {
+    const user = req.user;
+
+    const { data, pagination } = await this.fetchRankingCategoriesByUserCommandQuery.handle(
+      user,
+      new FetchRankingCategoriesQuery(query, page, limit, sortBy, sortOrder, status, categoryTypeId)
+    );
+
+    // const mappedRankingCategories = data.map((category: RankingCategory) =>
+    //   RankingCategoryMapper.toResponse(category)
+    // );
+
+    return {
+      data: data,
       pagination,
     };
   }

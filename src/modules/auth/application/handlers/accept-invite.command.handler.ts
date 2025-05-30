@@ -30,9 +30,8 @@ export class AcceptInviteCommandHandler {
     }
 
     if (command.password) {
-      const hashedPassword = await bcrypt.hash(command.password, 10);
       await this.userRepo.update(existingUser.id, {
-        password: hashedPassword,
+        password: command.password,
         emailVerified: true,
         status: UserStatusEnum.ACTIVE,
         updatedAt: new Date(),

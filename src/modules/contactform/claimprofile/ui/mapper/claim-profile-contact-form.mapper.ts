@@ -9,9 +9,14 @@ import { UpdateClaimProfileContactFormRequest } from '../request/update-claim-pr
 import { UpdateClaimProfileContactFormStatusRequest } from '../request/update-claim-profile-contact-form-status.request';
 import { CreateClaimProfileContactFormRequest } from '../request/create-claim-profile-contact-form.request';
 import { CountryResponse } from '../../../../shared/phone_code/ui/response/country.response';
+import { ResidenceMapper } from './residence.mapper';
+import { UserMapper } from './user.mapper';
 
 export class ClaimProfileContactFormMapper {
-  static toCreateCommand(request: CreateClaimProfileContactFormRequest,  email:string): CreateClaimProfileContactFormCommand {
+  static toCreateCommand(
+    request: CreateClaimProfileContactFormRequest,
+    email: string
+  ): CreateClaimProfileContactFormCommand {
     return new CreateClaimProfileContactFormCommand(
       request.firstName,
       request.lastName,
@@ -19,7 +24,8 @@ export class ClaimProfileContactFormMapper {
       request.phoneCodeId,
       request.phoneNumber,
       request.websiteUrl,
-      request.cvId
+      request.cvId,
+      request.residenceId
     );
   }
 
@@ -31,7 +37,7 @@ export class ClaimProfileContactFormMapper {
       id,
       request.firstName,
       request.lastName,
-      "",
+      '',
       request.phoneCodeId,
       request.phoneNumber,
       request.websiteUrl,
@@ -47,7 +53,6 @@ export class ClaimProfileContactFormMapper {
     return new UpdateClaimProfileContactFormStatusCommand(id, request.status);
   }
 
-
   static toResponse(contactForm: ClaimProfileContactForm): ClaimProfileContactFormResponse {
     return new ClaimProfileContactFormResponse(
       contactForm.id,
@@ -57,33 +62,35 @@ export class ClaimProfileContactFormMapper {
       contactForm.phoneNumber,
       contactForm.phoneCode
         ? new PhoneCodeResponse(
-          contactForm.phoneCode.id,
-          contactForm.phoneCode.code,
-          contactForm.phoneCode.country
-            ? new CountryResponse(
-              contactForm.phoneCode.country.id,
-              contactForm.phoneCode.country.name,
-              contactForm.phoneCode.country.flag,
-            )
-            : null,
-          contactForm.phoneCode.createdAt,
-          contactForm.phoneCode.updatedAt
-        )
+            contactForm.phoneCode.id,
+            contactForm.phoneCode.code,
+            contactForm.phoneCode.country
+              ? new CountryResponse(
+                  contactForm.phoneCode.country.id,
+                  contactForm.phoneCode.country.name,
+                  contactForm.phoneCode.country.flag
+                )
+              : null,
+            contactForm.phoneCode.createdAt,
+            contactForm.phoneCode.updatedAt
+          )
         : null,
       contactForm.websiteUrl,
       contactForm.cv
         ? new MediaResponse(
-          contactForm.cv.id,
-          contactForm.cv.originalFileName,
-          contactForm.cv.mimeType,
-          contactForm.cv.uploadStatus,
-          contactForm.cv.size,
-          contactForm.cv.securedUrl
-        )
+            contactForm.cv.id,
+            contactForm.cv.originalFileName,
+            contactForm.cv.mimeType,
+            contactForm.cv.uploadStatus,
+            contactForm.cv.size,
+            contactForm.cv.securedUrl
+          )
         : null,
       contactForm.status,
+      contactForm.residence ? ResidenceMapper.toResponse(contactForm.residence) : null,
+      contactForm.createdBy ? UserMapper.toResponse(contactForm.createdBy) : null,
       contactForm.createdAt,
-      contactForm.updatedAt,
+      contactForm.updatedAt
     );
   }
 }

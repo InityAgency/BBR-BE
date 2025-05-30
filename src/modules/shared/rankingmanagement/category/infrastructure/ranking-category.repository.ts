@@ -11,6 +11,7 @@ import { randomUUID } from 'crypto';
 import { Residence } from 'src/modules/residentmanagement/residence/domain/residence.entity';
 import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-category.query';
 import { ResidenceStatusEnum } from 'src/modules/residentmanagement/residence/domain/residence-status.enum';
+import { User } from 'src/modules/user/domain/user.entity';
 
 @Injectable()
 export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository {
@@ -52,153 +53,6 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     return this.resolveEntityForCategory(category);
   }
 
-  // async findResidencesByCategory(
-  //   rankingCategoryId: string,
-  //   query: FetchResidencesByCategoryQuery
-  // ): Promise<any> {
-  //   const { page, limit, sortBy, sortOrder, searchQuery, countryId } = query;
-
-  //   const searchableColumns = ['residences.name', 'residences.description', 'residences.subtitle'];
-
-  //   const totalScoreEntries = await this.knexService
-  //     .connection('residence_total_scores')
-  //     .select('residence_id')
-  //     .where('ranking_category_id', rankingCategoryId);
-
-  //   const allResidenceIds = totalScoreEntries.map((r) => r.residenceId);
-
-  //   let dataQuery = Residence.query()
-  //     .join('residence_total_scores as rts', 'residences.id', 'rts.residence_id')
-  //     .select('residences.*', 'rts.position')
-  //     .distinct('residences.id')
-  //     .modify((qb) => {
-  //       qb.whereNull('residences.deleted_at');
-  //       qb.where('residences.status', ResidenceStatusEnum.ACTIVE);
-
-  //       if (countryId) {
-  //         qb.where('residences.country_id', countryId);
-  //       }
-  //     })
-  //     .whereIn('residences.id', allResidenceIds)
-  //     .withGraphFetched(
-  //       `
-  //     [
-  //       featuredImage,
-  //       city,
-  //       country,
-  //       company,
-  //       units,
-  //       totalScores
-  //     ]
-  //   `
-  //     )
-  //     .orderBy('rts.position', 'asc')
-  //     .orderBy('residences.name', 'asc');
-
-  //   applySearchFilter(dataQuery, searchQuery, searchableColumns);
-
-  //   if (sortBy && sortOrder) {
-  //     const allowedSort = ['residences.name', 'residences.yearBuilt', 'residences.avgPricePerUnit'];
-  //     if (allowedSort.includes(sortBy)) {
-  //       dataQuery = dataQuery.orderBy(sortBy, sortOrder);
-  //     }
-  //   } else {
-  //     dataQuery = dataQuery.orderBy('residences.name', 'asc');
-  //   }
-
-  //   dataQuery.limit(limit).offset((page - 1) * limit);
-
-  //   const data = await dataQuery;
-
-  //   // 🔥 Pravi trenutak za računanje pagination.total
-  //   const realCount = data.length;
-  //   const totalPages = Math.ceil(realCount / limit);
-
-  //   if (!realCount) {
-  //     return {
-  //       data: [],
-  //       pagination: {
-  //         total: 0,
-  //         totalPages: 0,
-  //         page,
-  //         limit,
-  //       },
-  //     };
-  //   }
-
-  //   const residenceIds = data.filter((r) => r?.id).map((r) => r.id);
-
-  //   const scores = await this.knexService
-  //     .connection('residence_total_scores')
-  //     .select('residence_id', 'total_score', 'position')
-  //     .whereIn('residence_id', residenceIds)
-  //     .andWhere('ranking_category_id', rankingCategoryId);
-
-  //   const scoreMap = new Map(
-  //     scores.map((s) => [s.residenceId, { totalScore: s.totalScore, position: s.position }])
-  //   );
-
-  //   const validRankingCriteriaIds: string[] = await this.knexService
-  //     .connection('ranking_category_criteria')
-  //     .where('ranking_category_id', rankingCategoryId)
-  //     .pluck('ranking_criteria_id');
-
-  //   const criteriaScores = await this.knexService
-  //     .connection('residence_ranking_criteria_scores as scores')
-  //     .join('ranking_criteria as rc', 'rc.id', 'scores.ranking_criteria_id')
-  //     .select([
-  //       'scores.residenceId',
-  //       'scores.rankingCriteriaId',
-  //       'scores.score',
-  //       'rc.name as criteria_name',
-  //       'rc.description as criteria_description',
-  //       'rc.isDefault as criteria_is_default',
-  //     ])
-  //     .whereIn('scores.residence_id', residenceIds);
-
-  //   const scoreGrouped = new Map();
-
-  //   for (const row of criteriaScores) {
-  //     const rcId = String(row.rankingCriteriaId);
-  //     const residenceId = String(row.residenceId);
-
-  //     if (!validRankingCriteriaIds.includes(rcId)) continue;
-
-  //     if (!scoreGrouped.has(residenceId)) {
-  //       scoreGrouped.set(residenceId, []);
-  //     }
-
-  //     scoreGrouped.get(residenceId).push({
-  //       rankingCriteriaId: rcId,
-  //       score: row.score,
-  //       name: row.criteriaName,
-  //       description: row.criteriaDescription,
-  //       isDefault: row.criteriaIsDefault,
-  //     });
-  //   }
-
-  //   const response = data.map((res) => {
-  //     const scoreEntry = scoreMap.get(res.id);
-
-  //     return {
-  //       ...res,
-  //       totalScore: scoreEntry?.totalScore ?? 0,
-  //       position: scoreEntry?.position ?? 0,
-  //       rankingCriteriaScores: scoreGrouped.get(res.id) ?? [],
-  //     };
-  //   });
-
-  //   return {
-  //     data: response,
-  //     pagination: {
-  //       total: realCount,
-  //       totalPages,
-  //       page,
-  //       limit,
-  //     },
-  //   };
-  // }
-
   async findResidencesByCategory(
     rankingCategoryId: string,
     query: FetchResidencesByCategoryQuery
@@ -212,25 +66,25 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       .whereNull('residences.deleted_at')
       .where('residences.status', ResidenceStatusEnum.ACTIVE)
       .where('rts.ranking_category_id', rankingCategoryId)
-      .modify((qb) => {
-        if (countryId) qb.where('residences.country_id', countryId);
-        applySearchFilter(qb, searchQuery, searchableColumns);
+      .modify((queryBuilder) => {
+        if (countryId) queryBuilder.where('residences.country_id', countryId);
+        applySearchFilter(queryBuilder, searchQuery, searchableColumns);
       });
 
     const { results, total } = await baseQuery
       .select('residences.*', 'rts.position')
       .withGraphFetched('[featuredImage, city, country, company, units, totalScores]')
       .orderBy('rts.position', 'asc')
-      .modify((qb) => {
+      .modify((queryBuilder) => {
         if (sortBy && sortOrder) {
           const allowedSort = [
             'residences.name',
             'residences.yearBuilt',
             'residences.avgPricePerUnit',
           ];
-          if (allowedSort.includes(sortBy)) qb.orderBy(sortBy, sortOrder);
+          if (allowedSort.includes(sortBy)) queryBuilder.orderBy(sortBy, sortOrder);
         } else {
-          qb.orderBy('residences.name', 'asc');
+          queryBuilder.orderBy('residences.name', 'asc');
         }
       })
       .page(page - 1, limit);
@@ -308,9 +162,9 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
     let rankingCategoryQuery = RankingCategory.query()
       .whereNull('deletedAt')
-      .modify((qb) =>
+      .modify((queryBuilder) =>
         applyFilters(
-          qb,
+          queryBuilder,
           { status: query.status, rankingCategoryTypeId: query.categoryTypeId },
           RankingCategory.tableName
         )
@@ -403,6 +257,93 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
 
     return {
       data: enrichedData,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page,
+        limit,
+      },
+    };
+  }
+
+  async findAllByUser(
+    user: User,
+    query: FetchRankingCategoriesQuery
+  ): Promise<{ data: any[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery } = query;
+
+    if (!user.company) {
+      throw new BadRequestException('User has no company');
+    }
+
+    // 1) Build a single QueryBuilder that only yields categories WITH at least one residence
+    let queryBuilder = RankingCategory.query()
+      .alias('rc')
+      // inner‐join to force “has at least one residence”
+      .join('residence_total_scores as rts', 'rts.ranking_category_id', 'rc.id')
+      .join('residences as r', 'r.id', 'rts.residence_id')
+      .where('r.company_id', user.company!.id!)
+      .select([
+        'rc.id as id',
+        'rc.name',
+        'rc.slug',
+        'rc.title',
+        'rc.description',
+        'rc.residenceLimitation',
+        'rc.entity_type as rankingType',
+        'rc.status',
+        'r.id as residenceId',
+        'r.name as residenceName',
+        'r.slug as residenceSlug',
+        'rts.position as position',
+        'rts.total_score as totalScore',
+      ]);
+
+    // 2) apply your search helper
+    queryBuilder = applySearchFilter(queryBuilder, searchQuery, [
+      'rc.name',
+      'rc.description',
+      'rc.title',
+    ]);
+
+    // 3) sorting
+    const sortable = {
+      name: 'rc.name',
+      createdAt: 'rc.created_at',
+      updatedAt: 'rc.updated_at',
+    };
+    if (sortBy && sortOrder && sortable[sortBy]) {
+      queryBuilder = queryBuilder.orderBy(sortable[sortBy], sortOrder);
+    } else {
+      queryBuilder = queryBuilder.orderBy('rc.name', 'asc');
+    }
+
+    // 4) pagination
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      queryBuilder,
+      page,
+      limit
+    );
+
+    // 5) remap each row into your “one‐residence‐in‐the‐array” shape
+    const data = paginatedQuery.map((row) => ({
+      id: row.id,
+      name: row.name,
+      rankingType: row.rankingType,
+      status: row.status,
+      residences: [
+        {
+          id: row.residenceId,
+          name: row.residenceName,
+          slug: row.residenceSlug,
+          position: row.position,
+          totalScore: row.totalScore,
+        },
+      ],
+    }));
+
+    return {
+      data,
       pagination: {
         total: totalCount,
         totalPages,

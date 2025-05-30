@@ -35,6 +35,11 @@ export enum PermissionsEnum {
   UNITS_UPDATE = 'units.update',
   UNITS_DELETE = 'units.delete',
 
+  UNITS_CREATE_OWN = 'units.create.own',
+  UNITS_READ_OWN = 'units.read.own',
+  UNITS_UPDATE_OWN = 'units.update.own',
+  UNITS_DELETE_OWN = 'units.delete.own',
+
   // Leads
   LEADS_CREATE = 'leads.create',
   LEADS_READ = 'leads.read',
@@ -102,6 +107,10 @@ export enum PermissionsEnum {
   CLAIM_PROFILE_CONTACT_FORMS_READ = 'claim_profile_contact_forms.read',
   CLAIM_PROFILE_CONTACT_FORMS_UPDATE = 'claim_profile_contact_forms.update',
   CLAIM_PROFILE_CONTACT_FORMS_DELETE = 'claim_profile_contact_forms.delete',
+
+  CLAIM_PROFILE_CONTACT_FORMS_READ_OWN = 'claim_profile_contact_forms.read.own',
+  CLAIM_PROFILE_CONTACT_FORMS_UPDATE_OWN = 'claim_profile_contact_forms.update.own',
+  CLAIM_PROFILE_CONTACT_FORMS_DELETE_OWN = 'claim_profile_contact_forms.delete.own',
 
   // Career Contact Forms
   CAREER_CONTACT_FORMS_CREATE = 'career_contact_forms.create',

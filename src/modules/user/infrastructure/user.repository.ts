@@ -17,10 +17,9 @@ import { User } from '../domain/user.entity';
 import { IUserRepository } from '../domain/user.repository.interface';
 import { UpdateUserProfileRequest } from '../ui/request/update-user-profile.request';
 import { UpdateUserRequest } from '../ui/request/update-user.request';
-
-import { validate as isValidUUID } from 'uuid';
 import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -29,13 +28,58 @@ export class UserRepositoryImpl implements IUserRepository {
   constructor(private readonly knexService: KnexService) {}
 
   @LogMethod()
-  async create(user: Partial<User>): Promise<User> {
-    const [createdUser] = await this.knexService
-      .connection(this.tableName)
-      .insert(user)
-      .returning('*');
+  async create(userData: Partial<User>): Promise<User | undefined> {
+    return this.knexService.connection.transaction(async (trx) => {
+      const user = await User.query(trx).insert(userData).returning('*');
 
-    return createdUser;
+      if (user) {
+        // ✅ If the user is a developer, create a company
+        const isDeveloper = await trx('roles')
+          .where({ name: 'developer', id: user.roleId })
+          .select('id', 'name')
+          .first();
+
+        const isBuyer = await trx('roles')
+          .where({ name: 'buyer', id: user.roleId })
+          .select('id', 'name')
+          .first();
+
+        if (isDeveloper) {
+          // ✅ Create a company for developers
+          const companyId = uuidv4();
+          await trx('companies').insert({
+            id: companyId,
+            name: userData.companyName || `${userData.fullName}'s Company`,
+            address: null,
+            phone_number: null,
+            website: null,
+          });
+
+          // ✅ Link developer user to the created company
+          await trx('users').where({ id: user.id }).update({ company_id: companyId });
+        }
+
+        if (isBuyer) {
+          // ✅ Create a company for developers
+          await trx('user_buyers').insert({
+            userId: user.id,
+            imageId: null,
+            phoneNumber: null,
+            phoneNumberCountryCode: null,
+            budgetRangeFrom: null,
+            budgetRangeTo: null,
+            currentLocation: null,
+            preferredContactMethod: null,
+            preferredResidenceLocation: null,
+          });
+
+          const updatedUser = await User.query(trx).findById(user.id);
+          return updatedUser;
+        }
+      }
+
+      return user;
+    });
   }
 
   @LogMethod()

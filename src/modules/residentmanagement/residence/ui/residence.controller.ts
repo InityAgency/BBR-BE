@@ -186,6 +186,8 @@ export class ResidenceController {
   }
 
   @Post()
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_CREATE, PermissionsEnum.RESIDENCES_CREATE_OWN)
   @ApiOperation({ summary: 'Create a new residence' })
   @ApiResponse({ status: 201, description: 'Residence created', type: ResidenceResponse })
   async create(
@@ -193,11 +195,6 @@ export class ResidenceController {
     @Req() req: Request
   ): Promise<ResidenceResponse> {
     const user = req.user as User;
-    let loggedDeveloperId: string | undefined = undefined;
-
-    if (user.role?.name?.toLowerCase() === 'developer') {
-      loggedDeveloperId = user.id;
-    }
 
     const command = new CreateResidenceCommand(
       request.name,
@@ -230,11 +227,10 @@ export class ResidenceController {
       request.companyId,
       request.mainGallery,
       request.secondaryGallery,
-      request.highlightedAmenities,
-      loggedDeveloperId
+      request.highlightedAmenities
     );
 
-    const created = await this.createResidenceCommandHandler.handle(command);
+    const created = await this.createResidenceCommandHandler.handle(user, command);
 
     return ResidenceMapper.toResponse(created);
   }

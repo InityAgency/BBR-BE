@@ -1,12 +1,12 @@
 import { Knex } from 'knex';
 
 // * LIVE
-const adminRoleId = 'e0f9da2d-daa9-4a29-aa26-6dd1619ee7b8';
-const managerRoleId = 'fa9a57fc-ade4-4e96-be36-570e269b7a9c';
+// const adminRoleId = 'e0f9da2d-daa9-4a29-aa26-6dd1619ee7b8';
+// const managerRoleId = 'fa9a57fc-ade4-4e96-be36-570e269b7a9c';
 
 // * LOCAL
-// const adminRoleId = '1810ad7b-d504-4576-ab96-c2f27328033e';
-// const managerRoleId = '16627f92-6b84-48f1-8b72-658ffda59b86';
+const adminRoleId = '1810ad7b-d504-4576-ab96-c2f27328033e';
+const managerRoleId = '16627f92-6b84-48f1-8b72-658ffda59b86';
 
 const allPermissions = [
   'users.create',
@@ -17,6 +17,10 @@ const allPermissions = [
   'lead.read',
   'lead.update',
   'lead.delete',
+  'lead.create.own',
+  'lead.read.own',
+  'lead.update.own',
+  'lead.delete.own',
   'roles.create',
   'roles.read',
   'roles.update',
@@ -33,14 +37,23 @@ const allPermissions = [
   'units.read',
   'units.update',
   'units.delete',
-  'ranking.create',
-  'ranking.read',
-  'ranking.update',
-  'ranking.delete',
+  'units.create.own',
+  'units.read.own',
+  'units.update.own',
+  'units.delete.own',
+  'ranking_categories.create',
+  'ranking_categories.read',
+  'ranking_categories.update',
+  'ranking_categories.delete',
+  'ranking_categories.read.own',
   'billing.create',
   'billing.read',
   'billing.update',
   'billing.delete',
+  'billing.create.own',
+  'billing.read.own',
+  'billing.update.own',
+  'billing.delete.own',
   'brand.create',
   'brand.read',
   'brand.update',
@@ -61,6 +74,10 @@ const allPermissions = [
   'reviews.read',
   'reviews.update',
   'reviews.delete',
+  'reviews.create.own',
+  'reviews.read.own',
+  'reviews.update.own',
+  'reviews.delete.own',
   'lifestyles.create',
   'lifestyles.read',
   'lifestyles.update',
@@ -81,10 +98,18 @@ const allPermissions = [
   'companies.read',
   'companies.update',
   'companies.delete',
+  'companies.create.own',
+  'companies.read.own',
+  'companies.update.own',
+  'companies.delete.own',
   'claim_profile_contact_forms.create',
   'claim_profile_contact_forms.read',
   'claim_profile_contact_forms.update',
   'claim_profile_contact_forms.delete',
+  'claim_profile_contact_forms.create.own',
+  'claim_profile_contact_forms.read.own',
+  'claim_profile_contact_forms.update.own',
+  'claim_profile_contact_forms.delete.own',
   'career_contact_forms.create',
   'career_contact_forms.read',
   'career_contact_forms.update',
@@ -102,16 +127,22 @@ const allPermissions = [
 
 const EXCLUDED_PREFIXES = [
   'users.',
+  'units.',
   'billing.',
+  'reviews.',
   'brand.',
   'brand_type.',
   'roles.',
   'lifestyles.',
   'amenities.',
+  'ranking_categories.',
   'ranking_criteria.',
   'key_features.',
   'companies.',
   'email.',
+  'claim_profile_contact_forms.',
+  'career_contact_forms.',
+  'b2b_contact_forms.',
   'system.',
   'residences.',
 ];

@@ -23,6 +23,7 @@ import { FindRankingCategoryBySlugCommandQuery } from './application/query/find-
 import { RankingCategoryPublicController } from './ui/ranking-category.public.controller';
 import { FetchResidencesByCategoryCommandQuery } from './application/query/fetch-residences-by-category.query';
 import { FetchResidencesByCategoryIdCommandQuery } from './application/query/fetch-residences-by-category-id.query';
+import { FetchRankingCategoriesByUserCommandQuery } from './application/query/fetch-ranking-categories-by-user.query';
 @Module({
   imports: [DatabaseModule, MediaModule],
   controllers: [RankingCategoryController, RankingCategoryPublicController],
@@ -49,6 +50,7 @@ import { FetchResidencesByCategoryIdCommandQuery } from './application/query/fet
     FindRankingCategoryBySlugCommandQuery,
     FetchResidencesByCategoryCommandQuery,
     FetchResidencesByCategoryIdCommandQuery,
+    FetchRankingCategoriesByUserCommandQuery,
     UpdateRankingCategoryCommandHandler,
     UpdateRankingCategoryStatusCommandHandler,
     DeleteRankingCategoryCommandHandler,

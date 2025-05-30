@@ -39,6 +39,7 @@ export class UnitPublicController {
     };
 
     const { data, pagination } = await this.fetchUnitsCommandQuery.handle(
+      null,
       new FetchUnitsQuery(
         query,
         page,

@@ -4,7 +4,7 @@ import { UpdateUserProfileRequest } from '../ui/request/update-user-profile.requ
 import { User } from './user.entity';
 
 export abstract class IUserRepository {
-  abstract create(user: User): Promise<User>;
+  abstract create(user: Partial<User>): Promise<User | undefined>;
   abstract findById(id: string): Promise<User | null>;
   abstract findByEmail(email: string): Promise<User | null>;
   abstract findAll(

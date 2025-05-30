@@ -2,6 +2,8 @@ import { Model } from 'objection';
 import { Media } from 'src/modules/media/domain/media.entity';
 import { PhoneCode } from 'src/modules/shared/phone_code/domain/phone-code.entity';
 import { ClaimProfileContactFormStatus } from './claim-profile-contact-form-status.enum';
+import { Residence } from './residence.entity';
+import { User } from 'src/modules/user/domain/user.entity';
 
 export class ClaimProfileContactForm extends Model {
   id!: string;
@@ -13,9 +15,14 @@ export class ClaimProfileContactForm extends Model {
   websiteUrl!: string;
   cvId?: string;
   status!: ClaimProfileContactFormStatus;
+  residenceId!: string;
+  userId!: string;
   createdAt!: Date;
   updatedAt!: Date;
   deletedAt?: Date;
+
+  residence: Residence;
+  createdBy: any;
 
   phoneCode: PhoneCode;
   cv: Media;
@@ -37,6 +44,22 @@ export class ClaimProfileContactForm extends Model {
       join: {
         from: 'claim_profile_contact_forms.cvId',
         to: 'media.id',
+      },
+    },
+    residence: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => Residence,
+      join: {
+        from: 'claim_profile_contact_forms.residenceId',
+        to: 'residences.id',
+      },
+    },
+    createdBy: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => User,
+      join: {
+        from: 'claim_profile_contact_forms.userId',
+        to: 'users.id',
       },
     },
   };

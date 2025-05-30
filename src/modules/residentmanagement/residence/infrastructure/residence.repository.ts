@@ -56,8 +56,13 @@ export class ResidenceRepository implements IResidenceRepository {
       .whereNull('deleted_at')
       .findOne({ slug })
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity.[icon, featuredImage], amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
-      );
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity.[icon, featuredImage], amenities.[icon, featuredImage], units.featureImage, totalScores(filterActive).[rankingCategory]]'
+      )
+      .modifiers({
+        filterActive(builder) {
+          builder.joinRelated('rankingCategory').where('rankingCategory.status', 'ACTIVE');
+        },
+      });
   }
 
   async findByName(name: string): Promise<Residence | undefined> {

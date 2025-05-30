@@ -7,18 +7,39 @@ import { IMediaRepository } from 'src/modules/media/domain/media.repository.inte
 import { CreateClaimProfileContactFormCommand } from '../command/create-claim-profile-contact-form.command';
 import { ClaimProfileContactFormStatus } from '../../domain/claim-profile-contact-form-status.enum';
 import { IClaimProfileContactFormRepository } from '../../domain/claim-profile-contact-form.repository';
+import { IResidenceRepository } from '../../domain/residence.repository.interface';
+import { User } from 'src/modules/user/domain/user.entity';
 
 @Injectable()
 export class CreateClaimProfileContactFormCommandHandler {
   constructor(
     private readonly contactFormRepository: IClaimProfileContactFormRepository,
     private readonly phoneCodeRepository: IPhoneCodeRepository,
-    private readonly mediaRepository: IMediaRepository,
+    private readonly residenceRepository: IResidenceRepository,
+    private readonly mediaRepository: IMediaRepository
   ) {}
 
   @LogMethod()
-  async handle(command: CreateClaimProfileContactFormCommand): Promise<ClaimProfileContactForm> {
+  async handle(
+    user: User,
+    command: CreateClaimProfileContactFormCommand
+  ): Promise<ClaimProfileContactForm> {
     let phoneCode: PhoneCode | undefined = undefined;
+
+    const existingResidence = await this.residenceRepository.findById(command.residenceId);
+
+    if (!existingResidence) {
+      throw new NotFoundException('Residence not found');
+    }
+
+    const existClaimProfileContactForm = await this.contactFormRepository.findByResidenceId(
+      command.residenceId
+    );
+
+    if (existClaimProfileContactForm) {
+      throw new InternalServerErrorException('Claim Profile Contact Form already exists');
+    }
+
     if (command.phoneCodeId) {
       phoneCode = await this.phoneCodeRepository.findById(command.phoneCodeId);
       if (!phoneCode) {
@@ -27,9 +48,9 @@ export class CreateClaimProfileContactFormCommandHandler {
     }
 
     let cv = await this.mediaRepository.findById(command.cvId);
-      if (!cv) {
-        throw new NotFoundException('Media not found');
-      }
+    if (!cv) {
+      throw new NotFoundException('Media not found');
+    }
 
     const contactFormData: Partial<ClaimProfileContactForm> = {
       firstName: command.firstName,
@@ -40,6 +61,8 @@ export class CreateClaimProfileContactFormCommandHandler {
       websiteUrl: command.websiteUrl,
       cv: cv,
       status: ClaimProfileContactFormStatus.NEW,
+      residenceId: command.residenceId,
+      userId: user.id,
     };
 
     const createdContactForm = await this.contactFormRepository.create(contactFormData);

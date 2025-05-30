@@ -1,4 +1,3 @@
-
 export class CreateClaimProfileContactFormCommand {
   constructor(
     public readonly firstName: string,
@@ -8,5 +7,6 @@ export class CreateClaimProfileContactFormCommand {
     public readonly phoneNumber: string,
     public readonly websiteUrl: string,
     public readonly cvId: string,
+    public readonly residenceId: string
   ) {}
 }

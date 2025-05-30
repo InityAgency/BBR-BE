@@ -59,14 +59,27 @@ export class RankingCategory extends Model {
         to: 'ranking_criteria.id',
       },
     },
+    // residences: {
+    //   relation: Model.ManyToManyRelation,
+    //   modelClass: () => Residence,
+    //   join: {
+    //     from: 'ranking_categories.id',
+    //     through: {
+    //       from: 'residence_ranking_categories.rankingCategoryId',
+    //       to: 'residence_ranking_categories.residenceId',
+    //     },
+    //     to: 'residences.id',
+    //   },
+    // },
     residences: {
       relation: Model.ManyToManyRelation,
       modelClass: () => Residence,
       join: {
         from: 'ranking_categories.id',
         through: {
-          from: 'residence_ranking_categories.rankingCategoryId',
-          to: 'residence_ranking_categories.residenceId',
+          from: 'residence_total_scores.rankingCategoryId',
+          to: 'residence_total_scores.residenceId',
+          extra: ['total_score', 'position'],
         },
         to: 'residences.id',
       },

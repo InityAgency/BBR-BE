@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
 import { FindByEmailQueryHandler } from '../query/find-by-email.command.query';
 import { SignUpGoogleCommandHandler } from '../handlers/sign-up-google.command.handler';
+import { FindByEmailQuery } from '../commands/find-by-email.query';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -20,7 +21,16 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
   async validate(accessToken: string, refreshToken: string, profile: any, done: Function) {
     const { email, given_name, family_name, email_verified, picture } = profile._json;
-    let user = await this.findbyEmailQueryHandler.handler(email);
+
+    const query = new FindByEmailQuery(email);
+
+    let user = await this.findbyEmailQueryHandler.handler(query);
+
+    if (user) {
+      if (user.signupMethod !== profile.provider) {
+        throw new ForbiddenException(`Please use ${user.signupMethod} to login`);
+      }
+    }
 
     if (!user) {
       user = await this.signUpGoogleCommandHandler.handler({
@@ -30,7 +40,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         emailVerified: email_verified,
       });
     } else {
-      user = await this.findbyEmailQueryHandler.handler(email);
+      user = await this.findbyEmailQueryHandler.handler(query);
     }
 
     return done(null, user);

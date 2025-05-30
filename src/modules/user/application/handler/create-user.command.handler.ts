@@ -7,11 +7,13 @@ import { IInviteRepository } from '../../domain/invite.repository.interface';
 import { InviteUserCommandHandler } from './invite-user-command.handler';
 import { InviteUserCommand } from '../command/invite-user.command';
 import { UserStatusEnum } from 'src/shared/types/user-status.enum';
+import { IRoleRepository } from 'src/modules/role/domain/role.repository.interface';
 
 @Injectable()
 export class CreateUserCommandHandler {
   constructor(
     private readonly userRepository: IUserRepository,
+    private readonly roleRepository: IRoleRepository,
     private readonly inviteUserCommandHandler: InviteUserCommandHandler
   ) {}
 
@@ -23,9 +25,20 @@ export class CreateUserCommandHandler {
       throw new ConflictException('User already exists');
     }
 
+    const validRole = await this.roleRepository.findById(command.roleId);
+
+    if (!validRole) {
+      throw new ConflictException('Role not found');
+    }
+
     const { createdBy, ...commandUser } = command;
 
-    const createdUser = await User.create({ status: UserStatusEnum.INACTIVE, ...commandUser });
+    const newUser: Partial<User> = {
+      ...commandUser,
+      status: UserStatusEnum.INACTIVE,
+    };
+
+    const createdUser = await this.userRepository.create(newUser);
 
     if (!createdUser) {
       throw new InternalServerErrorException('User not saved');

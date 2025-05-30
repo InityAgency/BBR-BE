@@ -28,4 +28,7 @@ export class CreateClaimProfileContactFormRequest {
 
   @IsUUID()
   cvId: string;
+
+  @IsUUID()
+  residenceId: string;
 }

@@ -3,6 +3,7 @@ import { ClaimProfileContactFormStatus } from '../../domain/claim-profile-contac
 
 export class FetchClaimProfileContactFormsQuery extends BaseFetchQuery {
   status?: ClaimProfileContactFormStatus;
+  createdBy?: string;
 
   constructor(
     query?: string,
@@ -11,8 +12,10 @@ export class FetchClaimProfileContactFormsQuery extends BaseFetchQuery {
     sortBy?: string,
     sortOrder?,
     status?: ClaimProfileContactFormStatus,
+    createdBy?: string
   ) {
     super(query, page, limit, sortBy, sortOrder);
     this.status = status;
+    this.createdBy = createdBy;
   }
 }

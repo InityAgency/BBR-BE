@@ -53,4 +53,9 @@ export class RoleRepositoryImpl implements IRoleRepository {
     const role = await this.knexService.connection('roles').where('name', name).first();
     return role;
   }
+
+  async findById(id: string): Promise<Role | null> {
+    const role = await this.knexService.connection('roles').where('id', id).first();
+    return role;
+  }
 }

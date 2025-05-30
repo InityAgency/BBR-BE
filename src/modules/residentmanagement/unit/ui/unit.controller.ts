@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -32,6 +33,8 @@ import { UnitMapper } from './mapper/unit.mapper';
 import { CreateUnitRequest } from './request/create-unit.request';
 import { UpdateUnitRequest } from './request/update-unit.request';
 import { UnitResponse } from './response/unit.response';
+import { User } from 'src/modules/user/domain/user.entity';
+import { Permission } from '@aws-sdk/client-s3';
 
 @ApiTags('Units')
 @Controller('units')
@@ -46,9 +49,12 @@ export class UnitController {
   ) {}
 
   @Get()
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_READ, PermissionsEnum.UNITS_READ_OWN)
   @ApiOperation({ summary: 'Get all units' })
   @ApiResponse({ type: [UnitResponse] })
   async fetchAll(
+    @Req() req,
     @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -58,7 +64,9 @@ export class UnitController {
     @Query('residenceId') residenceId?: string[],
     @Query('status') status?: UnitStatusEnum[]
   ) {
+    const user = req.user as User;
     const { data, pagination } = await this.fetchUnitsCommandQuery.handle(
+      user,
       new FetchUnitsQuery(query, page, limit, sortBy, sortOrder, residenceId, unitTypeId, status)
     );
 

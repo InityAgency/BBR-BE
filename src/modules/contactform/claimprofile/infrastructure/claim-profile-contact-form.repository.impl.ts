@@ -7,12 +7,15 @@ import { FetchClaimProfileContactFormsQuery } from '../application/command/fetch
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { applyPagination } from '../../../../shared/utils/pagination.util';
 import { IClaimProfileContactFormRepository } from '../domain/claim-profile-contact-form.repository';
+import { User } from 'src/modules/user/domain/user.entity';
 
 @Injectable()
 export class ClaimProfileContactFormRepositoryImpl implements IClaimProfileContactFormRepository {
   constructor(private readonly knexService: KnexService) {}
 
-  async create(contactForm: Partial<ClaimProfileContactForm>): Promise<ClaimProfileContactForm | undefined> {
+  async create(
+    contactForm: Partial<ClaimProfileContactForm>
+  ): Promise<ClaimProfileContactForm | undefined> {
     const contactFormData = {
       firstName: contactForm.firstName,
       lastName: contactForm.lastName,
@@ -21,7 +24,9 @@ export class ClaimProfileContactFormRepositoryImpl implements IClaimProfileConta
       phoneNumber: contactForm.phoneNumber,
       websiteUrl: contactForm.websiteUrl,
       cvId: contactForm.cv?.id,
-      status: contactForm.status
+      status: contactForm.status,
+      residenceId: contactForm.residenceId,
+      userId: contactForm.userId,
     };
 
     const knex = this.knexService.connection;
@@ -37,18 +42,27 @@ export class ClaimProfileContactFormRepositoryImpl implements IClaimProfileConta
     return ClaimProfileContactForm.query()
       .findById(id)
       .whereNull('deletedAt')
-      .withGraphFetched('[phoneCode, cv, phoneCode.country]');
+      .withGraphFetched('[cv, phoneCode.[country], residence, createdBy]');
+  }
+
+  async findByResidenceId(residenceId: string): Promise<ClaimProfileContactForm | undefined> {
+    return ClaimProfileContactForm.query().findOne({ residenceId }).whereNull('deletedAt');
   }
 
   async findAll(
     query: FetchClaimProfileContactFormsQuery
   ): Promise<{ data: ClaimProfileContactForm[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery } = query;
+    const { page, limit, sortBy, sortOrder, searchQuery, createdBy } = query;
 
     let contactFormQuery = ClaimProfileContactForm.query()
-      .modify((qb) => applyFilters(qb, {}, ClaimProfileContactForm.tableName))
+      .modify((qb) => {
+        if (createdBy) {
+          qb.where('user_id', '=', createdBy);
+        }
+        return applyFilters(qb, {}, ClaimProfileContactForm.tableName);
+      })
       .whereNull('deletedAt')
-      .withGraphFetched('[phoneCode, cv, phoneCode.country]');
+      .withGraphFetched('[cv, phoneCode.[country], residence, createdBy]');
 
     const columnsToSearchAndSort = ['firstName', 'lastName', 'email', 'phoneNumber', 'websiteUrl'];
     contactFormQuery = applySearchFilter(contactFormQuery, searchQuery, columnsToSearchAndSort);
@@ -57,7 +71,46 @@ export class ClaimProfileContactFormRepositoryImpl implements IClaimProfileConta
       contactFormQuery = contactFormQuery.orderBy(sortBy, sortOrder);
     }
 
-    const { paginatedQuery, totalCount, totalPages } = await applyPagination(contactFormQuery, page, limit);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      contactFormQuery,
+      page,
+      limit
+    );
+
+    return {
+      data: paginatedQuery,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page: page,
+        limit: limit,
+      },
+    };
+  }
+
+  async findAllByUser(
+    user: User,
+    query: FetchClaimProfileContactFormsQuery
+  ): Promise<{ data: ClaimProfileContactForm[]; pagination: PaginationResponse }> {
+    const { page, limit, sortBy, sortOrder, searchQuery } = query;
+
+    let contactFormQuery = ClaimProfileContactForm.query()
+      .modify((qb) => applyFilters(qb, {}, ClaimProfileContactForm.tableName))
+      .whereNull('deletedAt')
+      .withGraphFetched('[cv, phoneCode.[country], residence, createdBy]');
+
+    const columnsToSearchAndSort = ['firstName', 'lastName', 'email', 'phoneNumber', 'websiteUrl'];
+    contactFormQuery = applySearchFilter(contactFormQuery, searchQuery, columnsToSearchAndSort);
+
+    if (sortBy && sortOrder) {
+      contactFormQuery = contactFormQuery.orderBy(sortBy, sortOrder);
+    }
+
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(
+      contactFormQuery,
+      page,
+      limit
+    );
 
     return {
       data: paginatedQuery,
@@ -77,7 +130,10 @@ export class ClaimProfileContactFormRepositoryImpl implements IClaimProfileConta
       .whereNull('deletedAt');
   }
 
-  async update(id: string, data: Partial<ClaimProfileContactForm>): Promise<ClaimProfileContactForm | undefined> {
+  async update(
+    id: string,
+    data: Partial<ClaimProfileContactForm>
+  ): Promise<ClaimProfileContactForm | undefined> {
     const knex = this.knexService.connection;
 
     const contactFormData = {

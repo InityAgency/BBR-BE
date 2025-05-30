@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   Post,
   Req,
   Res,
@@ -60,8 +61,17 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(GoogleGuard)
-  async googleCallback(@Req() req) {
-    return 'OK';
+  async googleCallback(@Req() req, @Res() res) {
+    const user = req.user;
+
+    await new Promise<void>((resolve, reject) => {
+      req.login(user, (err) => {
+        if (err) return reject(new InternalServerErrorException('Login failed'));
+        resolve();
+      });
+    });
+
+    return res.redirect(process.env.FRONTEND_URL);
   }
 
   @Post('signup/developer')

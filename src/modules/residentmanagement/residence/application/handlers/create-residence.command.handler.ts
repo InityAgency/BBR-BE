@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -14,6 +15,8 @@ import { IMediaRepository } from 'src/modules/media/domain/media.repository.inte
 import { ICompanyRepository } from 'src/modules/company/domain/company.repository.interface';
 import { IAmenityRepository } from 'src/modules/residentmanagement/amenity/domain/amenity.repository.interface';
 import { IKeyFeatureRepository } from 'src/modules/residentmanagement/key_feature/domain/key-feature.repository.interface';
+import { User } from 'src/modules/user/domain/user.entity';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
 
 @Injectable()
 export class CreateResidenceCommandHandler {
@@ -28,7 +31,10 @@ export class CreateResidenceCommandHandler {
     private readonly keyFeatureRepository: IKeyFeatureRepository
   ) {}
 
-  async handle(command: CreateResidenceCommand): Promise<Residence> {
+  async handle(user: User, command: CreateResidenceCommand): Promise<Residence> {
+    // Residence owner
+    const hasOwnPermission = user.role.permissions?.includes(PermissionsEnum.RESIDENCES_CREATE_OWN);
+
     if (!command.brandId) {
       throw new NotFoundException('Brand not found');
     }
@@ -107,8 +113,7 @@ export class CreateResidenceCommandHandler {
       videoTourUrl: command.videoTourUrl,
       videoTourId: command.videoTourId,
       featuredImageId: command.featuredImageId,
-      companyId: command.companyId,
-      developerId: command.developerId,
+      companyId: hasOwnPermission ? user.company?.id : command.companyId,
     };
 
     const residence = await this.residenceRepository.create(createResidence);

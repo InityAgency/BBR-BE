@@ -28,6 +28,8 @@ import { UserMapper } from './ui/mappers/user.mapper';
 import { FindByEmailUserQueryHandler } from './application/query/find-by-email-user.command.query';
 import { VerifyPasswordCommandHandler } from './application/handler/verify-password-command.handler';
 import { ChangePasswordCommandHandler } from './application/handler/change-password-command.handler';
+import { IRoleRepository } from '../role/domain/role.repository.interface';
+import { RoleRepositoryImpl } from '../role/infrastructure/role.repository';
 
 @Module({
   imports: [DatabaseModule, EmailModule, MediaModule],
@@ -48,6 +50,10 @@ import { ChangePasswordCommandHandler } from './application/handler/change-passw
     {
       provide: IInviteRepository,
       useClass: InviteRepositoryImpl,
+    },
+    {
+      provide: IRoleRepository,
+      useClass: RoleRepositoryImpl,
     },
     CreateUserCommandHandler,
     FetchUsersCommandHandler,

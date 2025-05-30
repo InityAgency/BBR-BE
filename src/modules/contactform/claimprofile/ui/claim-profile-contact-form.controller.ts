@@ -49,15 +49,21 @@ export class ClaimProfileContactFormController {
   @ApiOperation({ summary: 'Get all claim profile contact forms' })
   @ApiResponse({ type: [ClaimProfileContactFormResponse] })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
+  @Permissions(
+    PermissionsEnum.SYSTEM_SUPERADMIN,
+    PermissionsEnum.CLAIM_PROFILE_CONTACT_FORMS_READ_OWN
+  )
   async fetchAll(
+    @Req() req,
     @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: string
   ) {
+    const user = req.user as User;
     const { data, pagination } = await this.fetchContactFormsCommandQuery.handle(
+      user,
       new FetchClaimProfileContactFormsQuery(query, page, limit, sortBy, sortOrder)
     );
 
@@ -75,9 +81,13 @@ export class ClaimProfileContactFormController {
   @ApiOperation({ summary: 'Get claim profile contact form by ID' })
   @ApiResponse({ type: ClaimProfileContactFormResponse })
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
-  async findById(@Param('id') id: string) {
-    const contactForm = await this.findContactFormByIdCommandQuery.handle(id);
+  @Permissions(
+    PermissionsEnum.SYSTEM_SUPERADMIN,
+    PermissionsEnum.CLAIM_PROFILE_CONTACT_FORMS_READ_OWN
+  )
+  async findById(@Param('id') id: string, @Req() req) {
+    const user = req.user as User;
+    const contactForm = await this.findContactFormByIdCommandQuery.handle(user, id);
     return ClaimProfileContactFormMapper.toResponse(contactForm);
   }
 
@@ -85,10 +95,11 @@ export class ClaimProfileContactFormController {
   @ApiOperation({ summary: 'Create a new claim profile contact form' })
   @ApiResponse({ type: ClaimProfileContactFormResponse })
   @UseGuards(SessionAuthGuard)
-  async create(@Body() request: CreateClaimProfileContactFormRequest, @Req() req: Request) {
+  async create(@Body() request: CreateClaimProfileContactFormRequest, @Req() req) {
     const loggedUserEmail = (req.user as User).email;
+    const user = req.user;
     const command = ClaimProfileContactFormMapper.toCreateCommand(request, loggedUserEmail);
-    const createdContactForm = await this.createContactFormCommandHandler.handle(command);
+    const createdContactForm = await this.createContactFormCommandHandler.handle(req.user, command);
     return ClaimProfileContactFormMapper.toResponse(createdContactForm);
   }
 

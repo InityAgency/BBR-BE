@@ -21,7 +21,7 @@ export class AuthRepository implements IAuthRepository {
     const knex = this.knexService.connection;
     let query = this.knexService
       .connection(this.tableName)
-      .where({ email })
+      .where('email', email)
       .whereNull('users.deleted_at')
       .leftJoin(buildUnitTypesJoin(knex))
       .leftJoin(buildLifestylesJoin(knex))

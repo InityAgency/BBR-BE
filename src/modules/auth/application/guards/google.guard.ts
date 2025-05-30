@@ -8,6 +8,7 @@ export class GoogleGuard extends AuthGuard('google') {
     const request = context.switchToHttp().getRequest();
 
     await super.logIn(request);
+
     return result;
   }
 }
