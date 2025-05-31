@@ -27,15 +27,22 @@ export class RedisService {
   }
 
   async setCache(key: string, value: any, ttl: number) {
-    await this.client.set(key, JSON.stringify(value), 'EX', ttl);
+    await this.client.set(
+      `${this.configService.get<string>('REDIS_APP_PREFIX')}-${key}`,
+      JSON.stringify(value),
+      'EX',
+      ttl
+    );
   }
 
   async getCache(key: string) {
-    const data = await this.client.get(key);
+    const data = await this.client.get(
+      `${this.configService.get<string>('REDIS_APP_PREFIX')}-${key}`
+    );
     return data ? JSON.parse(data) : null;
   }
 
   async delCache(key: string) {
-    await this.client.del(key);
+    await this.client.del(`${this.configService.get<string>('REDIS_APP_PREFIX')}-${key}`);
   }
 }
