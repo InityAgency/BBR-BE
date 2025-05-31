@@ -9,7 +9,6 @@ import { RedisService } from './shared/cache/redis.service';
 import { RestExceptionFilter } from './shared/error/handler/rest.exception.handler';
 import { HttpResponseInterceptor } from './shared/interceptors/http-response-interceptor';
 import { swaggerConfig } from './shared/swagger/swagger.config';
-import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -71,8 +70,10 @@ async function bootstrap() {
   app.use(passport.session());
 
   // Set up Swagger using the imported configuration
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api-docs', app, document);
+  if (process.env.NODE_ENV === 'development') {
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api-docs', app, document);
+  }
 
   await app.listen(process.env.PORT || 3000);
 }
