@@ -1,11 +1,10 @@
 module.exports = {
     apps: [
       {
-        name: "nestjs-app",  // Change to your app name
-        script: "pnpm",
-        args: "start:prod",
+        name: "nestjs-app",
+        script: "dist/src/main.js",
         exec_mode: "cluster",
-        instances: 'max',
+        instances: "max",
         autorestart: true,
         watch: false,
       },
