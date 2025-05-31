@@ -42,6 +42,9 @@ async function bootstrap() {
       'https://bbradmin.inity.space',
       'https://bbr-admin.vercel.app',
       'https://bbrweb.inity.space',
+      'https://www.bestbrandedresidences.com',
+      'https://bestbrandedresidences.com',
+      'https://admin.bestbrandedresidences.com',
     ],
     credentials: true,
   });

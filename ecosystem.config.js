@@ -4,8 +4,8 @@ module.exports = {
         name: "nestjs-app",  // Change to your app name
         script: "pnpm",
         args: "start:prod",
-        exec_mode: "fork",
-        instances: 1,
+        exec_mode: "cluster",
+        instances: 'max',
         autorestart: true,
         watch: false,
       },
