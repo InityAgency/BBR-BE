@@ -5,6 +5,7 @@ export class SignUpGoogleCommand {
     public readonly email: string,
     public readonly fullName: string,
     public readonly signupMethod: SignupMethodEnum,
-    public readonly emailVerified: boolean
+    public readonly emailVerified: boolean,
+    public readonly roleId: string
   ) {}
 }

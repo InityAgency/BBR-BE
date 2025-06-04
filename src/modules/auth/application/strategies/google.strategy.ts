@@ -4,27 +4,50 @@ import { Strategy } from 'passport-google-oauth20';
 import { FindByEmailQueryHandler } from '../query/find-by-email.command.query';
 import { SignUpGoogleCommandHandler } from '../handlers/sign-up-google.command.handler';
 import { FindByEmailQuery } from '../commands/find-by-email.query';
+import { IAuthRepository } from '../../domain/auth.repository.interface';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     private readonly findbyEmailQueryHandler: FindByEmailQueryHandler,
-    private readonly signUpGoogleCommandHandler: SignUpGoogleCommandHandler
+    private readonly signUpGoogleCommandHandler: SignUpGoogleCommandHandler,
+    private readonly authRepository: IAuthRepository
   ) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
       scope: ['profile', 'email'],
+      passReqToCallback: true,
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: any, done: Function) {
+  authorizationParams(): Record<string, string> {
+    return {
+      prompt: 'select_account',
+    };
+  }
+
+  async validate(
+    req: any,
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: Function
+  ) {
     const { email, given_name, family_name, email_verified, picture } = profile._json;
 
     const query = new FindByEmailQuery(email);
 
     let user = await this.findbyEmailQueryHandler.handler(query);
+
+    const accountType = req.query.state as string;
+
+    const role = await this.authRepository.findRoleByName(accountType.toLowerCase().trim());
+
+    if (!role) {
+      throw new ForbiddenException('User can not be created');
+    }
 
     if (user) {
       if (user.signupMethod !== profile.provider) {
@@ -38,6 +61,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         fullName: `${given_name} ${family_name}`,
         signupMethod: profile.provider,
         emailVerified: email_verified,
+        roleId: role.id,
       });
     } else {
       user = await this.findbyEmailQueryHandler.handler(query);

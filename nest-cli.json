@@ -8,6 +8,10 @@
         "include": "modules/email/infrastructure/templates/**/*.hbs",
         "watchAssets": true,
         "outDir": "dist"
+      },
+      {
+        "include": "prompts/**/*.json",
+        "outDir": "dist"
       }
     ],
     "deleteOutDir": true

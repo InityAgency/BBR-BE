@@ -36,12 +36,15 @@ import { ResidenceRankingScoreModule } from './modules/residentmanagement/rankin
 import { RequestModule } from './modules/requestmanagement/request/request.module';
 import { LeadModule } from './modules/requestmanagement/lead/lead.module';
 import { ReviewModule } from './modules/residentmanagement/review/review.module';
-import {  ContactFormModule } from './modules/contactform/contactform/contact-form.module';
+import { ContactFormModule } from './modules/contactform/contactform/contact-form.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { ClaimProfileModule } from './modules/contactform/claimprofile/claim-profile.module';
 import { PhoneCodeModule } from './modules/shared/phone_code/phone-code.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
 import { B2BFormSubmissionModule } from './modules/contactform/b2bform/b2b-form-submission.module';
+import { OpenAiModule } from './shared/openai/openai.module';
+import { MatchmakingModule } from './modules/matchmaking/matchmaking.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -55,6 +58,14 @@ import { B2BFormSubmissionModule } from './modules/contactform/b2bform/b2b-form-
       useFactory: getBullConfig,
     }),
     BullModule.registerQueue({ name: QueuesEnum.EMAIL }, { name: QueuesEnum.NOTIFICATION }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+        dbName: configService.get<string>('MONGODB_DB') || 'bbr_mm_db',
+      }),
+      inject: [ConfigService],
+    }),
     AwsModule,
     SchedulerModule,
     UserModule,
@@ -90,7 +101,9 @@ import { B2BFormSubmissionModule } from './modules/contactform/b2bform/b2b-form-
     ClaimProfileModule,
     PhoneCodeModule,
     FavoriteModule,
-    B2BFormSubmissionModule
+    B2BFormSubmissionModule,
+    OpenAiModule,
+    MatchmakingModule,
   ],
   providers: [],
 })

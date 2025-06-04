@@ -20,6 +20,7 @@ export class SignUpGoogleCommandHandler {
       fullName: command.fullName,
       signupMethod: command.signupMethod,
       emailVerified: command.emailVerified,
+      roleId: command.roleId,
     };
 
     return await this.authRepository.create(user);

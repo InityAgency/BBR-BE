@@ -11,4 +11,15 @@ export class GoogleGuard extends AuthGuard('google') {
 
     return result;
   }
+
+  getAuthenticateOptions(context: ExecutionContext) {
+    const req = context.switchToHttp().getRequest();
+
+    // Uzmi npr. ?accountType=buyer ili bilo koji drugi parametar
+    const accountType = req.query.accountType as string | undefined;
+
+    return {
+      state: accountType, // prosleđuje se natrag na callback
+    };
+  }
 }
