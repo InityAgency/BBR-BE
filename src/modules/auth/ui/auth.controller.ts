@@ -73,6 +73,9 @@ export class AuthController {
       });
     });
 
+    const isNew = req.session.isNewUser as boolean;
+    console.log(isNew);
+
     return res.redirect(this.configService.get<string>('FRONTEND_URL'));
   }
 

@@ -1,10 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
-import { FindByEmailQueryHandler } from '../query/find-by-email.command.query';
-import { SignUpGoogleCommandHandler } from '../handlers/sign-up-google.command.handler';
-import { FindByEmailQuery } from '../commands/find-by-email.query';
 import { IAuthRepository } from '../../domain/auth.repository.interface';
+import { FindByEmailQuery } from '../commands/find-by-email.query';
+import { SignUpGoogleCommandHandler } from '../handlers/sign-up-google.command.handler';
+import { FindByEmailQueryHandler } from '../query/find-by-email.command.query';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -63,6 +63,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         emailVerified: email_verified,
         roleId: role.id,
       });
+      req.session.isNewUser = true;
     } else {
       user = await this.findbyEmailQueryHandler.handler(query);
     }
