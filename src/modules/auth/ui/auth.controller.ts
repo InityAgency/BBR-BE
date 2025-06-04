@@ -30,6 +30,7 @@ import { CreateUserRequest } from './request/create-user.request';
 import { RequestResetPasswordRequest } from './request/request-reset-password.request';
 import { ResetPasswordRequest } from './request/reset-password.request';
 import { VerifyOtpRequest } from './request/verify-otp.request';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
@@ -40,7 +41,8 @@ export class AuthController {
     private readonly verifyResetOtpHandler: VerifyResetOtpCommandHandler,
     private readonly resetPasswordHandler: ResetPasswordCOmmandHandler,
     private readonly acceptInviteCommandHandler: AcceptInviteCommandHandler,
-    private readonly userMapper: UserMapper
+    private readonly userMapper: UserMapper,
+    private readonly configService: ConfigService
   ) {}
 
   @Post('login')
@@ -71,7 +73,7 @@ export class AuthController {
       });
     });
 
-    return res.redirect(process.env.FRONTEND_URL);
+    return res.redirect(this.configService.get<string>('FRONTEND_URL'));
   }
 
   @Post('signup/developer')
