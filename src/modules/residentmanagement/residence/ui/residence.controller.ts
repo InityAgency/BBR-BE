@@ -127,13 +127,14 @@ export class ResidenceController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('sortBy') sortBy?: string,
-    @Query('sortOrder') sortOrder?: OrderByDirection
+    @Query('sortOrder') sortOrder?: OrderByDirection,
+    @Query('status') status?: ResidenceStatusEnum[]
   ): Promise<{ data: ResidenceResponse[]; pagination: PaginationResponse }> {
     const user = req.user as User;
 
     const { data, pagination } = await this.fetchResidencesByUserCommandQuery.handle(
       user,
-      new FetchResidencesQuery(query, page, limit, sortBy, sortOrder)
+      new FetchResidencesQuery(query, page, limit, sortBy, sortOrder, status)
     );
 
     return {

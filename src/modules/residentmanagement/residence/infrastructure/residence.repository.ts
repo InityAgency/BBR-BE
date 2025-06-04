@@ -47,7 +47,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .findById(id)
       .whereNull('deleted_at')
       .withGraphFetched(
-        '[company,videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
+        '[company, videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
       );
   }
 
@@ -56,7 +56,7 @@ export class ResidenceRepository implements IResidenceRepository {
       .whereNull('deleted_at')
       .findOne({ slug })
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity.[icon, featuredImage], amenities.[icon, featuredImage], units.featureImage, totalScores(filterActive).[rankingCategory]]'
+        '[company, videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity.[icon, featuredImage], amenities.[icon, featuredImage], units.featureImage, totalScores(filterActive).[rankingCategory]]'
       )
       .modifiers({
         filterActive(builder) {
@@ -215,10 +215,11 @@ export class ResidenceRepository implements IResidenceRepository {
     user: User,
     fetchQuery: FetchResidencesQuery
   ): Promise<{ data: Residence[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery } = fetchQuery;
+    const { page, limit, sortBy, sortOrder, searchQuery: searchQuery, status } = fetchQuery;
 
     const baseQuery = Residence.query()
       .whereNull('residences.deleted_at')
+      .modify((qb) => applyFilters(qb, { status }, Residence.tableName))
       .where('residences.companyId', user.company!.id)
       .withGraphFetched(
         '[featuredImage, company, totalScores.[rankingCategory], rankingScores.[criteria]]'
