@@ -73,8 +73,13 @@ export class AuthController {
       });
     });
 
-    const isNew = req.session.isNewUser as boolean;
-    console.log(isNew);
+    const state = req.query.state as string;
+
+    if (state == 'buyer') {
+      return res.redirect(this.configService.get<string>('FRONTEND_URL') + '/buyer/onboarding');
+    } else if (state == 'developer') {
+      return res.redirect(this.configService.get<string>('FRONTEND_URL') + '/developer/onboarding');
+    }
 
     return res.redirect(this.configService.get<string>('FRONTEND_URL'));
   }

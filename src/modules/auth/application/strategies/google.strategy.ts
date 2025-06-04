@@ -40,13 +40,15 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const query = new FindByEmailQuery(email);
 
     let user = await this.findbyEmailQueryHandler.handler(query);
+    let role;
 
     const accountType = req.query.state as string;
 
-    const role = await this.authRepository.findRoleByName(accountType.toLowerCase().trim());
-
-    if (!role) {
-      throw new ForbiddenException('User can not be created');
+    if (accountType) {
+      role = await this.authRepository.findRoleByName(accountType.toLowerCase().trim());
+      if (!role) {
+        throw new ForbiddenException('User can not be created');
+      }
     }
 
     if (user) {
