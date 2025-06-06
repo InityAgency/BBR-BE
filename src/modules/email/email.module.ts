@@ -30,6 +30,9 @@ import { SendOnFormSubmitCommandHandler } from './application/send-on-form-submi
             user: config.get('SMTP_USER'),
             pass: config.get('SMTP_PASS'),
           },
+          tls: {
+            rejectUnauthorized: false,
+          },
         },
         defaults: {
           from: `"No Reply" <${config.get('SMTP_USER')}>`,
