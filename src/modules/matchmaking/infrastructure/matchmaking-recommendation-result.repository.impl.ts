@@ -11,10 +11,29 @@ export class MatchmakingRecommendationResultRepositoryImpl {
   ) {}
 
   async upsert(data: any) {
-    // Nadji po sessionId + userId i uradi update ili insert
+    // Prvo pročitaj prethodni dokument (ako postoji)
+    const previous = await this.model.findOne({ sessionId: data.sessionId, userId: data.userId });
+
+    // Spoji aiCriteria ako već postoji
+    let mergedAiCriteria = data.aiCriteria;
+    if (previous && previous.aiCriteria) {
+      mergedAiCriteria = {
+        ...previous.aiCriteria,
+        ...data.aiCriteria, // novo gazi staro ako postoji isti key
+      };
+    }
+
+    // Sastavi novi podatak
+    const newData = {
+      ...data,
+      aiCriteria: mergedAiCriteria,
+      updatedAt: new Date(),
+    };
+
+    // Upsert kao i do sad, ali sa merge-ovanim aiCriteria
     await this.model.findOneAndUpdate(
       { sessionId: data.sessionId, userId: data.userId },
-      { $set: data },
+      { $set: newData },
       { upsert: true, new: true }
     );
   }
