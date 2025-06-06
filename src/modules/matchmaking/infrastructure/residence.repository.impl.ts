@@ -130,7 +130,7 @@ export class ResidenceRepositoryImpl implements IResidenceRepository {
     }
 
     if (criteria.keyFeatures?.length) {
-      query = query.joinRelated('key_features').where(function () {
+      query = query.joinRelated('keyFeatures').where(function () {
         for (const val of criteria.keyFeatures) {
           const name = typeof val === 'string' ? val : val.name || val.id || val;
           this.orWhere('keyFeatures.name', 'ilike', `%${name}%`);
