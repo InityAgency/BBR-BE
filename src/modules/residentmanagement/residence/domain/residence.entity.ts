@@ -1,4 +1,4 @@
-import { Model, RelationMappings } from 'objection';
+import { Model, RelationMappings, QueryBuilder } from 'objection';
 import { Brand } from 'src/modules/brand/domain/brand.entity';
 import { Company } from 'src/modules/company/domain/company.entity';
 import { Media } from 'src/modules/media/domain/media.entity';

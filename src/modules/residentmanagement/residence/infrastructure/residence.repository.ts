@@ -47,8 +47,13 @@ export class ResidenceRepository implements IResidenceRepository {
       .findById(id)
       .whereNull('deleted_at')
       .withGraphFetched(
-        '[company, videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory]]'
-      );
+        '[company, videoTour, featuredImage, brand.logo, keyFeatures, city, country, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores(filterActive).[rankingCategory]]'
+      )
+      .modifiers({
+        filterActive(builder) {
+          builder.joinRelated('rankingCategory').where('rankingCategory.status', 'ACTIVE');
+        },
+      });
   }
 
   async findBySlug(slug: string): Promise<Residence | undefined> {
@@ -175,8 +180,13 @@ export class ResidenceRepository implements IResidenceRepository {
         }
       })
       .withGraphFetched(
-        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores.[rankingCategory], rankingScores.[criteria]]'
-      );
+        '[videoTour, featuredImage, brand.logo, keyFeatures, city, country, company, mainGallery, secondaryGallery, highlightedAmenities.amenity, amenities.[icon, featuredImage], units.featureImage, totalScores(filterActive).[rankingCategory], rankingScores.[criteria]]'
+      )
+      .modifiers({
+        filterActive(builder) {
+          builder.joinRelated('rankingCategory').where('rankingCategory.status', 'ACTIVE');
+        },
+      });
 
     const columnsToSearch = [
       'residences.name',
@@ -222,8 +232,13 @@ export class ResidenceRepository implements IResidenceRepository {
       .modify((qb) => applyFilters(qb, { status }, Residence.tableName))
       .where('residences.companyId', user.company!.id)
       .withGraphFetched(
-        '[featuredImage, company, totalScores.[rankingCategory], rankingScores.[criteria]]'
-      );
+        '[featuredImage, company, totalScores(filterActive).[rankingCategory], rankingScores.[criteria]]'
+      )
+      .modifiers({
+        filterActive(builder) {
+          builder.joinRelated('rankingCategory').where('rankingCategory.status', 'ACTIVE');
+        },
+      });
 
     const columnsToSearch = [
       'residences.name',
