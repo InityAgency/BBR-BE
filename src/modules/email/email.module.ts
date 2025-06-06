@@ -25,7 +25,7 @@ import { SendOnFormSubmitCommandHandler } from './application/send-on-form-submi
         transport: {
           host: config.get('SMTP_HOST'),
           port: config.get('SMTP_PORT'),
-          secure: config.get('SMTP_SECURE') == 1,
+          // secure: config.get('SMTP_SECURE') == 1,
           auth: {
             user: config.get('SMTP_USER'),
             pass: config.get('SMTP_PASS'),
@@ -35,7 +35,7 @@ import { SendOnFormSubmitCommandHandler } from './application/send-on-form-submi
           },
         },
         defaults: {
-          from: `"No Reply" <${config.get('SMTP_USER')}>`,
+          from: `"No Reply" <${config.get('MAILER_FROM')}>`,
         },
         template: {
           dir: path.join(
