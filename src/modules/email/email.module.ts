@@ -13,6 +13,7 @@ import { EmailQueue } from './infrastructure/queues/email.queue';
 import { EmailJobProcessor } from './infrastructure/jobs/email.job';
 import { SendVerifyEmailCommandHandler } from './application/send-verify-email.command.handler';
 import { SendInviteEmailCommandHandler } from './application/send-invite-email.command.handler';
+import { SendOnFormSubmitCommandHandler } from './application/send-on-form-submit.command.handler';
 
 @Module({
   controllers: [EmailController],
@@ -62,6 +63,7 @@ import { SendInviteEmailCommandHandler } from './application/send-invite-email.c
     SendResetPasswordEmailCommandHandler,
     SendVerifyEmailCommandHandler,
     SendInviteEmailCommandHandler,
+    SendOnFormSubmitCommandHandler,
     EmailJobProcessor,
     EmailQueue,
   ],

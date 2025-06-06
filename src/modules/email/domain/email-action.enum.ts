@@ -3,4 +3,5 @@ export enum EmailAction {
   WELCOME = 'WELCOME',
   VERIFY_EMAIL = 'VERIFY_EMAIL',
   INVITE = 'INVITE',
+  ON_FORM_SUBMIT = 'ON_FORM_SUBMIT',
 }

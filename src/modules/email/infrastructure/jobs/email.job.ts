@@ -1,16 +1,17 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Job } from 'bullmq';
+import { SendInviteEmailCommand } from '../../application/command/send-invite-email.command';
+import { SendResetPasswordEmailCommand } from '../../application/command/send-reset-password-email.command';
+import { SendVerifyEmailCommand } from '../../application/command/send-verify-email.command';
+import { SendWelcomeEmailCommand } from '../../application/command/send-welcome.command';
+import { SendInviteEmailCommandHandler } from '../../application/send-invite-email.command.handler';
 import { SendResetPasswordEmailCommandHandler } from '../../application/send-reset-password-email.command.handler';
+import { SendVerifyEmailCommandHandler } from '../../application/send-verify-email.command.handler';
 import { SendWelcomeEmailCommandHandler } from '../../application/send-welcome-email.command.handler';
 import { EmailAction } from '../../domain/email-action.enum';
-import { SendWelcomeEmailCommand } from '../../application/command/send-welcome.command';
-import { SendResetPasswordEmailCommand } from '../../application/command/send-reset-password-email.command';
-import { SendVerifyEmailCommandHandler } from '../../application/send-verify-email.command.handler';
-import { SendInviteEmailCommandHandler } from '../../application/send-invite-email.command.handler';
-import { SendVerifyEmailCommand } from '../../application/command/send-verify-email.command';
-import { SendInviteEmailCommand } from '../../application/command/send-invite-email.command';
-import { Logger } from '@nestjs/common';
 import { IProcessJob } from '../../domain/process-job.interface';
-import { Job } from 'bullmq';
+import { SendOnFormSubmitCommand } from '../../application/command/send-on-form-submit.command';
+import { SendOnFormSubmitCommandHandler } from '../../application/send-on-form-submit.command.handler';
 
 @Processor('email-queue')
 export class EmailJobProcessor extends WorkerHost {
@@ -18,7 +19,8 @@ export class EmailJobProcessor extends WorkerHost {
     private readonly resetPassword: SendResetPasswordEmailCommandHandler,
     private readonly verifyEmail: SendVerifyEmailCommandHandler,
     private readonly invite: SendInviteEmailCommandHandler,
-    private readonly welcome: SendWelcomeEmailCommandHandler
+    private readonly welcome: SendWelcomeEmailCommandHandler,
+    private readonly onFormSubmit: SendOnFormSubmitCommandHandler
   ) {
     super();
   }
@@ -55,6 +57,11 @@ export class EmailJobProcessor extends WorkerHost {
           data.variables?.tempPassword
         );
         await this.invite.handle(command);
+        break;
+      }
+      case EmailAction.ON_FORM_SUBMIT: {
+        const command = new SendOnFormSubmitCommand(data.to, data.variables?.fullName);
+        await this.onFormSubmit.handle(command);
         break;
       }
 
