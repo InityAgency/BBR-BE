@@ -2,13 +2,15 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import Knex, { Knex as KnexType } from 'knex';
 import { Model } from 'objection';
 import knexConfig from './../../../../knexfile';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class KnexService implements OnModuleInit, OnModuleDestroy {
   private readonly db: KnexType;
 
-  constructor() {
-    this.db = Knex(knexConfig.development);
+  constructor(private readonly configService: ConfigService) {
+    this.db = Knex(knexConfig[this.configService.get<string>('NODE_ENV') || 'development']);
+
     Model.knex(this.db);
   }
 

@@ -18,6 +18,7 @@ export class QueryMMCommandHandler {
 
     const previousCriteria = previousRecommendation?.aiCriteria || {};
     const userMessage = command.userMessage;
+    const maxResults = 10;
 
     const {
       friendlyResponse,
@@ -43,6 +44,8 @@ export class QueryMMCommandHandler {
       let criteria: Record<string, any> = { ...baseCriteria };
 
       for (const field of relaxOrder) {
+        if (results.length >= maxResults) break;
+
         if (field in criteria) {
           delete criteria[field];
           relaxedFields.push(field);
@@ -94,7 +97,7 @@ export class QueryMMCommandHandler {
     relaxed?: boolean;
     relaxedFields?: string[];
   }) {
-    await this.matchmakingRecommendationResultRepository.create({
+    await this.matchmakingRecommendationResultRepository.upsert({
       sessionId: new Types.ObjectId(params.sessionId),
       userId: params.userId,
       inputMessage: params.inputMessage,
@@ -109,8 +112,7 @@ export class QueryMMCommandHandler {
       })),
       rawAiPrompt: params.rawAiPrompt,
       rawAiResponse: params.rawAiResponse,
-      createdAt: new Date(),
-      // relaxed, relaxedFields po potrebi za debug/analitiku
+      updatedAt: new Date(),
       ...(params.relaxed !== undefined && { relaxed: params.relaxed }),
       ...(params.relaxedFields && { relaxedFields: params.relaxedFields }),
     });

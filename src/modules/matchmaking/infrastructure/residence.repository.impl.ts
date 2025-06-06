@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Residence } from '../domain/residence.entity';
 import { IResidenceRepository } from '../domain/residence.repository.interface';
+import { ResidenceStatusEnum } from 'src/modules/residentmanagement/residence/domain/residence-status.enum';
 
 @Injectable()
 export class ResidenceRepositoryImpl implements IResidenceRepository {
   async findByCriteria(criteria: any): Promise<Residence[]> {
-    let query = Residence.query().whereNull('deletedAt');
+    let query = Residence.query()
+      .whereNull('residences.deletedAt')
+      .where('status', ResidenceStatusEnum.ACTIVE);
 
     // String/ID fields
     if (criteria.name) {

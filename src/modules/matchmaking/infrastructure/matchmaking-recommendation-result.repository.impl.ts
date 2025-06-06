@@ -10,8 +10,13 @@ export class MatchmakingRecommendationResultRepositoryImpl {
     private readonly model: Model<MatchmakingRecommendationResult>
   ) {}
 
-  async create(recommendationResult: Partial<MatchmakingRecommendationResult>): Promise<any> {
-    return this.model.create(recommendationResult);
+  async upsert(data: any) {
+    // Nadji po sessionId + userId i uradi update ili insert
+    await this.model.findOneAndUpdate(
+      { sessionId: data.sessionId, userId: data.userId },
+      { $set: data },
+      { upsert: true, new: true }
+    );
   }
 
   async findBySession(sessionId: string) {

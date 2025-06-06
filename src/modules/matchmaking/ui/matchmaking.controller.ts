@@ -1,7 +1,8 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { CreateMMSessionCommandHandler } from '../application/handler/create-mm-session.command.handler';
 import { CreateMMSessionCommand } from '../application/command/create-mm-sesssion.command';
 import { QueryMMCommandHandler } from '../application/handler/query-mm.command.handler';
+import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
 
 @Controller('matchmaking')
 export class MatchmakingController {
@@ -11,6 +12,7 @@ export class MatchmakingController {
   ) {}
 
   @Post('session')
+  @UseGuards(SessionAuthGuard)
   async create(@Req() req) {
     const metadata = {
       userAgent: req.get('user-agent') || '',
@@ -31,7 +33,11 @@ export class MatchmakingController {
   }
 
   @Post('query')
+  @UseGuards(SessionAuthGuard)
   async query(@Req() req, @Body() body: any) {
-    return this.queryMMCommandHandler.handle(body);
+    return this.queryMMCommandHandler.handle({
+      userId: req.user.id,
+      ...body,
+    });
   }
 }

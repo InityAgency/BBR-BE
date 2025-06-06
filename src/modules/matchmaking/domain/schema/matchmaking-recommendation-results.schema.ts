@@ -16,6 +16,7 @@ export class MatchmakingRecommendationResult extends Document {
   @Prop() rawAiPrompt?: string;
   @Prop() rawAiResponse?: string;
   @Prop({ type: Date, default: Date.now }) createdAt: Date;
+  @Prop({ type: Date, default: Date.now }) updatedAt: Date;
 }
 
 export const MatchmakingRecommendationResultSchema = SchemaFactory.createForClass(
