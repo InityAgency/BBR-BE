@@ -8,7 +8,7 @@ export class ResidenceRepositoryImpl implements IResidenceRepository {
   async findByCriteria(criteria: any): Promise<Residence[]> {
     let query = Residence.query()
       .whereNull('residences.deletedAt')
-      .where('status', ResidenceStatusEnum.ACTIVE);
+      .where('residences.status', ResidenceStatusEnum.ACTIVE);
 
     // String/ID fields
     if (criteria.name) {
