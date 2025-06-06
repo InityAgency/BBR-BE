@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { raw } from '@nestjs/mongoose';
 import { OpenAiService } from 'src/shared/openai/openai.service';
 import { PromptService } from 'src/shared/openai/prompt/prompt.service';
 
@@ -21,7 +22,11 @@ export class AiMatchmakingService {
       maxTokens: 700,
     });
 
-    return this.parseAiResponse(aiResponse);
+    return {
+      ...this.parseAiResponse(aiResponse),
+      rawAiPrompt: prompt,
+      rawAiResponse: aiResponse,
+    };
   }
 
   parseAiResponse(aiResponse: string) {

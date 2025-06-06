@@ -10,6 +10,10 @@ export class MatchmakingRecommendationResultRepositoryImpl {
     private readonly model: Model<MatchmakingRecommendationResult>
   ) {}
 
+  async create(recommendationResult: Partial<MatchmakingRecommendationResult>): Promise<any> {
+    return this.model.create(recommendationResult);
+  }
+
   async findBySession(sessionId: string) {
     this.model.find({ sessionId }).lean().exec();
   }
