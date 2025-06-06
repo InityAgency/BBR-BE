@@ -5,7 +5,7 @@ import { IResidenceRepository } from '../domain/residence.repository.interface';
 @Injectable()
 export class ResidenceRepositoryImpl implements IResidenceRepository {
   async findByCriteria(criteria: any): Promise<Residence[]> {
-    let query = Residence.query();
+    let query = Residence.query().whereNull('deletedAt');
 
     // String/ID fields
     if (criteria.name) {
