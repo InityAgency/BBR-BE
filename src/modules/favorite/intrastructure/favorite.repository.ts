@@ -20,7 +20,7 @@ export class FavoriteRepositoryImpl implements IFavoriteRepository {
     const { page, limit, sortBy, sortOrder, searchQuery, entityType } = fetchQuery;
 
     // 1. Fetch favorites paginated
-    let query = Favorite.query();
+    let query = Favorite.query().where({ userId });
 
     if (sortBy && sortOrder) {
       const allowedColumns = ['createdAt', 'updatedAt', 'entityType'];
