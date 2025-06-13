@@ -6,12 +6,17 @@ import { Media } from 'src/modules/media/domain/media.entity';
 import { CreateCareerContactFormCommand } from '../command/create-career-contact-form.command';
 import { ICareerContactFormRepository } from '../../domain/career-contact-form.repository.interface';
 import { CareerContactFormStatusEnum } from '../../domain/career-contact-form-status.enum';
+import { EmailQueue } from 'src/modules/email/infrastructure/queues/email.queue';
+import { EmailAction } from 'src/modules/email/domain/email-action.enum';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CreateCareerContactFormCommandHandler {
   constructor(
     private readonly contactFormRepository: ICareerContactFormRepository,
     private readonly mediaRepository: IMediaRepository,
+    private readonly emailQueue: EmailQueue,
+    private readonly configService: ConfigService
   ) {}
 
   @LogMethod()
@@ -33,7 +38,7 @@ export class CreateCareerContactFormCommandHandler {
       cv: cv,
       position: command.position,
       websiteURL: command.websiteURL,
-      status: CareerContactFormStatusEnum.NEW
+      status: CareerContactFormStatusEnum.NEW,
     };
 
     const createdContactForm = await this.contactFormRepository.create(contactFormData);
@@ -41,6 +46,14 @@ export class CreateCareerContactFormCommandHandler {
     if (!createdContactForm) {
       throw new InternalServerErrorException('Contact Form could not be saved');
     }
+
+    await this.emailQueue.addEmailJob(EmailAction.JOB_APPLICATION, {
+      to: command.email,
+      variables: {
+        fullName: `${command.fullName}`,
+        exploreMoreOpportunitiesLink: `${this.configService.get<string>('FRONTEND_URL')}/careers`,
+      },
+    });
 
     return createdContactForm;
   }

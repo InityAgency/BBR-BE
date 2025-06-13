@@ -11,9 +11,10 @@ import { UpdateCareerContactFormCommandHandler } from './application/handler/upd
 import { UpdateCareerContactFormStatusCommandHandler } from './application/handler/update-career-contact-form-status.handler';
 import { MediaModule } from 'src/modules/media/media.module';
 import { DeleteCareerContactFormCommandHandler } from './application/handler/delete-career-contact-form.handler';
+import EmailModule from 'src/modules/email/email.module';
 
 @Module({
-  imports: [DatabaseModule, MediaModule],
+  imports: [DatabaseModule, MediaModule, EmailModule],
   controllers: [CareerContactFormController],
   providers: [
     {

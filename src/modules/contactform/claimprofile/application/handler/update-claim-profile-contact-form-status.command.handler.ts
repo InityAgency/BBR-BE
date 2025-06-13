@@ -6,13 +6,18 @@ import { UpdateClaimProfileContactFormStatusCommand } from '../command/update-cl
 import { ClaimProfileContactFormStatus } from '../../domain/claim-profile-contact-form-status.enum';
 import { IResidenceRepository } from '../../domain/residence.repository.interface';
 import { IUserRepository } from '../../domain/user.repository.interface';
+import { ConfigService } from '@nestjs/config';
+import { EmailQueue } from 'src/modules/email/infrastructure/queues/email.queue';
+import { EmailAction } from 'src/modules/email/domain/email-action.enum';
 
 @Injectable()
 export class UpdateClaimProfileContactFormStatusCommandHandler {
   constructor(
     private readonly claimProfileContactFormRepository: IClaimProfileContactFormRepository,
     private readonly userRepository: IUserRepository,
-    private readonly residenceRepository: IResidenceRepository
+    private readonly residenceRepository: IResidenceRepository,
+    private readonly emailQueue: EmailQueue,
+    private readonly configService: ConfigService
   ) {}
 
   async handle(
@@ -56,6 +61,33 @@ export class UpdateClaimProfileContactFormStatusCommandHandler {
         claimProfileContactForm.residence.id,
         user.companyId
       );
+
+      await this.emailQueue.addEmailJob(EmailAction.OWNERSHIP_REQUEST_ACCEPTED, {
+        to: user.email,
+        variables: {
+          fullName: `${user.fullName}`,
+          manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
+        },
+      });
+    }
+
+    if (
+      command.status === ClaimProfileContactFormStatus.REJECTED &&
+      claimProfileContactForm.residence
+    ) {
+      const user = await this.userRepository.findById(claimProfileContactForm.createdBy.id);
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      await this.emailQueue.addEmailJob(EmailAction.OWNERSHIP_REQUEST_DECLINED, {
+        to: user.email,
+        variables: {
+          fullName: `${user.fullName}`,
+          manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
+        },
+      });
     }
 
     if (!updatedContactForm) {

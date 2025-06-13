@@ -14,6 +14,20 @@ import { EmailJobProcessor } from './infrastructure/jobs/email.job';
 import { SendVerifyEmailCommandHandler } from './application/send-verify-email.command.handler';
 import { SendInviteEmailCommandHandler } from './application/send-invite-email.command.handler';
 import { SendOnFormSubmitCommandHandler } from './application/send-on-form-submit.command.handler';
+import { EmailHandlerRegistry } from './infrastructure/registry/email-handler.registry';
+import { SendContactConsultationEmailCommandHandler } from './application/send-contact-consultation.handler';
+import { SendRequestInformationEmailCommandHandler } from './application/send-request-information.handler';
+import { SendSubmitReviewCommandHandler } from './application/send-submit-review.handler';
+import { SendReportAnErrorCommandHandler } from './application/send-report-an-error.command.handler';
+import { SendApplyForRankingCommandHandler } from './application/send-apply-for-ranking.command.handler';
+import { SendRegisterResidenceCommandHandler } from './application/send-register-residence.command.handler';
+import { SendJobApplicationCommandHandler } from './application/send-job-application.command.handler';
+import { SendAcceptedResidenceCommandHandler } from './application/send-accepted-residence.command.handler';
+import { SendRejectedResidenceCommandHandler } from './application/send-rejected-residence.command.handler';
+import { SendOwnershipRequestCommandHandler } from './application/send-ownership-request.command.handler';
+import { SendOwnershipRequestAcceptedCommandHandler } from './application/send-ownership-request-accepted.command.handler';
+import { SendOwnershipRequestDeclinedCommandHandler } from './application/send-ownership-request-declined.command.handler';
+import { SendSuggestFeatureCommandHandler } from './application/send-suggest-feature.command.handler';
 
 @Module({
   controllers: [EmailController],
@@ -67,8 +81,22 @@ import { SendOnFormSubmitCommandHandler } from './application/send-on-form-submi
     SendVerifyEmailCommandHandler,
     SendInviteEmailCommandHandler,
     SendOnFormSubmitCommandHandler,
+    SendContactConsultationEmailCommandHandler,
+    SendRequestInformationEmailCommandHandler,
+    SendSubmitReviewCommandHandler,
+    SendReportAnErrorCommandHandler,
+    SendApplyForRankingCommandHandler,
+    SendRegisterResidenceCommandHandler,
+    SendJobApplicationCommandHandler,
+    SendAcceptedResidenceCommandHandler,
+    SendRejectedResidenceCommandHandler,
+    SendOwnershipRequestCommandHandler,
+    SendOwnershipRequestAcceptedCommandHandler,
+    SendOwnershipRequestDeclinedCommandHandler,
+    SendSuggestFeatureCommandHandler,
     EmailJobProcessor,
     EmailQueue,
+    EmailHandlerRegistry,
   ],
   exports: [EmailQueue],
 })

@@ -63,7 +63,7 @@ export class EmailQueue {
       variables?: Record<string, any>;
     }
   ) {
-    await this.queue.add(
+    const job = await this.queue.add(
       QueuesEnum.EMAIL,
       { action, ...data },
       {

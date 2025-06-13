@@ -10,9 +10,10 @@ import { FindContactFormByIdCommandQuery } from './application/query/find-contac
 import { FetchContactFormsCommandQuery } from './application/query/fetch-contact-forms-command.query';
 import { UpdateContactFormCommandHandler } from './application/handler/update-contact-form.command-handler';
 import { DeleteContactFormCommandHandler } from './application/handler/delete-contact-form.command-handler';
+import EmailModule from 'src/modules/email/email.module';
 
 @Module({
-  imports: [DatabaseModule, MediaModule],
+  imports: [DatabaseModule, EmailModule, MediaModule],
   controllers: [ContactFormController],
   providers: [
     {

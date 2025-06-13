@@ -41,6 +41,7 @@ import { RBACGuard } from 'src/shared/guards/rbac.guard';
 import { Permissions } from 'src/shared/decorators/permissions.decorator';
 import { PermissionsEnum } from 'src/shared/types/permissions.enum';
 import { FetchResidencesByUserCommandQuery } from '../application/query/fetch-residences-by-user.command.query';
+import { UpdateStatusResidenceRequest } from './request/update-status.residence.request';
 
 ApiTags('Residence');
 @Controller('residences')
@@ -236,7 +237,6 @@ export class ResidenceController {
     return ResidenceMapper.toResponse(created);
   }
 
-  //todo: zabraniti update ako je developer rola
   @Patch(':id/status')
   @UseGuards(SessionAuthGuard, RBACGuard)
   @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
@@ -245,9 +245,9 @@ export class ResidenceController {
   @ApiResponse({ status: 200, description: 'Residence status updated', type: ResidenceResponse })
   async updateStatus(
     @Param('id') id: string,
-    @Body('status') status: ResidenceStatusEnum
+    @Body() request: UpdateStatusResidenceRequest
   ): Promise<void> {
-    const command = new UpdateResidenceStatusCommand(id, status);
+    const command = new UpdateResidenceStatusCommand(id, request.status);
     await this.updateResidenceStatusCommandHandler.handle(command);
   }
 

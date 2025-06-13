@@ -1,32 +1,34 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Param,
-  Post,
-  Body,
-  Delete,
-  Query,
   Patch,
-  UnauthorizedException,
+  Post,
+  Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Req } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import { OrderByDirection } from 'objection';
+import { User } from 'src/modules/user/domain/user.entity';
+import { Permissions } from 'src/shared/decorators/permissions.decorator';
+import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { FetchReviewsQuery } from '../application/command/fetch-reviews.query';
+import { UpdateReviewStatusCommand } from '../application/command/update-review-status.command';
+import { CreateReviewCommandHandler } from '../application/handler/create-review-command.handler';
+import { DeleteReviewCommandHandler } from '../application/handler/delete-review-command.handler';
+import { UpdateReviewStatusCommandHandler } from '../application/handler/update-review-status-command.handler';
 import { FetchReviewsCommandQuery } from '../application/query/fetch-reviews-command.query';
 import { FindReviewByIdCommandQuery } from '../application/query/find-review-by-id-command.query';
-import { CreateReviewCommandHandler } from '../application/handler/create-review-command.handler';
-import { UpdateReviewStatusCommandHandler } from '../application/handler/update-review-status-command.handler';
-import { DeleteReviewCommandHandler } from '../application/handler/delete-review-command.handler';
-import { ReviewResponse } from './response/review.response';
-import { FetchReviewsQuery } from '../application/command/fetch-reviews.query';
 import { Review } from '../domain/review.entity';
 import { ReviewMapper } from './mapper/review.mapper';
 import { CreateReviewRequest } from './request/create-review.request';
 import { UpdateReviewStatusRequest } from './request/update-review-status.request';
-import { User } from 'src/modules/user/domain/user.entity';
-import { log } from 'console';
-import { OrderByDirection } from 'objection';
-import { UpdateReviewStatusCommand } from '../application/command/update-review-status.command';
+import { ReviewResponse } from './response/review.response';
 
 @ApiTags('Reviews')
 @Controller('reviews')
@@ -40,6 +42,7 @@ export class ReviewController {
   ) {}
 
   @Get()
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Get all reviews' })
   @ApiResponse({ type: [ReviewResponse] })
   async fetchAll(
@@ -85,6 +88,7 @@ export class ReviewController {
   }
 
   @Get(':id')
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Get review by ID' })
   @ApiResponse({ type: ReviewResponse })
   async findById(@Param('id') id: string) {
@@ -94,6 +98,7 @@ export class ReviewController {
   }
 
   @Post()
+  @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Create a review' })
   @ApiResponse({ type: ReviewResponse })
   async create(@Body() createReviewRequest: CreateReviewRequest, @Req() req: Request) {
@@ -105,10 +110,15 @@ export class ReviewController {
     return ReviewMapper.toResponse(created);
   }
 
-  //todo: zabraniti update statusa developerima
   @Patch(':id/status')
+  @UseGuards(SessionAuthGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_UPDATE)
   @ApiOperation({ summary: 'Update review status' })
-  async updateStatus(@Param('id') id: string, @Body() request: UpdateReviewStatusRequest, @Req() req) {
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() request: UpdateReviewStatusRequest,
+    @Req() req
+  ) {
     const result = await this.updateReviewStatusCommandHandler.handle(
       new UpdateReviewStatusCommand(id, request.status)
     );
@@ -117,6 +127,8 @@ export class ReviewController {
   }
 
   @Delete(':id')
+  @UseGuards(SessionAuthGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_DELETE)
   @ApiOperation({ summary: 'Delete a review' })
   async delete(@Param('id') id: string) {
     return this.deleteReviewCommandHandler.handle(id);

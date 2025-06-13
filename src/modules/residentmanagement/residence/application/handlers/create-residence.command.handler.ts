@@ -17,6 +17,9 @@ import { IAmenityRepository } from 'src/modules/residentmanagement/amenity/domai
 import { IKeyFeatureRepository } from 'src/modules/residentmanagement/key_feature/domain/key-feature.repository.interface';
 import { User } from 'src/modules/user/domain/user.entity';
 import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { EmailQueue } from 'src/modules/email/infrastructure/queues/email.queue';
+import { ConfigService } from '@nestjs/config';
+import { EmailAction } from 'src/modules/email/domain/email-action.enum';
 
 @Injectable()
 export class CreateResidenceCommandHandler {
@@ -28,7 +31,9 @@ export class CreateResidenceCommandHandler {
     private readonly mediaRepository: IMediaRepository,
     private readonly companyRepository: ICompanyRepository,
     private readonly amenityRepository: IAmenityRepository,
-    private readonly keyFeatureRepository: IKeyFeatureRepository
+    private readonly keyFeatureRepository: IKeyFeatureRepository,
+    private readonly emailQueue: EmailQueue,
+    private readonly configService: ConfigService
   ) {}
 
   async handle(user: User, command: CreateResidenceCommand): Promise<Residence> {
@@ -184,6 +189,17 @@ export class CreateResidenceCommandHandler {
 
     if (!created) {
       throw new InternalServerErrorException('Residence not created');
+    }
+
+    // * Send mail to developer after create residence
+    if (hasOwnPermission) {
+      await this.emailQueue.addEmailJob(EmailAction.REGISTER_RESIDENCE, {
+        to: user.email,
+        variables: {
+          fullName: `${user.fullName}`,
+          manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
+        },
+      });
     }
 
     return created;

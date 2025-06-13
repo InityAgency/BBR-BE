@@ -7,6 +7,7 @@ import { applyFilters } from '../../../../shared/filters/query.dynamic-filters';
 import { ILeadRepository } from '../domain/ilead.repository.interface';
 import { Lead } from '../domain/lead.entity';
 import { FetchLeadsQuery } from '../application/command/fetch-leads.query';
+import { User } from 'src/modules/user/domain/user.entity';
 
 @Injectable()
 export class LeadRepositoryImpl implements ILeadRepository {
@@ -35,12 +36,45 @@ export class LeadRepositoryImpl implements ILeadRepository {
     return Lead.query().findById(id).whereNull('deletedAt').withGraphFetched('[requests]');
   }
 
+  async findOwnById(companyId: string, id: string): Promise<Lead | undefined> {
+    const lead = Lead.query()
+      .findById(id)
+      .whereNull('leads.deletedAt')
+      .leftJoin('requests', 'leads.id', 'requests.leadId')
+      .leftJoin('residences as reqRes', 'reqRes.id', 'requests.entityId')
+      .leftJoin('units as u', 'u.id', 'requests.entityId')
+      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residence_id');
+
+    if (companyId) {
+      lead.where((qb) =>
+        qb
+          // slučaj gde je request bio na rezidenciju
+          .where('reqRes.company_id', companyId)
+          // ili slučaj gde je request bio na jedinicu čija rezidencija pripada toj kompaniji
+          .orWhere('unitRes.company_id', companyId)
+      );
+    }
+
+    return lead;
+  }
+
   async findByEmail(email: string): Promise<Lead | undefined> {
     return Lead.query().where('email', email).whereNull('deletedAt').first();
   }
 
   async findAll(query: FetchLeadsQuery): Promise<{ data: Lead[]; pagination: PaginationResponse }> {
-    const { page, limit, sortBy, sortOrder, searchQuery, firstName, lastName, email, status, developerId } = query;
+    const {
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      searchQuery,
+      firstName,
+      lastName,
+      email,
+      status,
+      companyId,
+    } = query;
 
     const columnsToSearch = ['first_name', 'last_name', 'email', 'status'];
     const columnsToSort = ['firstName', 'lastName', 'createdAt', 'updatedAt'];
@@ -49,10 +83,20 @@ export class LeadRepositoryImpl implements ILeadRepository {
       .modify((qb) => applyFilters(qb, { firstName, lastName, email, status }, Lead.tableName))
       .whereNull('leads.deletedAt')
       .leftJoin('requests', 'leads.id', 'requests.leadId')
-      .leftJoin('residences', 'requests.entityId', 'residences.id');
+      // pokušaj da ga vežeš kao rezidenciju
+      .leftJoin('residences as reqRes', 'reqRes.id', 'requests.entityId')
+      // pokušaj da ga vežeš kao jedinicu, pa iz jedinice do njene rezidencije
+      .leftJoin('units as u', 'u.id', 'requests.entityId')
+      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residence_id');
 
-    if (developerId) {
-      leadQuery.where('residences.developerId', developerId);
+    if (companyId) {
+      leadQuery.where((qb) =>
+        qb
+          // slučaj gde je request bio na rezidenciju
+          .where('reqRes.company_id', companyId)
+          // ili slučaj gde je request bio na jedinicu čija rezidencija pripada toj kompaniji
+          .orWhere('unitRes.company_id', companyId)
+      );
     }
 
     leadQuery = applySearchFilter(leadQuery.clone(), searchQuery, columnsToSearch);
@@ -82,7 +126,6 @@ export class LeadRepositoryImpl implements ILeadRepository {
       },
     };
   }
-
 
   async update(id: string, data: Partial<Lead>): Promise<Lead | undefined> {
     const knex = this.knexService.connection;

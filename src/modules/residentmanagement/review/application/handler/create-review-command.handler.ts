@@ -6,6 +6,9 @@ import { IUserRepository } from '../../domain/user.repository.interface';
 import { IUnitTypeRepository } from '../../domain/unit-type.repository.interface';
 import { ReviewStatusEnum } from '../../domain/review-status.enum';
 import { IReviewRepository } from '../../domain/ireview.repository.interface';
+import { EmailQueue } from 'src/modules/email/infrastructure/queues/email.queue';
+import { ConfigService } from '@nestjs/config';
+import { EmailAction } from 'src/modules/email/domain/email-action.enum';
 
 @Injectable()
 export class CreateReviewCommandHandler {
@@ -13,7 +16,9 @@ export class CreateReviewCommandHandler {
     private readonly reviewRepository: IReviewRepository,
     private readonly residenceRepository: IResidenceRepository,
     private readonly userRepository: IUserRepository,
-    private readonly unitTypeRepository: IUnitTypeRepository
+    private readonly unitTypeRepository: IUnitTypeRepository,
+    private readonly emailQueue: EmailQueue,
+    private readonly configService: ConfigService
   ) {}
 
   async handle(command: CreateReviewCommand): Promise<Review> {
@@ -53,6 +58,14 @@ export class CreateReviewCommandHandler {
     if (!created) {
       throw new InternalServerErrorException('Review not created');
     }
+
+    await this.emailQueue.addEmailJob(EmailAction.SUBMIT_REVIEW, {
+      to: user.email,
+      variables: {
+        fullName: `${user.fullName}`,
+        exploreMoreResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/residences`,
+      },
+    });
 
     return created;
   }

@@ -130,6 +130,15 @@ export class UserRepositoryImpl implements IUserRepository {
   }
 
   @LogMethod()
+  async findByCompanyId(companyId: string): Promise<User | null> {
+    return this.knexService
+      .connection(this.tableName)
+      .where({ company_id: companyId })
+      .whereNull('deleted_at')
+      .first();
+  }
+
+  @LogMethod()
   async findAll(
     fetchQuery: FetchUsersQuery
   ): Promise<{ data: User[]; pagination: PaginationResponse }> {

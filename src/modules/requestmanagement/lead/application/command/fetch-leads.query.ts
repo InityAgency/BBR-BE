@@ -5,7 +5,7 @@ export class FetchLeadsQuery extends BaseFetchQuery {
   firstName?: string[];
   lastName?: string[];
   status?: string[];
-  developerId?: string;
+  companyId?: string;
 
   constructor(
     query?: string,
@@ -17,13 +17,13 @@ export class FetchLeadsQuery extends BaseFetchQuery {
     firstName?: string[],
     lastName?: string[],
     status?: string[],
-    developerId?: string
+    companyId?: string
   ) {
     super(query, page, limit, sortBy, sortOrder);
     this.email = email;
     this.firstName = firstName;
     this.lastName = lastName;
     this.status = status;
-    this.developerId = developerId;
+    this.companyId = companyId;
   }
 }

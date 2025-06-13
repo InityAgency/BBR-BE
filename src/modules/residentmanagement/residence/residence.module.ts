@@ -3,6 +3,7 @@ import { IBrandRepository } from 'src/modules/brand/domain/brand.repository.inte
 import { BrandRepositoryImpl } from 'src/modules/brand/infrastructure/brand.repository';
 import { ICompanyRepository } from 'src/modules/company/domain/company.repository.interface';
 import { CompanyRepository } from 'src/modules/company/infrastructure/company.repository';
+import EmailModule from 'src/modules/email/email.module';
 import { IMediaRepository } from 'src/modules/media/domain/media.repository.interface';
 import { MediaRepositoryImpl } from 'src/modules/media/infrastructure/media.repository';
 import { ICityRepository } from 'src/modules/shared/city/domain/city.repository.interface';
@@ -19,6 +20,7 @@ import { CreateResidenceCommandHandler } from './application/handlers/create-res
 import { DeleteResidenceCommandHandler } from './application/handlers/delete-residence.command.handler';
 import { UpdateResidenceCommandHandler } from './application/handlers/update-residence.command.handler';
 import { UpdateResidenceStatusCommandHandler } from './application/handlers/update-status-residence.command.handler';
+import { FetchResidencesByUserCommandQuery } from './application/query/fetch-residences-by-user.command.query';
 import { FindAllResidencesCommandQuery } from './application/query/find-all-residences.query';
 import { FindAllUnassignedResidencesCommandQuery } from './application/query/find-all-unassigned-residences.query';
 import { FindByIdResidenceCommandQuery } from './application/query/find-by-id-residence.query';
@@ -27,9 +29,11 @@ import { IResidenceRepository } from './domain/residence.repository.interface';
 import { ResidenceRepository } from './infrastructure/residence.repository';
 import { ResidenceController } from './ui/residence.controller';
 import { ResidencePublicController } from './ui/residence.public.controller';
-import { FetchResidencesByUserCommandQuery } from './application/query/fetch-residences-by-user.command.query';
+import { IUserRepository } from './domain/user.repository.interface';
+import { UserRepositoryImpl } from './infrastructure/user.repository.impl';
 
 @Module({
+  imports: [EmailModule],
   controllers: [ResidenceController, ResidencePublicController],
   providers: [
     {
@@ -67,6 +71,10 @@ import { FetchResidencesByUserCommandQuery } from './application/query/fetch-res
     {
       provide: IKeyFeatureRepository,
       useClass: KeyFeatureRepository,
+    },
+    {
+      provide: IUserRepository,
+      useClass: UserRepositoryImpl,
     },
     FindAllResidencesCommandQuery,
     FindAllUnassignedResidencesCommandQuery,

@@ -15,11 +15,10 @@ import { FindReviewByIdCommandQuery } from './application/query/find-review-by-i
 import { ReviewMapper } from './ui/mapper/review.mapper';
 import { IUnitTypeRepository } from './domain/unit-type.repository.interface';
 import { UnitTypeRepositoryImpl } from './infrastructure/unit-type.repository';
-
-
+import EmailModule from 'src/modules/email/email.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, EmailModule],
   controllers: [ReviewController],
   providers: [
     {

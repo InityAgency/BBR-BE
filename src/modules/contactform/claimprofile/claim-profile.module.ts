@@ -17,9 +17,10 @@ import { IResidenceRepository } from './domain/residence.repository.interface';
 import { ResidenceRepositoryImpl } from './infrastructure/residence.repository.impl';
 import { IUserRepository } from './domain/user.repository.interface';
 import { UserRepositoryImpl } from './infrastructure/user.repository.impl';
+import EmailModule from 'src/modules/email/email.module';
 
 @Module({
-  imports: [DatabaseModule, MediaModule],
+  imports: [DatabaseModule, MediaModule, EmailModule],
   controllers: [ClaimProfileContactFormController],
   providers: [
     {

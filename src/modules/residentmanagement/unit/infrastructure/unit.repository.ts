@@ -63,6 +63,15 @@ export class UnitRepositoryImpl implements IUnitRepository {
       .withGraphFetched('[residence, gallery, featureImage, unitType]');
   }
 
+  async findOwnById(companyId: string, id: string): Promise<Unit | undefined> {
+    return Unit.query()
+      .findById(id)
+      .whereNull('deletedAt')
+      .whereExists(Unit.relatedQuery('residence').where('company_id', companyId))
+      .withGraphFetched('[residence, gallery, featureImage, unitType]')
+      .first();
+  }
+
   async findBySlug(slug: string): Promise<Unit | undefined> {
     return Unit.query()
       .findOne('slug', slug)

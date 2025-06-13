@@ -5,6 +5,7 @@ import { PaginationResponse } from '../../../../shared/ui/response/pagination.re
 export abstract class IUnitRepository {
   abstract create(unit: Partial<Unit>): Promise<Unit | undefined>;
   abstract findById(id: string): Promise<Unit | undefined>;
+  abstract findOwnById(companyId: string, id: string): Promise<Unit | undefined>;
   abstract findBySlug(slug: string): Promise<Unit | undefined>;
   abstract findAll(
     query: FetchUnitsQuery

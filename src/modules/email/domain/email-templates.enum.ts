@@ -17,4 +17,20 @@ export enum EmailTemplatesEnum {
   REVIEW_RESPONSE = 'review-response',
   REVIEW_WEEKLY_SUMMARY = 'review-weekly-summary',
   SPECIFIC_WORDS_REVIEW = 'specific-words-review',
+
+  CONTACT_CONSULTATION = 'contact-consultation',
+  REQUEST_INFORMATION = 'request-information',
+  CONTACT_US = 'contact-us',
+  SUBMIT_REVIEW = 'submit-review',
+  REPORT_AN_ERROR = 'report-an-error',
+  APPLY_FOR_RANKING = 'apply-for-ranking',
+  REQUEST_PREMIUM_PROFILE = 'request-premium-profile',
+  REGISTER_RESIDENCE = 'register-residence',
+  SUGGEST_FEATURE = 'suggest-feature',
+
+  ACCEPTED_RESIDENCE = 'accepted-residence',
+  REJECTED_RESIDENCE = 'rejected-residence',
+  OWNERSHIP_REQUEST = 'ownership-request',
+  OWNERSHIP_REQUEST_ACCEPTED = 'ownership-request-accepted',
+  OWNERSHIP_REQUEST_DECLINED = 'ownership-request-declined',
 }

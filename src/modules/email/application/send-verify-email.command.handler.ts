@@ -10,7 +10,7 @@ export class SendVerifyEmailCommandHandler {
   async handle(command: SendVerifyEmailCommand): Promise<any> {
     return await this.emailRepository.sendEmail(
       command.email,
-      'Verify Email',
+      'One Step Away from Your Account!',
       EmailTemplatesEnum.VERIFY_EMAIL,
       {
         verificationLink: command.verificationLink,

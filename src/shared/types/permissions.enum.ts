@@ -41,10 +41,15 @@ export enum PermissionsEnum {
   UNITS_DELETE_OWN = 'units.delete.own',
 
   // Leads
-  LEADS_CREATE = 'leads.create',
-  LEADS_READ = 'leads.read',
-  LEADS_UPDATE = 'leads.update',
-  LEADS_DELETE = 'leads.delete',
+  LEADS_CREATE = 'lead.create',
+  LEADS_READ = 'lead.read',
+  LEADS_UPDATE = 'lead.update',
+  LEADS_DELETE = 'lead.delete',
+
+  LEADS_CREATE_OWN = 'lead.create.own',
+  LEADS_READ_OWN = 'lead.read.own',
+  LEADS_UPDATE_OWN = 'lead.update.own',
+  LEADS_DELETE_OWN = 'lead.delete.own',
 
   // Dashboard
   DASHBOARD_READ = 'dashboard.read',

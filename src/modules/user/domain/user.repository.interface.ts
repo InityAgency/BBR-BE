@@ -7,6 +7,7 @@ export abstract class IUserRepository {
   abstract create(user: Partial<User>): Promise<User | undefined>;
   abstract findById(id: string): Promise<User | null>;
   abstract findByEmail(email: string): Promise<User | null>;
+  abstract findByCompanyId(companyId: string): Promise<User | null>;
   abstract findAll(
     fetchQuery: FetchUsersQuery
   ): Promise<{ data: User[]; pagination: PaginationResponse }>;

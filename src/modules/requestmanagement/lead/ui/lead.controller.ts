@@ -1,4 +1,16 @@
-import { Controller, Get, Param, Query, Post, Body, Put, Delete, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Post,
+  Body,
+  Put,
+  Delete,
+  Patch,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DeleteLeadCommandHandler } from '../application/handler/delete-lead.command.handler';
 import { LeadMapper } from './mapper/lead.mapper';
@@ -14,6 +26,11 @@ import { UpdateLeadRequest } from './request/update-lead.request';
 import { UpdateLeadCommandHandler } from '../application/handler/update-lead.command.handler';
 import { CreateLeadCommandHandler } from '../application/handler/create-lead-command.handler';
 import { LeadResponse } from './response/lead.response';
+import { SessionAuthGuard } from 'src/shared/guards/session-auth.guard';
+import { Permissions } from 'src/shared/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { User } from 'src/modules/user/domain/user.entity';
+import { RBACGuard } from 'src/shared/guards/rbac.guard';
 
 @ApiTags('Leads')
 @Controller('leads')
@@ -28,9 +45,12 @@ export class LeadController {
   ) {}
 
   @Get()
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_READ, PermissionsEnum.LEADS_READ_OWN)
   @ApiOperation({ summary: 'Get all leads' })
   @ApiResponse({ type: [LeadResponse] })
   async fetchAll(
+    @Req() req,
     @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -40,10 +60,24 @@ export class LeadController {
     @Query('lastName') lastName?: string[],
     @Query('email') email?: string[],
     @Query('status') status?: string[],
-    @Query('developerId') developerId?: string
+    @Query('companyId') companyId?: string
   ) {
+    const user = req.user as User;
+
     const { data, pagination } = await this.fetchLeadsCommandQuery.handle(
-      new FetchLeadsQuery(query, page, limit, sortBy, sortOrder, firstName, lastName, email, status, developerId)
+      user,
+      new FetchLeadsQuery(
+        query,
+        page,
+        limit,
+        sortBy,
+        sortOrder,
+        firstName,
+        lastName,
+        email,
+        status,
+        companyId
+      )
     );
 
     const mappedLeads = data.map((lead: Lead) => LeadMapper.toResponse(lead));
@@ -55,15 +89,20 @@ export class LeadController {
   }
 
   @Get(':id')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_READ, PermissionsEnum.LEADS_READ_OWN)
   @ApiOperation({ summary: 'Get lead by ID' })
   @ApiResponse({ type: LeadResponse })
-  async findById(@Param('id') id: string) {
-    const lead = await this.findLeadByIdCommandQuery.handle(id);
+  async findById(@Req() req, @Param('id') id: string) {
+    const user = req.user as User;
+    const lead = await this.findLeadByIdCommandQuery.handle(user, id);
 
     return LeadMapper.toResponse(lead);
   }
 
   @Post()
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_READ)
   @ApiOperation({ summary: 'Create a lead' })
   @ApiResponse({ type: LeadResponse })
   async create(@Body() lead: CreateLeadRequest) {
@@ -74,6 +113,8 @@ export class LeadController {
   }
 
   @Patch(':id/status')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_READ)
   @ApiOperation({ summary: 'Update a lead status' })
   @ApiResponse({ type: LeadResponse })
   async updateStatus(@Param('id') id: string, @Body() lead: UpdateLeadStatusRequest) {
@@ -84,6 +125,8 @@ export class LeadController {
   }
 
   @Put(':id')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_READ)
   @ApiOperation({ summary: 'Update a lead' })
   @ApiResponse({ type: LeadResponse })
   async update(@Param('id') id: string, @Body() lead: UpdateLeadRequest) {
@@ -94,6 +137,8 @@ export class LeadController {
   }
 
   @Delete(':id')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN_READ)
   @ApiOperation({ summary: 'Delete a lead' })
   async delete(@Param('id') id: string) {
     return this.deleteLeadCommandHandler.handle(id);

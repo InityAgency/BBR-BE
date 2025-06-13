@@ -9,6 +9,9 @@ import { ClaimProfileContactFormStatus } from '../../domain/claim-profile-contac
 import { IClaimProfileContactFormRepository } from '../../domain/claim-profile-contact-form.repository';
 import { IResidenceRepository } from '../../domain/residence.repository.interface';
 import { User } from 'src/modules/user/domain/user.entity';
+import { EmailQueue } from 'src/modules/email/infrastructure/queues/email.queue';
+import { ConfigService } from '@nestjs/config';
+import { EmailAction } from 'src/modules/email/domain/email-action.enum';
 
 @Injectable()
 export class CreateClaimProfileContactFormCommandHandler {
@@ -16,7 +19,9 @@ export class CreateClaimProfileContactFormCommandHandler {
     private readonly contactFormRepository: IClaimProfileContactFormRepository,
     private readonly phoneCodeRepository: IPhoneCodeRepository,
     private readonly residenceRepository: IResidenceRepository,
-    private readonly mediaRepository: IMediaRepository
+    private readonly mediaRepository: IMediaRepository,
+    private readonly emailQueue: EmailQueue,
+    private readonly configService: ConfigService
   ) {}
 
   @LogMethod()
@@ -70,6 +75,15 @@ export class CreateClaimProfileContactFormCommandHandler {
     if (!createdContactForm) {
       throw new InternalServerErrorException('Contact form could not be saved');
     }
+
+    // * send email to claimer
+    await this.emailQueue.addEmailJob(EmailAction.OWNERSHIP_REQUEST, {
+      to: user.email,
+      variables: {
+        fullName: `${user.fullName}`,
+        manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
+      },
+    });
 
     return createdContactForm;
   }

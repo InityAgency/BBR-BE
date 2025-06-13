@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,6 +12,9 @@ import { UpdateUnitCommand } from '../command/update-unit.command';
 import { Unit } from '../../domain/unit.entity';
 import { IResidenceRepository } from '../../domain/residence.repository.interface';
 import { IUnitTypeRepository } from '../../../unit_type/domain/unit-type.repository.interface';
+import { User } from 'src/modules/user/domain/user.entity';
+import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { UnitStatusEnum } from '../../domain/unit-status.enum';
 
 @Injectable()
 export class UpdateUnitCommandHandler {
@@ -22,15 +26,22 @@ export class UpdateUnitCommandHandler {
   ) {}
 
   @LogMethod()
-  async handle(command: UpdateUnitCommand): Promise<Unit> {
-    const existingUnit = await this.unitRepository.findById(command.id);
-    if (!existingUnit) {
-      throw new NotFoundException('Unit not found');
-    }
+  async handle(user: User, command: UpdateUnitCommand): Promise<Unit> {
+    const hasOwnPermission = user?.role.permissions?.includes(PermissionsEnum.UNITS_UPDATE_OWN);
 
     const residence = await this.residenceRepository.findById(command.residenceId);
     if (!residence) {
       throw new NotFoundException('Residence not found');
+    }
+
+    if (hasOwnPermission && residence.company.id !== user.company?.id) {
+      throw new ForbiddenException('You do not have permission to update this unit.');
+    }
+
+    const existingUnit = await this.unitRepository.findById(command.id);
+
+    if (!existingUnit) {
+      throw new NotFoundException('Unit not found');
     }
 
     const unitType = await this.unitTypeRepository.findById(command.unitTypeId);
@@ -67,7 +78,7 @@ export class UpdateUnitCommandHandler {
       slug: slug,
       description: command.description,
       surface: command.surface,
-      status: command.status,
+      status: hasOwnPermission ? UnitStatusEnum.PENDING : command.status,
       regularPrice: command.regularPrice,
       exclusivePrice: command.exclusivePrice,
       exclusiveOfferStartDate: command.exclusiveOfferStartDate,

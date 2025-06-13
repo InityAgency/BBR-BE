@@ -16,9 +16,10 @@ import { FindRequestByIdCommandQuery } from './application/query/find-request-by
 import { FetchRequestsCommandQuery } from './application/query/fetch-requests.command.query';
 import { RequestPublicController } from './ui/request.public.controller';
 import { UpdateLeadCommandHandler } from '../lead/application/handler/update-lead.command.handler';
+import EmailModule from 'src/modules/email/email.module';
 
 @Module({
-  imports: [DatabaseModule, MediaModule],
+  imports: [DatabaseModule, EmailModule, MediaModule],
   controllers: [RequestController, RequestPublicController],
   providers: [
     {

@@ -79,6 +79,8 @@ export class UnitController {
   }
 
   @Get(':id')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN, PermissionsEnum.UNITS_READ_OWN)
   @ApiOperation({ summary: 'Get unit by ID' })
   @ApiResponse({ type: UnitResponse })
   async findById(@Param('id') id: string) {
@@ -88,16 +90,21 @@ export class UnitController {
   }
 
   @Post()
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN, PermissionsEnum.UNITS_CREATE_OWN)
   @ApiOperation({ summary: 'Create a unit' })
   @ApiResponse({ type: UnitResponse })
-  async create(@Body() createUnitRequest: CreateUnitRequest) {
+  async create(@Req() Req, @Body() createUnitRequest: CreateUnitRequest) {
+    const user = Req.user as User;
     const command = UnitMapper.toCreateCommand(createUnitRequest);
-    const createdUnit = await this.createUnitCommandHandler.handle(command);
+    const createdUnit = await this.createUnitCommandHandler.handle(user, command);
 
     return UnitMapper.toResponse(createdUnit);
   }
 
   @Patch(':id/status')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Update a unit status' })
   @ApiResponse({ type: UnitResponse })
@@ -108,19 +115,23 @@ export class UnitController {
 
   @Put(':id')
   @UseGuards(SessionAuthGuard, RBACGuard)
-  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN, PermissionsEnum.UNITS_UPDATE_OWN)
   @ApiOperation({ summary: 'Update a unit' })
   @ApiResponse({ type: UnitResponse })
-  async update(@Param('id') id: string, @Body() updateUnitRequest: UpdateUnitRequest) {
+  async update(@Req() req, @Param('id') id: string, @Body() updateUnitRequest: UpdateUnitRequest) {
+    const user = req.user as User;
     const command = UnitMapper.toUpdateCommand(id, updateUnitRequest);
-    const updatedUnit = await this.updateUnitCommandHandler.handle(command);
+    const updatedUnit = await this.updateUnitCommandHandler.handle(user, command);
 
     return UnitMapper.toResponse(updatedUnit);
   }
 
   @Delete(':id')
+  @UseGuards(SessionAuthGuard, RBACGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN, PermissionsEnum.UNITS_DELETE_OWN)
   @ApiOperation({ summary: 'Delete a unit' })
-  async delete(@Param('id') id: string) {
-    return this.deleteUnitCommandHandler.handle(id);
+  async delete(@Req() req, @Param('id') id: string) {
+    const user = req.user as User;
+    return this.deleteUnitCommandHandler.handle(user, id);
   }
 }
