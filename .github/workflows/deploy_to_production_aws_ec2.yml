@@ -56,8 +56,8 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST_PROD }} << 'EOF'
           cd /mnt/app/bbr-backend-new
-          sudo pnpm install --prod
-          sudo npm rebuild bcrypt
+          pnpm install
+          npm rebuild bcrypt
           pm2 reload ecosystem.config.js --env production
           EOF
 
