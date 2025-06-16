@@ -29,10 +29,11 @@ import { CompanyRepositoryImpl } from './infrastructure/company.repository.impl'
 import { CompanyService } from './application/services/company.service';
 import { IUserRepository } from './domain/interfaces/user.repository.interface';
 import { UserRepositoryImpl } from './infrastructure/user.repository.impl';
+import EmailModule from '../email/email.module';
 
 @Module({
   controllers: [BillingController, StripeWebhookController],
-  imports: [],
+  imports: [EmailModule],
   providers: [
     {
       provide: IPaymentMethodRepository,
