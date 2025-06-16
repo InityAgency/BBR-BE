@@ -122,6 +122,7 @@ export class BillingController {
 
   @Get('transactions')
   @UseGuards(SessionAuthGuard)
+  @Permissions(PermissionsEnum.SYSTEM_SUPERADMIN, PermissionsEnum.BILLING_READ_OWN)
   @ApiOperation({ summary: 'Get transactions' })
   async fetchAllTransactions(
     @Req() req,

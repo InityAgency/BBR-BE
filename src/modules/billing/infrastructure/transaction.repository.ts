@@ -31,7 +31,8 @@ export class TransactionRepositoryImpl implements ITransactionRepository {
 
     let transactionsQuery = BillingTransaction.query()
       .modify((qb) => applyFilters(qb, { status, type }, BillingTransaction.tableName))
-      .where('user_id', userId);
+      .where('user_id', userId)
+      .withGraphFetched('[customer, user]');
 
     const columnsToSearch = ['amount'];
 
@@ -64,5 +65,13 @@ export class TransactionRepositoryImpl implements ITransactionRepository {
         limit: limit,
       },
     };
+  }
+
+  async update(id: string, transaction: Partial<BillingTransaction>): Promise<void> {
+    await BillingTransaction.query().where('id', id).update(transaction);
+  }
+
+  async findByInvoiceId(invoiceId: string): Promise<BillingTransaction | undefined> {
+    return BillingTransaction.query().where('stripe_invoice_id', invoiceId).first();
   }
 }

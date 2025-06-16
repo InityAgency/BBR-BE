@@ -4,6 +4,11 @@ import { FetchTransactionsQuery } from '../../application/commands/fetch-transac
 
 export abstract class ITransactionRepository {
   abstract create(transaction: Partial<BillingTransaction>): Promise<void>;
+
+  abstract findByInvoiceId(invoiceId: string): Promise<BillingTransaction | undefined>;
+
+  abstract update(id: string, transaction: Partial<BillingTransaction>): Promise<void>;
+
   abstract findAllByUser(
     userId: string,
     query: FetchTransactionsQuery

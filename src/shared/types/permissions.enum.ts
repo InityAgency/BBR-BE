@@ -105,6 +105,11 @@ export enum PermissionsEnum {
   BILLING_CREATE = 'billing.create',
   BILLING_UPDATE = 'billing.update',
   BILLING_DELETE = 'billing.delete',
+  // Billing own
+  BILLING_READ_OWN = 'billing.read.own',
+  BILLING_CREATE_OWN = 'billing.create.own',
+  BILLING_UPDATE_OWN = 'billing.update.own',
+  BILLING_DELETE_OWN = 'billing.delete.own',
 
   // Review
   REVIEWS_CREATE = 'reviews.create',

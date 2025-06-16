@@ -65,8 +65,6 @@ export class ReviewController {
       loggedDeveloperCompanyId = user.company?.id;
     }
 
-    console.log(loggedDeveloperCompanyId);
-
     const { data, pagination } = await this.fetchReviewsCommandQuery.handle(
       new FetchReviewsQuery(
         query,

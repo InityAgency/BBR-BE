@@ -96,6 +96,7 @@ export class LeadRepositoryImpl implements ILeadRepository {
       lastName,
       email,
       status,
+      entityId,
       companyId,
     } = query;
 
@@ -139,6 +140,15 @@ export class LeadRepositoryImpl implements ILeadRepository {
           },
         }
       : {};
+
+    if (entityId) {
+      leadQuery.andWhere(
+        (qb) =>
+          qb
+            .where('reqRes.id', entityId) // direct‐residence match
+            .orWhere('u.id', entityId) // unit match
+      );
+    }
 
     if (companyId) {
       leadQuery.where((qb) =>

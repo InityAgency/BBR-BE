@@ -60,6 +60,7 @@ export class LeadController {
     @Query('lastName') lastName?: string[],
     @Query('email') email?: string[],
     @Query('status') status?: string[],
+    @Query('entityId') entityId?: string,
     @Query('companyId') companyId?: string
   ) {
     const user = req.user as User;
@@ -76,6 +77,7 @@ export class LeadController {
         lastName,
         email,
         status,
+        entityId,
         companyId
       )
     );

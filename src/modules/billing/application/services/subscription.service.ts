@@ -50,7 +50,6 @@ export class SubscriptionService {
     if (!userId || !subscriptionId) return;
 
     const sub: any = await this.stripe.getSubscription(subscriptionId);
-    console.log('sub', sub);
 
     const items = sub.items?.data;
     if (!items?.length) return;
@@ -59,7 +58,6 @@ export class SubscriptionService {
     if (!priceId) return;
 
     const product = await this.productRepo.findByBillingPriceId(priceId);
-    console.log('product', product);
     if (!product) return;
 
     const periodEndUnix = sub.current_period_end ?? items[0]?.current_period_end;
@@ -92,7 +90,9 @@ export class SubscriptionService {
         const stripeInvoiceId = invoice.id;
         const stripePaymentIntentId = (invoice as any)?.payment_intent || '';
 
-        await this.transactionRepo.create({
+        const transaction = await this.transactionRepo.findByInvoiceId(invoice.id!);
+
+        const createdTransaction = {
           userId,
           stripePaymentIntentId,
           stripeInvoiceId,
@@ -102,7 +102,14 @@ export class SubscriptionService {
           amount: amountPaid,
           currency,
           status: invoice.status!, // usually “paid”
-        });
+          stripeHostingInvoiceUrl: invoice.hosted_invoice_url!,
+        };
+
+        if (transaction) {
+          await this.transactionRepo.update(transaction.id, createdTransaction);
+        } else {
+          await this.transactionRepo.create(createdTransaction);
+        }
       }
     }
 
@@ -142,7 +149,9 @@ export class SubscriptionService {
         status: mapStripeSubscriptionStatusToEnum(sub.status),
       });
 
-      await this.transactionRepo.create({
+      const transaction = await this.transactionRepo.findByInvoiceId(invoice.id!);
+
+      const createdTransaction = {
         userId,
         stripePaymentIntentId: (invoice as any).payment_intent,
         stripeInvoiceId: invoice.id,
@@ -152,7 +161,14 @@ export class SubscriptionService {
         amount: invoice.amount_paid / 100,
         currency: invoice.currency,
         status: invoice.status!, // 'paid'
-      });
+        stripeHostingInvoiceUrl: invoice.hosted_invoice_url!,
+      };
+
+      if (transaction) {
+        await this.transactionRepo.update(transaction.id, createdTransaction);
+      } else {
+        await this.transactionRepo.create(createdTransaction);
+      }
     }
 
     const pdfUrl = invoice.invoice_pdf;
