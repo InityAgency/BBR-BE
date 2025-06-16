@@ -50,6 +50,7 @@ export class SubscriptionService {
     if (!userId || !subscriptionId) return;
 
     const sub: any = await this.stripe.getSubscription(subscriptionId);
+    console.log('sub', sub);
 
     const items = sub.items?.data;
     if (!items?.length) return;
@@ -58,6 +59,7 @@ export class SubscriptionService {
     if (!priceId) return;
 
     const product = await this.productRepo.findByBillingPriceId(priceId);
+    console.log('product', product);
     if (!product) return;
 
     const periodEndUnix = sub.current_period_end ?? items[0]?.current_period_end;
