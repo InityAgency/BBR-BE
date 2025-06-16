@@ -12,6 +12,7 @@ import { Residence } from 'src/modules/residentmanagement/residence/domain/resid
 import { FetchResidencesByCategoryQuery } from '../application/command/fetch-residences-by-category.query';
 import { ResidenceStatusEnum } from 'src/modules/residentmanagement/residence/domain/residence-status.enum';
 import { User } from 'src/modules/user/domain/user.entity';
+import { ResidencePositionRequestStatusEnum } from 'src/shared/types/residence-position-requests.enum';
 
 @Injectable()
 export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository {
@@ -276,6 +277,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       throw new BadRequestException('User has no company');
     }
 
+    const knex = RankingCategory.knex();
     // 1) Build a single QueryBuilder that only yields categories WITH at least one residence
     let queryBuilder = RankingCategory.query()
       .alias('rc')
@@ -297,6 +299,22 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
         'r.slug as residenceSlug',
         'rts.position as position',
         'rts.total_score as totalScore',
+
+        knex.raw(
+          `EXISTS (
+            SELECT 1
+              FROM residence_position_requests req
+              WHERE req.residence_id        = r.id
+                AND req.ranking_category_id = rc.id
+                AND req.status              IN (?, ?)
+                AND req.requested_by        = ?
+          ) AS "hasRequest"`,
+          [
+            ResidencePositionRequestStatusEnum.NEW,
+            ResidencePositionRequestStatusEnum.PENDING,
+            user.id,
+          ]
+        ),
       ]);
 
     // 2) apply your search helper
@@ -331,6 +349,7 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       name: row.name,
       rankingType: row.rankingType,
       status: row.status,
+      hasRequest: row.hasRequest,
       residences: [
         {
           id: row.residenceId,

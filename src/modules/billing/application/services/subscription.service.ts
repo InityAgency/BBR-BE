@@ -10,6 +10,9 @@ import { IUserSubscriptionRepository } from '../../domain/interfaces/user-subscr
 import { StripeCustomerService } from './stripe-customer.service';
 import { IUserRepository } from '../../domain/interfaces/user.repository.interface';
 import { CompanyService } from './company.service';
+import { EmailAction } from 'src/modules/email/domain/email-action.enum';
+import { EmailQueue } from 'src/modules/email/infrastructure/queues/email.queue';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SubscriptionService {
@@ -21,7 +24,9 @@ export class SubscriptionService {
     private readonly transactionRepo: ITransactionRepository,
     private readonly emailRepository: IEmailRepository,
     private readonly userRepository: IUserRepository,
-    private readonly companyService: CompanyService
+    private readonly companyService: CompanyService,
+    private readonly emailQueue: EmailQueue,
+    private readonly configService: ConfigService
   ) {}
 
   async createCheckout(
@@ -47,18 +52,38 @@ export class SubscriptionService {
     const subscriptionId = session.subscription as string;
     const userId = session.metadata?.userId;
 
-    if (!userId || !subscriptionId) return;
+    if (!userId || !subscriptionId) {
+      console.error(
+        '[stripe wehbook]: Subscription has no userId or subscriptionId.',
+        subscriptionId,
+        userId
+      );
+      return;
+    }
 
     const sub: any = await this.stripe.getSubscription(subscriptionId);
 
     const items = sub.items?.data;
-    if (!items?.length) return;
+    if (!items?.length) {
+      console.error('[stripe wehbook]: Subscription has no items.', subscriptionId);
+      return;
+    }
 
     const priceId = items[0]?.price?.id;
-    if (!priceId) return;
+    if (!priceId) {
+      console.error('[stripe wehbook]: Subscription has no price.', subscriptionId);
+      return;
+    }
 
     const product = await this.productRepo.findByBillingPriceId(priceId);
-    if (!product) return;
+    if (!product) {
+      console.error(
+        '[stripe wehbook]: Subscription has no product. priceId:',
+        priceId,
+        subscriptionId
+      );
+      return;
+    }
 
     const periodEndUnix = sub.current_period_end ?? items[0]?.current_period_end;
     if (!periodEndUnix) return;
@@ -119,6 +144,15 @@ export class SubscriptionService {
     if (!user) return;
 
     await this.companyService.updatePlan(user.companyId, product.stripeProductId);
+
+    // send email
+    await this.emailQueue.addEmailJob(EmailAction.PREMIUM_SUBSCRIPTION, {
+      to: user.email,
+      variables: {
+        fullName: `${user.fullName}`,
+        manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
+      },
+    });
   }
 
   async handleInvoicePaid(invoice: Stripe.Invoice): Promise<void> {

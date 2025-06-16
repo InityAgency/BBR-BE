@@ -45,6 +45,7 @@ import { B2BFormSubmissionModule } from './modules/contactform/b2bform/b2b-form-
 import { OpenAiModule } from './shared/openai/openai.module';
 import { MatchmakingModule } from './modules/matchmaking/matchmaking.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ResidencePositionRequestsModule } from './modules/residentmanagement/residence_position_requests/residence-position-requests.module';
 
 @Module({
   imports: [
@@ -104,6 +105,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     B2BFormSubmissionModule,
     OpenAiModule,
     MatchmakingModule,
+    ResidencePositionRequestsModule,
   ],
   providers: [],
 })

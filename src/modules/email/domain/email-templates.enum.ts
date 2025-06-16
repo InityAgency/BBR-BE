@@ -25,7 +25,9 @@ export enum EmailTemplatesEnum {
   REPORT_AN_ERROR = 'report-an-error',
   APPLY_FOR_RANKING = 'apply-for-ranking',
   REQUEST_PREMIUM_PROFILE = 'request-premium-profile',
+  PREMIUM_SUBSCRIPTION = 'premium-subscription',
   REGISTER_RESIDENCE = 'register-residence',
+  REGISTER_UNIT = 'register-unit',
   SUGGEST_FEATURE = 'suggest-feature',
 
   ACCEPTED_RESIDENCE = 'accepted-residence',

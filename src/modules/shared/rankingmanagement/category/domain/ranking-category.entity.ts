@@ -26,6 +26,7 @@ export class RankingCategory extends Model {
   rankingCategoryTypeId!: string;
   rankingCriteria?: RankingCriteria[];
   entity: any;
+  hasRequest?: any;
 
   static tableName = 'ranking_categories';
 

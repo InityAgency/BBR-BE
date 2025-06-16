@@ -40,6 +40,11 @@ export enum PermissionsEnum {
   UNITS_UPDATE_OWN = 'units.update.own',
   UNITS_DELETE_OWN = 'units.delete.own',
 
+  POSITION_REQUESTS_CREATE_OWN = 'position_requests.create.own',
+  POSITION_REQUESTS_READ_OWN = 'position_requests.read.own',
+  POSITION_REQUESTS_UPDATE_OWN = 'position_requests.update.own',
+  POSITION_REQUESTS_DELETE_OWN = 'position_requests.delete.own',
+
   // Leads
   LEADS_CREATE = 'lead.create',
   LEADS_READ = 'lead.read',

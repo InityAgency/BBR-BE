@@ -1,12 +1,12 @@
 import { Knex } from 'knex';
 
 // * LIVE
-const adminRoleId = 'e0f9da2d-daa9-4a29-aa26-6dd1619ee7b8';
-const managerRoleId = 'fa9a57fc-ade4-4e96-be36-570e269b7a9c';
+// const adminRoleId = 'e0f9da2d-daa9-4a29-aa26-6dd1619ee7b8';
+// const managerRoleId = 'fa9a57fc-ade4-4e96-be36-570e269b7a9c';
 
 // * LOCAL
-// const adminRoleId = '1810ad7b-d504-4576-ab96-c2f27328033e';
-// const managerRoleId = '16627f92-6b84-48f1-8b72-658ffda59b86';
+const adminRoleId = '1810ad7b-d504-4576-ab96-c2f27328033e';
+const managerRoleId = '16627f92-6b84-48f1-8b72-658ffda59b86';
 
 const allPermissions = [
   'users.create',
@@ -25,6 +25,10 @@ const allPermissions = [
   'requests.read.own',
   'requests.update.own',
   'requests.delete.own',
+  'position_requests.create.own',
+  'position_requests.read.own',
+  'position_requests.update.own',
+  'position_requests.delete.own',
   'roles.create',
   'roles.read',
   'roles.update',
