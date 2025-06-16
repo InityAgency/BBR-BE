@@ -30,11 +30,18 @@ export function buildCompanyJoin(knex: Knex) {
           'mimeType', avatar.mime_type,
           'uploadStatus', avatar.upload_status,
           'size', avatar.size
+        ),
+        'plan', json_build_object(
+          'id', plan.id,
+          'name', plan.name,
+          'code', plan.code,
+          'description', plan.description
         )
         )::json AS company
         FROM companies 
         LEFT JOIN media AS image ON image.id = companies.image_id
         LEFT JOIN media AS avatar ON avatar.id = companies.contact_person_avatar_id
+        LEFT JOIN plans AS plan ON plan.id = companies.plan_id
         WHERE companies.id = users.company_id
     ) company ON TRUE
   `);

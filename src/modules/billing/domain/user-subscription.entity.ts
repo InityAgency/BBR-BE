@@ -2,6 +2,7 @@ import { SubscriptionStatusEnum } from 'src/shared/types/subscription-status.enu
 import { BillingProduct } from './billing-product.entity';
 import { StripeCustomer } from './stripe-customer.entity';
 import { Model, RelationMappings } from 'objection';
+import { Plan } from 'src/modules/plan/domain/plan.entity';
 
 export class UserSubscription extends Model {
   id!: string;
@@ -33,6 +34,14 @@ export class UserSubscription extends Model {
       join: {
         from: 'billing_subscriptions.userId',
         to: 'stripe_customers.userId',
+      },
+    },
+    plan: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: Plan,
+      join: {
+        from: 'billing_subscriptions.productId',
+        to: 'plans.product_id',
       },
     },
   };

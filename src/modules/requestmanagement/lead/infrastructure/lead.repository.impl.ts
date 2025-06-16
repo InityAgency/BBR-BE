@@ -43,15 +43,16 @@ export class LeadRepositoryImpl implements ILeadRepository {
       .leftJoin('requests', 'leads.id', 'requests.leadId')
       .leftJoin('residences as reqRes', 'reqRes.id', 'requests.entityId')
       .leftJoin('units as u', 'u.id', 'requests.entityId')
-      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residence_id');
+      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residence_id')
+      .withGraphFetched('[requests]');
 
     if (companyId) {
       lead.where((qb) =>
         qb
           // slučaj gde je request bio na rezidenciju
-          .where('reqRes.company_id', companyId)
+          .where('reqRes.companyId', companyId)
           // ili slučaj gde je request bio na jedinicu čija rezidencija pripada toj kompaniji
-          .orWhere('unitRes.company_id', companyId)
+          .orWhere('unitRes.companyId', companyId)
       );
     }
 
@@ -76,30 +77,36 @@ export class LeadRepositoryImpl implements ILeadRepository {
       companyId,
     } = query;
 
-    const columnsToSearch = ['first_name', 'last_name', 'email', 'status'];
+    const columnsToSearch = [
+      'leads.first_name',
+      'leads.last_name',
+      'leads.email',
+      'leads.status',
+      'leads.phone',
+    ];
     const columnsToSort = ['firstName', 'lastName', 'createdAt', 'updatedAt'];
 
     let leadQuery = Lead.query()
-      .modify((qb) => applyFilters(qb, { firstName, lastName, email, status }, Lead.tableName))
-      .whereNull('leads.deletedAt')
-      .leftJoin('requests', 'leads.id', 'requests.leadId')
-      // pokušaj da ga vežeš kao rezidenciju
+      .alias('leads')
+      .modify((qb) => applyFilters(qb, { firstName, lastName, email, status }, 'leads'))
+      .whereNull('leads.deleted_at')
+      .joinRelated('requests')
       .leftJoin('residences as reqRes', 'reqRes.id', 'requests.entityId')
-      // pokušaj da ga vežeš kao jedinicu, pa iz jedinice do njene rezidencije
       .leftJoin('units as u', 'u.id', 'requests.entityId')
-      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residence_id');
+      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residenceId');
 
     if (companyId) {
       leadQuery.where((qb) =>
         qb
-          // slučaj gde je request bio na rezidenciju
-          .where('reqRes.company_id', companyId)
-          // ili slučaj gde je request bio na jedinicu čija rezidencija pripada toj kompaniji
-          .orWhere('unitRes.company_id', companyId)
+          // case #1: direct residence request, must match company
+          .whereNotNull('reqRes.id')
+          .andWhere('reqRes.companyId', companyId)
+
+          // OR case #2: unit-request whose residence matches
+          .orWhere((sub) => sub.whereNotNull('unitRes.id').andWhere('unitRes.companyId', companyId))
       );
     }
-
-    leadQuery = applySearchFilter(leadQuery.clone(), searchQuery, columnsToSearch);
+    leadQuery = applySearchFilter(leadQuery, searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
       if (columnsToSort.includes(sortBy)) {
@@ -107,17 +114,25 @@ export class LeadRepositoryImpl implements ILeadRepository {
       }
     }
 
-    // Use distinct to avoid duplicate leads because of joins
-    leadQuery.distinct('leads.*');
-
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(
       leadQuery,
       page,
-      limit
+      limit,
+      'leads.id' // DODATI ZA DISTINCT
     );
 
+    const distLeadQuery = await leadQuery
+      .clone()
+      .distinct('leads.*')
+      .withGraphFetched('[requests(filterEntity)]')
+      .modifiers({
+        filterEntity(builder) {
+          builder.whereNotNull('entityId');
+        },
+      });
+
     return {
-      data: paginatedQuery,
+      data: distLeadQuery,
       pagination: {
         total: totalCount,
         totalPages,

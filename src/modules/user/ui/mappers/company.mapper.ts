@@ -1,6 +1,7 @@
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
 import { Company } from '../../domain/company.entity';
 import { CompanyResponse } from '../response/company.response';
+import { PlanMapper } from './plan.mapper';
 
 export class CompanyMapper {
   static toResponse(company: Company): CompanyResponse {
@@ -35,7 +36,8 @@ export class CompanyMapper {
       company.contactPersonJobTitle,
       company.contactPersonEmail,
       company.contactPersonPhoneNumber,
-      company.contactPersonPhoneNumberCountryCode
+      company.contactPersonPhoneNumberCountryCode,
+      company.plan ? PlanMapper.toResponse(company.plan) : null
     );
   }
 }

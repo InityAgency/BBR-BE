@@ -51,6 +51,11 @@ export enum PermissionsEnum {
   LEADS_UPDATE_OWN = 'lead.update.own',
   LEADS_DELETE_OWN = 'lead.delete.own',
 
+  REQUESTS_CREATE_OWN = 'requests.create.own',
+  REQUESTS_READ_OWN = 'requests.read.own',
+  REQUESTS_UPDATE_OWN = 'requests.update.own',
+  REQUESTS_DELETE_OWN = 'requests.delete.own',
+
   // Dashboard
   DASHBOARD_READ = 'dashboard.read',
 

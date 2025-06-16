@@ -12,11 +12,11 @@ export class BillingProductRepositoryImpl implements IBillingProductRepository {
   }
 
   async findByBillingPriceId(priceId: string): Promise<BillingProduct | undefined> {
-    return await BillingProduct.query().where('stripe_price_id', priceId).first();
+    return await BillingProduct.query().where('stripePriceId', priceId).first();
   }
 
   async findByFeatureKey(key: string): Promise<BillingProduct | undefined> {
-    return await BillingProduct.query().where('feature_key', key).first();
+    return await BillingProduct.query().where('featureKey', key).first();
   }
 
   async getActiveProducts(): Promise<BillingProduct[]> {

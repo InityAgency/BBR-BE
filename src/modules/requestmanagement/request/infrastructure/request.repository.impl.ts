@@ -36,32 +36,41 @@ export class RequestRepositoryImpl implements IRequestRepository {
     return Request.query().findById(id).whereNull('deletedAt').withGraphFetched('[lead]');
   }
 
-  async findAll(query: FetchRequestsQuery): Promise<{ data: Request[]; pagination: PaginationResponse }> {
-    const knex = this.knexService.connection;
-    const {
-      page,
-      limit,
-      sortBy,
-      sortOrder,
-      searchQuery,
-      leadId,
-      type,
-      status,
-      developerId,
-    } = query;
+  async findOwnById(companyId: string, id: string): Promise<Request | undefined> {
+    return Request.query()
+      .findById(id)
+      .whereNull('requests.deletedAt')
+      .join('residences', 'requests.entity_id', 'residences.id')
+      .andWhere('residences.companyId', companyId)
+      .withGraphFetched('[lead]');
+  }
 
-    const searchableColumns = ['subject', 'type'];
+  async findAll(
+    query: FetchRequestsQuery
+  ): Promise<{ data: Request[]; pagination: PaginationResponse }> {
+    const knex = this.knexService.connection;
+    const { page, limit, sortBy, sortOrder, searchQuery, leadId, type, status, companyId } = query;
+
+    const searchableColumns = [
+      'requests.subject',
+      'requests.type',
+      'requests.message',
+      'lead.first_name',
+      'lead.last_name',
+      'lead.email',
+    ];
     const sortableColumns = ['subject', 'type', 'createdAt', 'updatedAt'];
 
     let requestQuery = Request.query()
       .whereNull('requests.deleted_at')
       .withGraphFetched('[lead]')
-      .modify((qb) => applyFilters(qb, { leadId, type, status }, Request.tableName));
+      .modify((qb) => applyFilters(qb, { leadId, type, status }, Request.tableName))
+      .join('leads as lead', 'lead.id', 'requests.leadId');
 
-    if (developerId) {
+    if (companyId) {
       requestQuery = requestQuery
-        .join('residences', 'requests.entity_id', 'residences.id')
-        .andWhere('residences.developer_id', developerId);
+        .join('residences', 'requests.entityId', 'residences.id')
+        .andWhere('residences.companyId', companyId);
     }
 
     requestQuery = applySearchFilter(requestQuery, searchQuery, searchableColumns);
@@ -86,7 +95,6 @@ export class RequestRepositoryImpl implements IRequestRepository {
       },
     };
   }
-
 
   async update(id: string, data: Partial<Request>): Promise<Request | undefined> {
     const knex = this.knexService.connection;
