@@ -20,7 +20,7 @@ export class SignUpGoogleCommandHandler {
       email: command.email,
       fullName: command.fullName,
       signupMethod: command.signupMethod,
-      emailVerified: command.emailVerified,
+      emailVerified: true,
       roleId: command.roleId,
       status: UserStatusEnum.ACTIVE,
     };
