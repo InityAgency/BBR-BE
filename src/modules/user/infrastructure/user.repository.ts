@@ -112,7 +112,7 @@ export class UserRepositoryImpl implements IUserRepository {
     const user = await User.query().findById(id).whereNull('users.deleted_at').withGraphFetched(`
       [
         role,
-        company.[image, contactPersonAvatar],
+        company.[image, contactPersonAvatar, plan],
         buyer.[unitTypes, lifestyles]
       ]
     `);

@@ -37,7 +37,7 @@ export class CompanyMapper {
       company.contactPersonEmail,
       company.contactPersonPhoneNumber,
       company.contactPersonPhoneNumberCountryCode,
-      company.plan ? PlanMapper.toResponse(company.plan) : null
+      company.plan && company.plan.id ? PlanMapper.toResponse(company.plan) : null
     );
   }
 }
