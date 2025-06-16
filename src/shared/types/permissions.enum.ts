@@ -112,6 +112,12 @@ export enum PermissionsEnum {
   REVIEWS_UPDATE = 'reviews.update',
   REVIEWS_DELETE = 'reviews.delete',
 
+  // Review Own
+  REVIEWS_CREATE_OWN = 'reviews.create.own',
+  REVIEWS_READ_OWN = 'reviews.read.own',
+  REVIEWS_UPDATE_OWN = 'reviews.update.own',
+  REVIEWS_DELETE_OWN = 'reviews.delete.own',
+
   // Claim Profile Contact Forms
   CLAIM_PROFILE_CONTACT_FORMS_CREATE = 'claim_profile_contact_forms.create',
   CLAIM_PROFILE_CONTACT_FORMS_READ = 'claim_profile_contact_forms.read',

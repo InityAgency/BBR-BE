@@ -59,10 +59,13 @@ export class ReviewController {
   ) {
     const user = req.user as User;
     let loggedDeveloperCompanyId: string | undefined = undefined;
+    const hasOwnPermission = user?.role.permissions?.includes(PermissionsEnum.REVIEWS_READ_OWN);
 
-    if (user.role?.name?.toLowerCase() === 'developer') {
+    if (hasOwnPermission) {
       loggedDeveloperCompanyId = user.company?.id;
     }
+
+    console.log(loggedDeveloperCompanyId);
 
     const { data, pagination } = await this.fetchReviewsCommandQuery.handle(
       new FetchReviewsQuery(
@@ -91,8 +94,9 @@ export class ReviewController {
   @UseGuards(SessionAuthGuard)
   @ApiOperation({ summary: 'Get review by ID' })
   @ApiResponse({ type: ReviewResponse })
-  async findById(@Param('id') id: string) {
-    const review = await this.findReviewByIdCommandQuery.handle(id);
+  async findById(@Req() req, @Param('id') id: string) {
+    const user = req.user as User;
+    const review = await this.findReviewByIdCommandQuery.handle(user, id);
 
     return ReviewMapper.toResponse(review);
   }

@@ -8,6 +8,7 @@ import { ILeadRepository } from '../domain/ilead.repository.interface';
 import { Lead } from '../domain/lead.entity';
 import { FetchLeadsQuery } from '../application/command/fetch-leads.query';
 import { User } from 'src/modules/user/domain/user.entity';
+import { AnyQueryBuilder, Modifiers } from 'objection';
 
 @Injectable()
 export class LeadRepositoryImpl implements ILeadRepository {
@@ -44,7 +45,28 @@ export class LeadRepositoryImpl implements ILeadRepository {
       .leftJoin('residences as reqRes', 'reqRes.id', 'requests.entityId')
       .leftJoin('units as u', 'u.id', 'requests.entityId')
       .leftJoin('residences as unitRes', 'unitRes.id', 'u.residence_id')
-      .withGraphFetched('[requests]');
+      .withGraphFetched('[requests(filterEntity)]')
+      .modifiers({
+        filterEntity(builder) {
+          builder.whereNotNull('entityId');
+
+          builder
+            .leftJoin('residences     as reqRes', 'reqRes.id', 'requests.entity_id')
+            .leftJoin('units          as u', 'u.id', 'requests.entity_id')
+            .leftJoin('residences     as unitRes', 'unitRes.id', 'u.residence_id')
+            .where((qb) =>
+              qb
+                // CASE 1: request ON a residence AND that residence has a company
+                .where(function () {
+                  this.whereNotNull('reqRes.id').whereNotNull('reqRes.company_id');
+                })
+                // OR CASE 2: request on a unit whose parent residence has a company
+                .orWhere(function () {
+                  this.whereNotNull('unitRes.id').whereNotNull('unitRes.company_id');
+                })
+            );
+        },
+      });
 
     if (companyId) {
       lead.where((qb) =>
@@ -95,17 +117,43 @@ export class LeadRepositoryImpl implements ILeadRepository {
       .leftJoin('units as u', 'u.id', 'requests.entityId')
       .leftJoin('residences as unitRes', 'unitRes.id', 'u.residenceId');
 
+    const graphExpression = companyId ? 'requests(filterEntity)' : 'requests';
+
+    const modifiers: Modifiers<AnyQueryBuilder> = companyId
+      ? {
+          filterEntity(builder: AnyQueryBuilder) {
+            builder
+              .whereNotNull('entity_id')
+              .leftJoin('residences     as reqRes', 'reqRes.id', 'requests.entity_id')
+              .leftJoin('units          as u', 'u.id', 'requests.entity_id')
+              .leftJoin('residences     as unitRes', 'unitRes.id', 'u.residence_id')
+              .where((qb) =>
+                qb
+                  .where(function () {
+                    this.whereNotNull('reqRes.id').whereNotNull('reqRes.company_id');
+                  })
+                  .orWhere(function () {
+                    this.whereNotNull('unitRes.id').whereNotNull('unitRes.company_id');
+                  })
+              );
+          },
+        }
+      : {};
+
     if (companyId) {
       leadQuery.where((qb) =>
         qb
-          // case #1: direct residence request, must match company
-          .whereNotNull('reqRes.id')
-          .andWhere('reqRes.companyId', companyId)
-
-          // OR case #2: unit-request whose residence matches
-          .orWhere((sub) => sub.whereNotNull('unitRes.id').andWhere('unitRes.companyId', companyId))
+          .where(function () {
+            this.whereNotNull('reqRes.id').andWhere('reqRes.companyId', companyId);
+          })
+          .orWhere(function () {
+            this.whereNotNull('unitRes.id').andWhere('unitRes.companyId', companyId);
+          })
       );
+    } else {
+      leadQuery.where((qb) => qb.whereNotNull('reqRes.id').orWhereNotNull('unitRes.id'));
     }
+
     leadQuery = applySearchFilter(leadQuery, searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
@@ -124,12 +172,8 @@ export class LeadRepositoryImpl implements ILeadRepository {
     const distLeadQuery = await leadQuery
       .clone()
       .distinct('leads.*')
-      .withGraphFetched('[requests(filterEntity)]')
-      .modifiers({
-        filterEntity(builder) {
-          builder.whereNotNull('entityId');
-        },
-      });
+      .withGraphFetched(graphExpression)
+      .modifiers(modifiers);
 
     return {
       data: distLeadQuery,
