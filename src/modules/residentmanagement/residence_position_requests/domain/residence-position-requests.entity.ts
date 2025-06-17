@@ -10,13 +10,18 @@ export class ResidencePositionRequest extends Model {
   rankingCategoryId!: string;
   requestedPosition?: number;
   requestedBy!: string;
-  requestedAt!: string;
+  requestedAt!: Date;
   status!: ResidencePositionRequestStatusEnum;
   reviewedBy?: string;
-  reviewedAt?: string;
+  reviewedAt?: Date;
   reviewNotes?: string;
-  createdAt!: string;
-  updatedAt!: string;
+  createdAt!: Date;
+  updatedAt!: Date;
+
+  residence?: Residence;
+  rankingCategory?: RankingCategory;
+  requestedByUser?: User;
+  reviewedByUser?: User;
 
   static tableName = 'residence_position_requests';
 
@@ -25,7 +30,7 @@ export class ResidencePositionRequest extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: () => Residence,
       join: {
-        from: 'residence_position_requests.residence_id',
+        from: 'residence_position_requests.residenceId',
         to: 'residences.id',
       },
     },
@@ -33,7 +38,7 @@ export class ResidencePositionRequest extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: () => RankingCategory,
       join: {
-        from: 'residence_position_requests.ranking_category_id',
+        from: 'residence_position_requests.rankingCategoryId',
         to: 'ranking_categories.id',
       },
     },
@@ -41,7 +46,7 @@ export class ResidencePositionRequest extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: () => User,
       join: {
-        from: 'residence_position_requests.requested_by',
+        from: 'residence_position_requests.requestedBy',
         to: 'users.id',
       },
     },
@@ -49,9 +54,19 @@ export class ResidencePositionRequest extends Model {
       relation: Model.BelongsToOneRelation,
       modelClass: () => User,
       join: {
-        from: 'residence_position_requests.reviewed_by',
+        from: 'residence_position_requests.reviewedBy',
         to: 'users.id',
       },
     },
   };
+
+  async $beforeInsert() {
+    const now = new Date();
+    this.createdAt = now;
+    this.updatedAt = now;
+  }
+
+  async $beforeUpdate() {
+    this.updatedAt = new Date();
+  }
 }

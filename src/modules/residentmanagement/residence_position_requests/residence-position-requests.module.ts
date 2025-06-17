@@ -9,9 +9,14 @@ import { CreatePositionRequestCommandHandler } from './application/handler/creat
 import { ResidencePositionRequestsController } from './ui/residence-position-requests.controller';
 import { IResidencePositionRequestsRepository } from './domain/residence-position-requests.repository.interface';
 import { ResidencePositionRequestsRepositoryImpl } from './infrastructure/residence-position-requests.repository.impl';
+import { fetchPositionRequestsCommandQuery } from './application/query/fetch-position-requests.command.query';
+import { UpdatePositionRequestStatusCommandHandler } from './application/handler/update-position-request-status.command.handler';
+import EmailModule from 'src/modules/email/email.module';
+import { DeletePositionRequestCommandHandler } from './application/handler/delete-position-request.command.handler';
 
 @Module({
   controllers: [ResidencePositionRequestsController],
+  imports: [EmailModule],
   providers: [
     {
       provide: IUserRepository,
@@ -30,6 +35,9 @@ import { ResidencePositionRequestsRepositoryImpl } from './infrastructure/reside
       useClass: ResidencePositionRequestsRepositoryImpl,
     },
     CreatePositionRequestCommandHandler,
+    UpdatePositionRequestStatusCommandHandler,
+    DeletePositionRequestCommandHandler,
+    fetchPositionRequestsCommandQuery,
   ],
   exports: [],
 })
