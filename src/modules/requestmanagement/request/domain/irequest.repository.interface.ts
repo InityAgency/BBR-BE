@@ -7,6 +7,8 @@ export abstract class IRequestRepository {
 
   abstract findById(id: string): Promise<Request | undefined>;
 
+  abstract findOwnById(companyId: string, id: string): Promise<Request | undefined>;
+
   abstract findAll(
     query: FetchRequestsQuery
   ): Promise<{ data: Request[]; pagination: PaginationResponse }>;

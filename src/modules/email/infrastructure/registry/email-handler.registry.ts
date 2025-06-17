@@ -35,6 +35,14 @@ import { SendOwnershipRequestDeclinedCommandHandler } from '../../application/se
 import { SendOwnershipRequestCommand } from '../../application/command/send-ownership-request.command';
 import { SendOwnershipRequestAcceptedCommand } from '../../application/command/send-ownership-request-accepted.command';
 import { SendOwnershipRequestDeclinedCommand } from '../../application/command/send-ownership-request-declined.command';
+import { SendRegisterUnitCommand } from '../../application/command/send-register-unit.command';
+import { SendRegisterUnitCommandHandler } from '../../application/send-register-unit.command.handler';
+import { SendPremiumSubscriptionCommandHandler } from '../../application/send-premium-subscription.command.handler';
+import { SendPremiumSubscriptionCommand } from '../../application/command/send-premium-subscription.command';
+import { SendSuggestFeatureCommand } from '../../application/command/send-suggest-feature.command';
+import { SendSuggestFeatureCommandHandler } from '../../application/send-suggest-feature.command.handler';
+import { SendContactUsEmailCommand } from '../../application/command/send-contact-us.command';
+import { SendContactUsEmailCommandHandler } from '../../application/send-contact-us.command.handler';
 
 @Injectable()
 export class EmailHandlerRegistry {
@@ -55,7 +63,11 @@ export class EmailHandlerRegistry {
     private readonly rejectedResidence: SendRejectedResidenceCommandHandler,
     private readonly ownershipRequest: SendOwnershipRequestCommandHandler,
     private readonly ownershipRequestAccepted: SendOwnershipRequestAcceptedCommandHandler,
-    private readonly ownershipRequestDeclined: SendOwnershipRequestDeclinedCommandHandler
+    private readonly ownershipRequestDeclined: SendOwnershipRequestDeclinedCommandHandler,
+    private readonly registerUnit: SendRegisterUnitCommandHandler,
+    private readonly premiumSubscription: SendPremiumSubscriptionCommandHandler,
+    private readonly suggestFeature: SendSuggestFeatureCommandHandler,
+    private readonly contactUs: SendContactUsEmailCommandHandler
   ) {}
 
   getHandler(action: EmailAction): (cmd: SendEmailCommand) => Promise<void> {
@@ -97,11 +109,23 @@ export class EmailHandlerRegistry {
           )
         ),
 
-      // todo
-      [EmailAction.CONTACT_US]: (cmd) => Promise.resolve(),
+      [EmailAction.CONTACT_US]: (cmd) =>
+        this.contactUs.handle(
+          new SendContactUsEmailCommand(
+            cmd.to,
+            cmd.variables.fullName,
+            cmd.variables.exploreMoreResidencesLink
+          )
+        ),
 
-      // Todo
-      [EmailAction.SUGGEST_FEATURE]: (cmd) => Promise.resolve(),
+      [EmailAction.SUGGEST_FEATURE]: (cmd) =>
+        this.suggestFeature.handle(
+          new SendSuggestFeatureCommand(
+            cmd.to,
+            cmd.variables.fullName,
+            cmd.variables.exploreMoreResidencesLink
+          )
+        ),
 
       [EmailAction.SUBMIT_REVIEW]: (cmd) =>
         this.submitReview.handle(
@@ -130,11 +154,29 @@ export class EmailHandlerRegistry {
           )
         ),
 
+      // TODO
       [EmailAction.REQUEST_PREMIUM_PROFILE]: (cmd) => Promise.resolve(),
 
+      [EmailAction.PREMIUM_SUBSCRIPTION]: (cmd) =>
+        this.premiumSubscription.handle(
+          new SendPremiumSubscriptionCommand(
+            cmd.to,
+            cmd.variables.fullName,
+            cmd.variables.manageResidencesLink
+          )
+        ),
       [EmailAction.REGISTER_RESIDENCE]: (cmd) =>
         this.registerResidence.handle(
           new SendRegisterResidenceCommand(
+            cmd.to,
+            cmd.variables.fullName,
+            cmd.variables.manageResidencesLink
+          )
+        ),
+
+      [EmailAction.REGISTER_UNIT]: (cmd) =>
+        this.registerUnit.handle(
+          new SendRegisterUnitCommand(
             cmd.to,
             cmd.variables.fullName,
             cmd.variables.manageResidencesLink

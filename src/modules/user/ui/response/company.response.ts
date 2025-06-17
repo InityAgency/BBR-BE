@@ -1,4 +1,5 @@
 import { MediaResponse } from 'src/modules/media/ui/response/media.response';
+import { PlanResponse } from './plan.response';
 
 export class CompanyResponse {
   constructor(
@@ -14,6 +15,7 @@ export class CompanyResponse {
     public readonly contactPersonJobTitle?: string,
     public readonly contactPersonEmail?: string,
     public readonly contactPersonPhoneNumber?: string,
-    public readonly contactPersonPhoneNumberCountryCode?: string
+    public readonly contactPersonPhoneNumberCountryCode?: string,
+    public readonly plan?: PlanResponse | null
   ) {}
 }

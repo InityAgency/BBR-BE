@@ -16,6 +16,7 @@ export class RankingCategoryResponse {
     public readonly featuredImage: MediaResponse | null,
     public readonly status: string,
     public readonly entityId?: string,
-    public readonly entity?: any
+    public readonly entity?: any,
+    public readonly hasRequest?: Date
   ) {}
 }

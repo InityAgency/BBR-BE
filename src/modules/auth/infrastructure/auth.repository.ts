@@ -11,6 +11,7 @@ import {
 } from 'src/shared/user-query';
 import { v4 as uuidv4 } from 'uuid';
 import { IAuthRepository } from '../domain/auth.repository.interface';
+import { PlanEnum } from 'src/shared/types/plan.enum';
 @Injectable()
 export class AuthRepository implements IAuthRepository {
   private tableName = 'users';
@@ -63,6 +64,10 @@ export class AuthRepository implements IAuthRepository {
           .first();
 
         if (isDeveloper) {
+          const plan = await trx('plans')
+            .where({ code: PlanEnum.FREE })
+            .select('id', 'name', 'code')
+            .first();
           // ✅ Create a company for developers
           const companyId = uuidv4();
           await trx('companies').insert({
@@ -71,6 +76,7 @@ export class AuthRepository implements IAuthRepository {
             address: null,
             phone_number: null,
             website: null,
+            planId: plan.id,
           });
 
           // ✅ Link developer user to the created company

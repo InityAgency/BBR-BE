@@ -4,8 +4,6 @@ import { PaymentMethodRepositoryImpl } from './infrastructure/payment-method.rep
 import { IPaymentMethodRepository } from './domain/interfaces/payment-method.repository.interface';
 import { FetchAllPaymentMethodsByUserCommandQuery } from './application/query/fetch-all-payment-methods-by-user.command.query';
 import { AddPaymentMethodCommandHandler } from './application/handlers/add-payment-method.command.handler';
-import { IUserRepository } from '../user/domain/user.repository.interface';
-import { UserRepositoryImpl } from '../user/infrastructure/user.repository';
 import { StripeService } from 'src/shared/stripe/stripe.service';
 import { StripeCustomerService } from './application/services/stripe-customer.service';
 import { IStripeCustomerRepository } from './domain/interfaces/stripe-customer.repository.interface';
@@ -26,10 +24,16 @@ import { EmailRepository } from '../email/infrastructure/email.repository';
 import { IUserSubscriptionRepository } from './domain/interfaces/user-subscription.repository.interface';
 import { UserSubscriptionRepositoryImpl } from './infrastructure/user-subscription.repository';
 import { FetchAllTransactionsCommandQuery } from './application/query/fetch-all-transactions.command.query';
+import { ICompanyRepository } from './domain/interfaces/company.repository.interface';
+import { CompanyRepositoryImpl } from './infrastructure/company.repository.impl';
+import { CompanyService } from './application/services/company.service';
+import { IUserRepository } from './domain/interfaces/user.repository.interface';
+import { UserRepositoryImpl } from './infrastructure/user.repository.impl';
+import EmailModule from '../email/email.module';
 
 @Module({
   controllers: [BillingController, StripeWebhookController],
-  imports: [],
+  imports: [EmailModule],
   providers: [
     {
       provide: IPaymentMethodRepository,
@@ -59,6 +63,10 @@ import { FetchAllTransactionsCommandQuery } from './application/query/fetch-all-
       provide: IUserSubscriptionRepository,
       useClass: UserSubscriptionRepositoryImpl,
     },
+    {
+      provide: ICompanyRepository,
+      useClass: CompanyRepositoryImpl,
+    },
     FetchAllPaymentMethodsByUserCommandQuery,
     FetchAllProductsCommandQuery,
     FetchAllTransactionsCommandQuery,
@@ -70,6 +78,7 @@ import { FetchAllTransactionsCommandQuery } from './application/query/fetch-all-
     SubscriptionService,
     StripeService,
     StripeCustomerService,
+    CompanyService,
   ],
   exports: [],
 })

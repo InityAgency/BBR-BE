@@ -1,10 +1,12 @@
 import type { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
+  await knex.schema.dropTableIfExists('billing_subscriptions');
+
   return knex.schema.createTable('billing_subscriptions', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.uuid('user_id').notNullable().index();
-    table.integer('product_id').notNullable(); // stripe
+    table.string('product_id').notNullable().index(); // stripe
     table.string('subscription_id').notNullable(); // stripe
     table.timestamp('current_period_end').notNullable();
     table.string('status').notNullable(); // ['active', 'past_due', 'canceled', 'incomplete']

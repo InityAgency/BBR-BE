@@ -7,7 +7,11 @@ export abstract class IReviewRepository {
 
   abstract findById(id: string): Promise<Review | undefined>;
 
-  abstract findAll(query: FetchReviewsQuery): Promise<{ data: Review[]; pagination: PaginationResponse }>;
+  abstract findOwnById(companyId: string, id: string): Promise<Review | undefined>;
+
+  abstract findAll(
+    query: FetchReviewsQuery
+  ): Promise<{ data: Review[]; pagination: PaginationResponse }>;
 
   abstract update(id: string, data: Partial<Review>): Promise<Review | undefined>;
 

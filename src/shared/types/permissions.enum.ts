@@ -40,6 +40,11 @@ export enum PermissionsEnum {
   UNITS_UPDATE_OWN = 'units.update.own',
   UNITS_DELETE_OWN = 'units.delete.own',
 
+  POSITION_REQUESTS_CREATE_OWN = 'position_requests.create.own',
+  POSITION_REQUESTS_READ_OWN = 'position_requests.read.own',
+  POSITION_REQUESTS_UPDATE_OWN = 'position_requests.update.own',
+  POSITION_REQUESTS_DELETE_OWN = 'position_requests.delete.own',
+
   // Leads
   LEADS_CREATE = 'lead.create',
   LEADS_READ = 'lead.read',
@@ -50,6 +55,11 @@ export enum PermissionsEnum {
   LEADS_READ_OWN = 'lead.read.own',
   LEADS_UPDATE_OWN = 'lead.update.own',
   LEADS_DELETE_OWN = 'lead.delete.own',
+
+  REQUESTS_CREATE_OWN = 'requests.create.own',
+  REQUESTS_READ_OWN = 'requests.read.own',
+  REQUESTS_UPDATE_OWN = 'requests.update.own',
+  REQUESTS_DELETE_OWN = 'requests.delete.own',
 
   // Dashboard
   DASHBOARD_READ = 'dashboard.read',
@@ -100,12 +110,23 @@ export enum PermissionsEnum {
   BILLING_CREATE = 'billing.create',
   BILLING_UPDATE = 'billing.update',
   BILLING_DELETE = 'billing.delete',
+  // Billing own
+  BILLING_READ_OWN = 'billing.read.own',
+  BILLING_CREATE_OWN = 'billing.create.own',
+  BILLING_UPDATE_OWN = 'billing.update.own',
+  BILLING_DELETE_OWN = 'billing.delete.own',
 
   // Review
   REVIEWS_CREATE = 'reviews.create',
   REVIEWS_READ = 'reviews.read',
   REVIEWS_UPDATE = 'reviews.update',
   REVIEWS_DELETE = 'reviews.delete',
+
+  // Review Own
+  REVIEWS_CREATE_OWN = 'reviews.create.own',
+  REVIEWS_READ_OWN = 'reviews.read.own',
+  REVIEWS_UPDATE_OWN = 'reviews.update.own',
+  REVIEWS_DELETE_OWN = 'reviews.delete.own',
 
   // Claim Profile Contact Forms
   CLAIM_PROFILE_CONTACT_FORMS_CREATE = 'claim_profile_contact_forms.create',

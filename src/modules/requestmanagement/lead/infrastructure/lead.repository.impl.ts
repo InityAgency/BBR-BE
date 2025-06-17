@@ -8,6 +8,7 @@ import { ILeadRepository } from '../domain/ilead.repository.interface';
 import { Lead } from '../domain/lead.entity';
 import { FetchLeadsQuery } from '../application/command/fetch-leads.query';
 import { User } from 'src/modules/user/domain/user.entity';
+import { AnyQueryBuilder, Modifiers } from 'objection';
 
 @Injectable()
 export class LeadRepositoryImpl implements ILeadRepository {
@@ -43,15 +44,37 @@ export class LeadRepositoryImpl implements ILeadRepository {
       .leftJoin('requests', 'leads.id', 'requests.leadId')
       .leftJoin('residences as reqRes', 'reqRes.id', 'requests.entityId')
       .leftJoin('units as u', 'u.id', 'requests.entityId')
-      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residence_id');
+      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residence_id')
+      .withGraphFetched('[requests(filterEntity)]')
+      .modifiers({
+        filterEntity(builder) {
+          builder.whereNotNull('entityId');
+
+          builder
+            .leftJoin('residences     as reqRes', 'reqRes.id', 'requests.entity_id')
+            .leftJoin('units          as u', 'u.id', 'requests.entity_id')
+            .leftJoin('residences     as unitRes', 'unitRes.id', 'u.residence_id')
+            .where((qb) =>
+              qb
+                // CASE 1: request ON a residence AND that residence has a company
+                .where(function () {
+                  this.whereNotNull('reqRes.id').whereNotNull('reqRes.company_id');
+                })
+                // OR CASE 2: request on a unit whose parent residence has a company
+                .orWhere(function () {
+                  this.whereNotNull('unitRes.id').whereNotNull('unitRes.company_id');
+                })
+            );
+        },
+      });
 
     if (companyId) {
       lead.where((qb) =>
         qb
           // slučaj gde je request bio na rezidenciju
-          .where('reqRes.company_id', companyId)
+          .where('reqRes.companyId', companyId)
           // ili slučaj gde je request bio na jedinicu čija rezidencija pripada toj kompaniji
-          .orWhere('unitRes.company_id', companyId)
+          .orWhere('unitRes.companyId', companyId)
       );
     }
 
@@ -73,33 +96,75 @@ export class LeadRepositoryImpl implements ILeadRepository {
       lastName,
       email,
       status,
+      entityId,
       companyId,
     } = query;
 
-    const columnsToSearch = ['first_name', 'last_name', 'email', 'status'];
+    const columnsToSearch = [
+      'leads.first_name',
+      'leads.last_name',
+      'leads.email',
+      'leads.status',
+      'leads.phone',
+    ];
     const columnsToSort = ['firstName', 'lastName', 'createdAt', 'updatedAt'];
 
     let leadQuery = Lead.query()
-      .modify((qb) => applyFilters(qb, { firstName, lastName, email, status }, Lead.tableName))
-      .whereNull('leads.deletedAt')
-      .leftJoin('requests', 'leads.id', 'requests.leadId')
-      // pokušaj da ga vežeš kao rezidenciju
+      .alias('leads')
+      .modify((qb) => applyFilters(qb, { firstName, lastName, email, status }, 'leads'))
+      .whereNull('leads.deleted_at')
+      .joinRelated('requests')
       .leftJoin('residences as reqRes', 'reqRes.id', 'requests.entityId')
-      // pokušaj da ga vežeš kao jedinicu, pa iz jedinice do njene rezidencije
       .leftJoin('units as u', 'u.id', 'requests.entityId')
-      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residence_id');
+      .leftJoin('residences as unitRes', 'unitRes.id', 'u.residenceId');
+
+    const graphExpression = companyId ? 'requests(filterEntity)' : 'requests';
+
+    const modifiers: Modifiers<AnyQueryBuilder> = companyId
+      ? {
+          filterEntity(builder: AnyQueryBuilder) {
+            builder
+              .whereNotNull('entity_id')
+              .leftJoin('residences     as reqRes', 'reqRes.id', 'requests.entity_id')
+              .leftJoin('units          as u', 'u.id', 'requests.entity_id')
+              .leftJoin('residences     as unitRes', 'unitRes.id', 'u.residence_id')
+              .where((qb) =>
+                qb
+                  .where(function () {
+                    this.whereNotNull('reqRes.id').whereNotNull('reqRes.company_id');
+                  })
+                  .orWhere(function () {
+                    this.whereNotNull('unitRes.id').whereNotNull('unitRes.company_id');
+                  })
+              );
+          },
+        }
+      : {};
+
+    if (entityId) {
+      leadQuery.andWhere(
+        (qb) =>
+          qb
+            .where('reqRes.id', entityId) // direct‐residence match
+            .orWhere('u.id', entityId) // unit match
+      );
+    }
 
     if (companyId) {
       leadQuery.where((qb) =>
         qb
-          // slučaj gde je request bio na rezidenciju
-          .where('reqRes.company_id', companyId)
-          // ili slučaj gde je request bio na jedinicu čija rezidencija pripada toj kompaniji
-          .orWhere('unitRes.company_id', companyId)
+          .where(function () {
+            this.whereNotNull('reqRes.id').andWhere('reqRes.companyId', companyId);
+          })
+          .orWhere(function () {
+            this.whereNotNull('unitRes.id').andWhere('unitRes.companyId', companyId);
+          })
       );
+    } else {
+      leadQuery.where((qb) => qb.whereNotNull('reqRes.id').orWhereNotNull('unitRes.id'));
     }
 
-    leadQuery = applySearchFilter(leadQuery.clone(), searchQuery, columnsToSearch);
+    leadQuery = applySearchFilter(leadQuery, searchQuery, columnsToSearch);
 
     if (sortBy && sortOrder) {
       if (columnsToSort.includes(sortBy)) {
@@ -107,17 +172,21 @@ export class LeadRepositoryImpl implements ILeadRepository {
       }
     }
 
-    // Use distinct to avoid duplicate leads because of joins
-    leadQuery.distinct('leads.*');
-
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(
       leadQuery,
       page,
-      limit
+      limit,
+      'leads.id' // DODATI ZA DISTINCT
     );
 
+    const distLeadQuery = await leadQuery
+      .clone()
+      .distinct('leads.*')
+      .withGraphFetched(graphExpression)
+      .modifiers(modifiers);
+
     return {
-      data: paginatedQuery,
+      data: distLeadQuery,
       pagination: {
         total: totalCount,
         totalPages,

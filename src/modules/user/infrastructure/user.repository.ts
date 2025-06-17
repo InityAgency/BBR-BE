@@ -20,6 +20,7 @@ import { UpdateUserRequest } from '../ui/request/update-user.request';
 import { applyFilters } from 'src/shared/filters/query.dynamic-filters';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
 import { v4 as uuidv4 } from 'uuid';
+import { PlanEnum } from 'src/shared/types/plan.enum';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -45,6 +46,10 @@ export class UserRepositoryImpl implements IUserRepository {
           .first();
 
         if (isDeveloper) {
+          const plan = await trx('plans')
+            .where({ code: PlanEnum.FREE })
+            .select('id', 'name', 'code')
+            .first();
           // ✅ Create a company for developers
           const companyId = uuidv4();
           await trx('companies').insert({
@@ -53,6 +58,7 @@ export class UserRepositoryImpl implements IUserRepository {
             address: null,
             phone_number: null,
             website: null,
+            planId: plan?.id,
           });
 
           // ✅ Link developer user to the created company
@@ -112,7 +118,7 @@ export class UserRepositoryImpl implements IUserRepository {
     const user = await User.query().findById(id).whereNull('users.deleted_at').withGraphFetched(`
       [
         role,
-        company.[image, contactPersonAvatar],
+        company.[image, contactPersonAvatar, plan],
         buyer.[unitTypes, lifestyles]
       ]
     `);

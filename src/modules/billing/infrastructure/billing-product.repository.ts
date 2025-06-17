@@ -16,7 +16,7 @@ export class BillingProductRepositoryImpl implements IBillingProductRepository {
   }
 
   async findByFeatureKey(key: string): Promise<BillingProduct | undefined> {
-    return await BillingProduct.query().where('feature_key', key).first();
+    return await BillingProduct.query().where('featureKey', key).first();
   }
 
   async getActiveProducts(): Promise<BillingProduct[]> {

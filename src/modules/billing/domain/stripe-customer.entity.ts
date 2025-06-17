@@ -2,6 +2,7 @@ import { Model, RelationMappings } from 'objection';
 import { UserSubscription } from './user-subscription.entity';
 import { BillingTransaction } from './billing-transaction.entity';
 import { BillingPaymentMethod } from './billing-payment-method.entity';
+import { User } from './user.entity';
 
 export class StripeCustomer extends Model {
   id!: string;
@@ -17,6 +18,14 @@ export class StripeCustomer extends Model {
   static tableName = 'stripe_customers';
 
   static relationMappings: RelationMappings = {
+    user: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => User,
+      join: {
+        from: 'stripe_customers.userId',
+        to: 'users.id',
+      },
+    },
     subscriptions: {
       relation: Model.HasManyRelation,
       modelClass: () => UserSubscription,

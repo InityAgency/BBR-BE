@@ -1,6 +1,7 @@
 import { Model, RelationMappings } from 'objection';
 import { BillingProductTypeEnum } from 'src/shared/types/product-type.enum';
 import { StripeCustomer } from './stripe-customer.entity';
+import { User } from './user.entity';
 
 export class BillingTransaction extends Model {
   id!: string;
@@ -22,6 +23,14 @@ export class BillingTransaction extends Model {
   static tableName = 'billing_transactions';
 
   static relationMappings: RelationMappings = {
+    user: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: () => User,
+      join: {
+        from: 'billing_transactions.userId',
+        to: 'users.id',
+      },
+    },
     customer: {
       relation: Model.BelongsToOneRelation,
       modelClass: () => StripeCustomer,

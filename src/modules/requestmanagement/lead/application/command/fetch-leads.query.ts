@@ -6,6 +6,7 @@ export class FetchLeadsQuery extends BaseFetchQuery {
   lastName?: string[];
   status?: string[];
   companyId?: string;
+  entityId?: string;
 
   constructor(
     query?: string,
@@ -17,6 +18,7 @@ export class FetchLeadsQuery extends BaseFetchQuery {
     firstName?: string[],
     lastName?: string[],
     status?: string[],
+    entityId?: string,
     companyId?: string
   ) {
     super(query, page, limit, sortBy, sortOrder);
@@ -25,5 +27,6 @@ export class FetchLeadsQuery extends BaseFetchQuery {
     this.lastName = lastName;
     this.status = status;
     this.companyId = companyId;
+    this.entityId = entityId;
   }
 }

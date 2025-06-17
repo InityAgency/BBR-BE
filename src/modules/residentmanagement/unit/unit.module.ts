@@ -19,9 +19,10 @@ import { IUnitTypeRepository } from '../unit_type/domain/unit-type.repository.in
 import { UnitTypeRepositoryImpl } from '../unit_type/infrastructure/unit-type.repository';
 import { FindUnitBySlugCommandQuery } from './application/query/find-by-slug-unit.query';
 import { UpdateUnitStatusCommandHandler } from './application/handler/update-unit-status.command.handler';
+import EmailModule from 'src/modules/email/email.module';
 
 @Module({
-  imports: [DatabaseModule, MediaModule],
+  imports: [DatabaseModule, MediaModule, EmailModule],
   controllers: [UnitController, UnitPublicController],
   providers: [
     {

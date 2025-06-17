@@ -1,20 +1,17 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
-import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
-import { IUnitRepository } from '../../domain/unit.repository.interface';
-import { Unit } from '../../domain/unit.entity';
-import { CreateUnitCommand } from '../command/create-unit.command';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { EmailAction } from 'src/modules/email/domain/email-action.enum';
 import { IMediaRepository } from 'src/modules/media/domain/media.repository.interface';
-import { Media } from 'src/modules/media/domain/media.entity';
-import { IResidenceRepository } from '../../domain/residence.repository.interface';
-import { IUnitTypeRepository } from '../../../unit_type/domain/unit-type.repository.interface';
 import { User } from 'src/modules/user/domain/user.entity';
+import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { PermissionsEnum } from 'src/shared/types/permissions.enum';
+import { IUnitTypeRepository } from '../../../unit_type/domain/unit-type.repository.interface';
+import { IResidenceRepository } from '../../domain/residence.repository.interface';
 import { UnitStatusEnum } from '../../domain/unit-status.enum';
+import { Unit } from '../../domain/unit.entity';
+import { IUnitRepository } from '../../domain/unit.repository.interface';
+import { CreateUnitCommand } from '../command/create-unit.command';
+import { EmailQueue } from 'src/modules/email/infrastructure/queues/email.queue';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CreateUnitCommandHandler {
@@ -22,7 +19,9 @@ export class CreateUnitCommandHandler {
     private readonly unitRepository: IUnitRepository,
     private readonly mediaRepository: IMediaRepository,
     private readonly residenceRepository: IResidenceRepository,
-    private readonly unitTypeRepository: IUnitTypeRepository
+    private readonly unitTypeRepository: IUnitTypeRepository,
+    private readonly emailQueue: EmailQueue,
+    private readonly configService: ConfigService
   ) {}
 
   @LogMethod()
@@ -100,6 +99,16 @@ export class CreateUnitCommandHandler {
 
     if (!createdUnit) {
       throw new InternalServerErrorException('Unit could not be saved');
+    }
+
+    if (hasOwnPermission) {
+      await this.emailQueue.addEmailJob(EmailAction.REGISTER_UNIT, {
+        to: user.email,
+        variables: {
+          fullName: `${user.fullName}`,
+          manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
+        },
+      });
     }
 
     return createdUnit;

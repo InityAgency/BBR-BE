@@ -5,7 +5,7 @@ export class FetchRequestsQuery extends BaseFetchQuery {
   leadId?: string[];
   type?: string[];
   status?: string[];
-  developerId?: string;
+  companyId?: string;
 
   constructor(
     query?: string,
@@ -16,12 +16,12 @@ export class FetchRequestsQuery extends BaseFetchQuery {
     leadId?: string[],
     type?: string[],
     status?: string[],
-    developerId?: string
+    companyId?: string
   ) {
     super(query, page, limit, sortBy, sortOrder);
     this.leadId = leadId;
     this.type = type;
     this.status = status;
-    this.developerId = developerId;
+    this.companyId = companyId;
   }
 }

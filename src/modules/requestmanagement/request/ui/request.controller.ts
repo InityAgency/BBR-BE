@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, Post, Body, Put, Delete, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Query, Post, Body, Put, Delete, Patch, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RequestResponse } from './response/request-response.dto';
 import { DeleteRequestCommandHandler } from '../application/handler/delete-request.command.handler';
@@ -14,6 +14,7 @@ import { FetchRequestsCommandQuery } from '../application/query/fetch-requests.c
 import { UpdateRequestStatusCommandHandler } from '../application/handler/update-request-status.command.handler';
 import { UpdateRequestRequest } from './request/update-request.request';
 import { UpdateRequestCommandHandler } from '../application/handler/update-request.command.handler';
+import { User } from 'src/modules/user/domain/user.entity';
 
 @ApiTags('Requests')
 @Controller('requests')
@@ -31,6 +32,7 @@ export class RequestController {
   @ApiOperation({ summary: 'Get all requests' })
   @ApiResponse({ type: [RequestResponse] })
   async fetchAll(
+    @Req() req,
     @Query('query') query?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -39,10 +41,12 @@ export class RequestController {
     @Query('leadId') leadId?: string[],
     @Query('type') type?: string[],
     @Query('status') status?: string[],
-    @Query('developerId') developerId?: string
+    @Query('companyId') companyId?: string
   ) {
+    const user = req.user as User;
     const { data, pagination } = await this.fetchRequestsCommandQuery.handle(
-      new FetchRequestsQuery(query, page, limit, sortBy, sortOrder, leadId, type, status, developerId)
+      user,
+      new FetchRequestsQuery(query, page, limit, sortBy, sortOrder, leadId, type, status, companyId)
     );
 
     const mappedRequests = data.map((request: Request) => RequestMapper.toResponse(request));
@@ -56,8 +60,9 @@ export class RequestController {
   @Get(':id')
   @ApiOperation({ summary: 'Get request by ID' })
   @ApiResponse({ type: RequestResponse })
-  async findById(@Param('id') id: string) {
-    const request = await this.findRequestByIdCommandQuery.handle(id);
+  async findById(@Req() req, @Param('id') id: string) {
+    const user = req.user as User;
+    const request = await this.findRequestByIdCommandQuery.handle(user, id);
 
     return RequestMapper.toResponse(request);
   }

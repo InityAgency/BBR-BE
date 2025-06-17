@@ -14,10 +14,19 @@ export class StripeCustomerService {
     if (existing) return existing.stripeCustomerId;
 
     const existingCustomer = await this.stripe.listCustomerByEmail(email);
-    if (existingCustomer.data.length > 0) return existingCustomer.data[0].id;
+    if (existingCustomer.data.length > 0) {
+      {
+        const stripeId = existingCustomer.data[0].id;
+        await this.customerRepo.create({ userId, stripeCustomerId: stripeId });
+
+        return stripeId;
+      }
+    }
 
     const customer = await this.stripe.createCustomer({ email, metadata: { userId } });
+
     await this.customerRepo.create({ userId, stripeCustomerId: customer.id });
+
     return customer.id;
   }
 }

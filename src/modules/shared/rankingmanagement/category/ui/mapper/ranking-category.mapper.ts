@@ -95,7 +95,8 @@ export class RankingCategoryMapper {
         : null,
       rankingCategory.status,
       rankingCategory.entityId ?? null,
-      rankingCategory.entity ?? null
+      rankingCategory.entity ?? null,
+      rankingCategory.hasRequest
     );
   }
 

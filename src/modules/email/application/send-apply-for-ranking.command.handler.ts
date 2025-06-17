@@ -10,7 +10,7 @@ export class SendApplyForRankingCommandHandler {
   async handle(command: SendApplyForRankingCommand) {
     return await this.emailRepository.sendEmail(
       command.to,
-      'Thanks for Letting Us Know!',
+      'Your Application Is on Its Way!',
       EmailTemplatesEnum.APPLY_FOR_RANKING,
       {
         fullName: command.fullName,
