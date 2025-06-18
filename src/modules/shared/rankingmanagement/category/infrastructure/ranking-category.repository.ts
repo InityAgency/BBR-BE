@@ -284,6 +284,19 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       // inner‐join to force “has at least one residence”
       .join('residence_total_scores as rts', 'rts.ranking_category_id', 'rc.id')
       .join('residences as r', 'r.id', 'rts.residence_id')
+      .joinRaw(
+        `LEFT JOIN LATERAL (
+          SELECT
+            h.position,
+            h.total_score
+          FROM residence_total_score_history AS h
+          WHERE h.residence_id        = r.id
+            AND h.ranking_category_id = rc.id
+          ORDER BY h.changed_at DESC
+          OFFSET 1
+          LIMIT 1
+        ) AS prev ON TRUE`
+      )
       .where('r.company_id', user.company!.id!)
       .select([
         'rc.id as id',
@@ -299,6 +312,8 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
         'r.slug as residenceSlug',
         'rts.position as position',
         'rts.total_score as totalScore',
+        'prev.position      as previousPosition',
+        'prev.total_score   as previousTotalScore',
 
         knex.raw(
           `EXISTS (
@@ -350,15 +365,15 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
       rankingType: row.rankingType,
       status: row.status,
       hasRequest: row.hasRequest,
-      residences: [
-        {
-          id: row.residenceId,
-          name: row.residenceName,
-          slug: row.residenceSlug,
-          position: row.position,
-          totalScore: row.totalScore,
-        },
-      ],
+      previousPosition: row.previousPosition,
+      previousTotalScore: Math.round(row.previousTotalScore ?? 0),
+      residence: {
+        id: row.residenceId,
+        name: row.residenceName,
+        slug: row.residenceSlug,
+        position: row.position,
+        totalScore: row.totalScore,
+      },
     }));
 
     return {

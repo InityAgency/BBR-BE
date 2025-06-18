@@ -5,6 +5,7 @@ import { Media } from '../../../../media/domain/media.entity';
 import { Residence } from 'src/modules/residentmanagement/residence/domain/residence.entity';
 import { RankingCategoryCriteria } from './ranking-category-criteria.entity';
 import { RankingCriteria } from '../../criteria/domain/ranking-criteria.entity';
+import { TotalScoreHistoryResponse } from '../ui/response/total-score-history.response';
 
 export class RankingCategory extends Model {
   id!: string;
@@ -27,6 +28,8 @@ export class RankingCategory extends Model {
   rankingCriteria?: RankingCriteria[];
   entity: any;
   hasRequest?: any;
+  previousPosition?: number;
+  previousTotalScore?: number;
 
   static tableName = 'ranking_categories';
 

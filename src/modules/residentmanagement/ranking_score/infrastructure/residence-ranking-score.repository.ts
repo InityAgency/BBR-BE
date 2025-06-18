@@ -21,34 +21,42 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
 
       const history: any[] = [];
 
-      const existingMap = new Map(existing.map((e) => [`${e.ranking_criteria_id}`, e]));
+      const existingMap = new Map(existing.map((e) => [`${e.rankingCriteriaId}`, e]));
 
       const insertData = scores.map((s) => {
         const key = `${s.rankingCriteriaId}`;
         const old = existingMap.get(key);
 
-        if (old) {
-          if (old.score !== s.score) {
-            history.push({
-              residence_id: residenceId,
-              ranking_criteria_id: s.rankingCriteriaId,
-              score: s.score,
-              operation_type: RankingHistoryOperationType.UPDATE,
-              changed_at: new Date(),
-              changed_by: changedBy || null,
-            });
-          }
-          existingMap.delete(key); // Remove matched
-        } else {
-          history.push({
-            residence_id: residenceId,
-            ranking_criteria_id: s.rankingCriteriaId,
-            score: s.score,
-            operation_type: RankingHistoryOperationType.CREATE,
-            changed_at: new Date(),
-            changed_by: changedBy || null,
-          });
-        }
+        // if (old) {
+        //   if (old.score !== s.score) {
+        //     history.push({
+        //       residence_id: residenceId,
+        //       ranking_criteria_id: s.rankingCriteriaId,
+        //       score: s.score,
+        //       operation_type: RankingHistoryOperationType.UPDATE,
+        //       changed_at: new Date(),
+        //       changed_by: changedBy || null,
+        //     });
+        //   }
+        //   existingMap.delete(key); // Remove matched
+        // } else {
+        //   history.push({
+        //     residence_id: residenceId,
+        //     ranking_criteria_id: s.rankingCriteriaId,
+        //     score: s.score,
+        //     operation_type: RankingHistoryOperationType.CREATE,
+        //     changed_at: new Date(),
+        //     changed_by: changedBy || null,
+        //   });
+        // }
+        // history.push({
+        //   residence_id: residenceId,
+        //   ranking_criteria_id: s.rankingCriteriaId,
+        //   score: s.score,
+        //   operation_type: RankingHistoryOperationType.UPDATE,
+        //   changed_at: new Date(),
+        //   changed_by: changedBy || null,
+        // });
 
         return {
           residence_id: residenceId,
@@ -58,28 +66,29 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
       });
 
       // DELETE any remaining in map that are no longer submitted
-      const toDelete = Array.from(existingMap.values());
+      // const toDelete = Array.from(existingMap.values());
 
-      if (toDelete.length > 0) {
-        await trx('residence_ranking_score_history')
-          .where('residence_id', residenceId)
-          .whereIn(
-            'ranking_criteria_id',
-            toDelete.map((d) => d.rankingCriteriaId)
-          )
-          .delete();
+      // if (toDelete.length > 0) {
+      //   await trx('residence_ranking_score_history')
+      //     .where('residence_id', residenceId)
+      //     .whereIn(
+      //       'ranking_criteria_id',
+      //       toDelete.map((d) => d.rankingCriteriaId)
+      //     )
+      //     .debug(true)
+      //     .delete();
 
-        for (const del of toDelete) {
-          history.push({
-            residence_id: residenceId,
-            ranking_criteria_id: del.rankingCriteriaId,
-            score: del.score,
-            operation_type: RankingHistoryOperationType.DELETE,
-            changed_at: new Date(),
-            changed_by: changedBy || null,
-          });
-        }
-      }
+      //   // for (const del of toDelete) {
+      //   //   history.push({
+      //   //     residence_id: residenceId,
+      //   //     ranking_criteria_id: del.rankingCriteriaId,
+      //   //     score: del.score,
+      //   //     operation_type: RankingHistoryOperationType.DELETE,
+      //   //     changed_at: new Date(),
+      //   //     changed_by: changedBy || null,
+      //   //   });
+      //   // }
+      // }
 
       // Upsert (insert nove ili ažurirane)
       await trx('residence_ranking_criteria_scores')
@@ -94,7 +103,7 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
     });
 
     // * Update All Total Scores in Ranking Categories for Residence
-    this.updateAllTotalScoresForResidence(residenceId);
+    this.updateAllTotalScoresForResidence(residenceId, changedBy);
   }
 
   async getCriteriaWithCategoriesForResidence(residenceId: string) {
@@ -184,32 +193,42 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
     // 2) round and upsert
     const rounded = Math.round(Number(totalScore) * 100) / 100;
 
-    const existing = await knex('residence_total_scores')
-      .where({ residence_id: residenceId, ranking_category_id: rankingCategoryId })
-      .first();
+    // const existing = await knex('residence_total_scores')
+    //   .where({ residence_id: residenceId, ranking_category_id: rankingCategoryId })
+    //   .first();
 
-    const now = new Date();
+    // const now = new Date();
 
-    if (existing) {
-      await knex('residence_total_score_history').insert({
-        residence_id: residenceId,
-        ranking_category_id: rankingCategoryId,
-        total_score: rounded,
-        position: existing.position,
-        operation_type: RankingHistoryOperationType.UPDATE,
-        changed_at: now,
-        changed_by: changedBy || null,
-      });
-    } else {
-      await knex('residence_total_score_history').insert({
-        residence_id: residenceId,
-        ranking_category_id: rankingCategoryId,
-        total_score: rounded,
-        operation_type: RankingHistoryOperationType.CREATE,
-        changed_at: now,
-        changed_by: changedBy || null,
-      });
-    }
+    // await knex('residence_total_score_history').insert({
+    //   residence_id: residenceId,
+    //   ranking_category_id: rankingCategoryId,
+    //   total_score: rounded,
+    //   position: existing.position,
+    //   operation_type: RankingHistoryOperationType.CREATE,
+    //   changed_at: new Date(),
+    //   changed_by: changedBy || null,
+    // });
+    // if (existing) {
+    //   console.log('existing', existing);
+    //   await knex('residence_total_score_history').insert({
+    //     residence_id: residenceId,
+    //     ranking_category_id: rankingCategoryId,
+    //     total_score: rounded,
+    //     position: existing.position,
+    //     operation_type: RankingHistoryOperationType.UPDATE,
+    //     changed_at: now,
+    //     changed_by: changedBy || null,
+    //   });
+    // } else {
+    //   await knex('residence_total_score_history').insert({
+    //     residence_id: residenceId,
+    //     ranking_category_id: rankingCategoryId,
+    //     total_score: rounded,
+    //     operation_type: RankingHistoryOperationType.CREATE,
+    //     changed_at: now,
+    //     changed_by: changedBy || null,
+    //   });
+    // }
 
     await knex('residence_total_scores')
       .insert({
@@ -242,7 +261,7 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
     await this.knexService.connection.raw(rawQuery, [rankingCategoryId]);
   }
 
-  async updateAllTotalScoresForResidence(residenceId: string): Promise<void> {
+  async updateAllTotalScoresForResidence(residenceId: string, changedBy?: string): Promise<void> {
     const criteriaIds = await this.knexService
       .connection('residence_ranking_criteria_scores')
       .where({ residence_id: residenceId })
@@ -258,7 +277,32 @@ export class ResidenceRankingScoreRepositoryImpl implements IRankingScoreReposit
     for (const categoryId of categoryIds) {
       await this.updateTotalScore(residenceId, categoryId);
       await this.updateRankingPositionsForCategory(categoryId);
+      await this.updateTotalScoreHistory(residenceId, categoryId, changedBy);
     }
+  }
+
+  async updateTotalScoreHistory(
+    residenceId: string,
+    rankingCategoryId: string,
+    changedBy?: string
+  ): Promise<void> {
+    const knex = this.knexService.connection;
+
+    const existing = await knex('residence_total_scores')
+      .where({ residence_id: residenceId, ranking_category_id: rankingCategoryId })
+      .first();
+
+    if (!existing) return;
+
+    await knex('residence_total_score_history').insert({
+      residence_id: residenceId,
+      ranking_category_id: rankingCategoryId,
+      total_score: existing.totalScore,
+      position: existing.position,
+      operation_type: RankingHistoryOperationType.UPDATE,
+      changed_at: new Date(),
+      changed_by: changedBy || null,
+    });
   }
 
   async removeResidenceScoreFromCategory(
