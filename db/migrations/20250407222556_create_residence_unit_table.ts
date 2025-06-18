@@ -3,17 +3,13 @@ import { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('units', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
-    table
-      .uuid('residence_id')
-      .notNullable()
-      .references('id')
-      .inTable('residences');
+    table.uuid('residence_id').notNullable().references('id').inTable('residences');
     table.string('name').notNullable();
     table.text('description').nullable();
     table.float('surface').notNullable();
     table.string('status').notNullable();
     table.float('regular_price').notNullable();
-    table.float('exclusive_price').notNullable();
+    table.float('exclusive_price').nullable();
     table.date('exclusive_offer_start_date').nullable();
     table.date('exclusive_offer_end_date').nullable();
     table.string('room_type').notNullable();
@@ -22,7 +18,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('service_type').notNullable();
     table.float('service_amount').notNullable();
     table.uuid('feature_image_id').nullable();
- 
+
     table.timestamp('createdAt').notNullable().defaultTo(knex.fn.now());
     table.timestamp('updatedAt').notNullable().defaultTo(knex.fn.now());
     table.timestamp('deletedAt').nullable();

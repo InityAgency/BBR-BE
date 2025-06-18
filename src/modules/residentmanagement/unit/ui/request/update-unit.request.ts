@@ -47,15 +47,15 @@ export class UpdateUnitRequest {
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  exclusivePrice: number;
+  exclusivePrice: number | null;
 
   @IsOptional()
   @Type(() => Date)
-  exclusiveOfferStartDate: Date;
+  exclusiveOfferStartDate: Date | null;
 
   @IsOptional()
   @Type(() => Date)
-  exclusiveOfferEndDate: Date;
+  exclusiveOfferEndDate: Date | null;
 
   @IsOptional()
   @IsString()
