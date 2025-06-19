@@ -48,6 +48,7 @@ export class AuthRepository implements IAuthRepository {
           roleId: userData.roleId,
           signupMethod: userData.signupMethod,
           status: userData.status,
+          emailVerified: userData.emailVerified,
         })
         .returning('*');
 
