@@ -136,7 +136,10 @@ export class AuthController {
   @UseGuards(SessionAuthGuard)
   logout(@Req() req, @Res() res) {
     req.logout(() => {
-      req.session.destroy(() => {
+      req.session.destroy((err) => {
+        if (err) throw err;
+
+        res.clearCookie('bbr-session');
         res.json({ message: 'Logged out' });
       });
     });

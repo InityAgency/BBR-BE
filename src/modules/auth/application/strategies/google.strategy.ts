@@ -44,11 +44,15 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
     const accountType = req.query.state as string;
 
+    console.log('accountType', accountType);
+
     if (accountType) {
       role = await this.authRepository.findRoleByName(accountType.toLowerCase().trim());
       if (!role) {
         throw new ForbiddenException('User can not be created');
       }
+
+      console.log('role', role);
     }
 
     if (user) {
@@ -56,6 +60,14 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         throw new ForbiddenException(`Please use ${user.signupMethod} to login`);
       }
     }
+
+    console.log('CREATE USER', user, {
+      email,
+      fullName: `${given_name} ${family_name}`,
+      signupMethod: profile.provider,
+      emailVerified: email_verified,
+      roleId: role.id,
+    });
 
     if (!user) {
       user = await this.signUpGoogleCommandHandler.handler({
