@@ -43,6 +43,8 @@ import { SendSuggestFeatureCommand } from '../../application/command/send-sugges
 import { SendSuggestFeatureCommandHandler } from '../../application/send-suggest-feature.command.handler';
 import { SendContactUsEmailCommand } from '../../application/command/send-contact-us.command';
 import { SendContactUsEmailCommandHandler } from '../../application/send-contact-us.command.handler';
+import { SendB2BFormCommandHandler } from '../../application/send-b2b-form.command.handler';
+import { SendB2BFormCommand } from '../../application/command/send-b2b-form';
 
 @Injectable()
 export class EmailHandlerRegistry {
@@ -67,7 +69,8 @@ export class EmailHandlerRegistry {
     private readonly registerUnit: SendRegisterUnitCommandHandler,
     private readonly premiumSubscription: SendPremiumSubscriptionCommandHandler,
     private readonly suggestFeature: SendSuggestFeatureCommandHandler,
-    private readonly contactUs: SendContactUsEmailCommandHandler
+    private readonly contactUs: SendContactUsEmailCommandHandler,
+    private readonly b2bForm: SendB2BFormCommandHandler
   ) {}
 
   getHandler(action: EmailAction): (cmd: SendEmailCommand) => Promise<void> {
@@ -114,6 +117,17 @@ export class EmailHandlerRegistry {
           new SendContactUsEmailCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.exploreMoreResidencesLink
+          )
+        ),
+
+      [EmailAction.B2B_FORM]: (cmd) =>
+        this.b2bForm.handle(
+          new SendB2BFormCommand(
+            cmd.to,
+            cmd.variables.fullName,
+            cmd.variables.residenceName,
+            cmd.variables.companyName,
             cmd.variables.exploreMoreResidencesLink
           )
         ),

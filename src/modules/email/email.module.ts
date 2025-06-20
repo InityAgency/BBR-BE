@@ -31,6 +31,7 @@ import { EmailJobProcessor } from './infrastructure/jobs/email.job';
 import { EmailQueue } from './infrastructure/queues/email.queue';
 import { EmailHandlerRegistry } from './infrastructure/registry/email-handler.registry';
 import { EmailController } from './ui/email.controller';
+import { SendB2BFormCommandHandler } from './application/send-b2b-form.command.handler';
 
 @Module({
   controllers: [EmailController],
@@ -100,6 +101,7 @@ import { EmailController } from './ui/email.controller';
     SendRegisterUnitCommandHandler,
     SendPremiumSubscriptionCommandHandler,
     SendContactUsEmailCommandHandler,
+    SendB2BFormCommandHandler,
     EmailJobProcessor,
     EmailQueue,
     EmailHandlerRegistry,

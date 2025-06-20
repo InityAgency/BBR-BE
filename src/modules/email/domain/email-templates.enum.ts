@@ -21,6 +21,7 @@ export enum EmailTemplatesEnum {
   CONTACT_CONSULTATION = 'contact-consultation',
   REQUEST_INFORMATION = 'request-information',
   CONTACT_US = 'contact-us',
+  B2B_FORM = 'b2b-form',
   SUBMIT_REVIEW = 'submit-review',
   REPORT_AN_ERROR = 'report-an-error',
   APPLY_FOR_RANKING = 'apply-for-ranking',
