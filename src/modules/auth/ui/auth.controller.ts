@@ -75,8 +75,6 @@ export class AuthController {
 
     const state = req.query.state as string;
 
-    console.log('callback state', state);
-
     if (state == 'buyer') {
       return res.redirect(this.configService.get<string>('FRONTEND_URL') + '/buyer/onboarding');
     } else if (state == 'developer') {

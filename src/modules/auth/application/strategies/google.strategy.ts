@@ -44,8 +44,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
     const accountType = req.query.state as string;
 
-    console.log('accountType', accountType);
-
     if (accountType) {
       role = await this.authRepository.findRoleByName(accountType.toLowerCase().trim());
       if (!role) {
