@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { IEmailRepository } from '../domain/email.repository.interface';
-import { SendAcceptedResidenceCommand } from './command/send-accepted-residence.command';
 import { EmailTemplatesEnum } from '../domain/email-templates.enum';
+import { IEmailRepository } from '../domain/email.repository.interface';
 import { SendRejectedResidenceCommand } from './command/send-rejected-residence.command';
 
 @Injectable()
@@ -15,6 +14,7 @@ export class SendRejectedResidenceCommandHandler {
       EmailTemplatesEnum.REJECTED_RESIDENCE,
       {
         fullName: command.fullName,
+        residenceName: command.residenceName,
         manageResidencesLink: command.manageResidencesLink,
       }
     );

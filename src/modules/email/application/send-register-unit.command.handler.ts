@@ -14,6 +14,7 @@ export class SendRegisterUnitCommandHandler {
       EmailTemplatesEnum.REGISTER_UNIT,
       {
         fullName: command.fullName,
+        unitName: command.unitName,
         manageResidencesLink: command.manageResidencesLink,
       }
     );

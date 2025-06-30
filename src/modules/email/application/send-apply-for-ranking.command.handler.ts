@@ -14,6 +14,8 @@ export class SendApplyForRankingCommandHandler {
       EmailTemplatesEnum.APPLY_FOR_RANKING,
       {
         fullName: command.fullName,
+        residenceName: command.residenceName,
+        categoryName: command.categoryName,
         exploreMoreResidencesLink: command.exploreMoreResidencesLink,
       }
     );

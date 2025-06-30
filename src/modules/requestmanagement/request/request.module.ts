@@ -17,6 +17,8 @@ import { FetchRequestsCommandQuery } from './application/query/fetch-requests.co
 import { RequestPublicController } from './ui/request.public.controller';
 import { UpdateLeadCommandHandler } from '../lead/application/handler/update-lead.command.handler';
 import EmailModule from 'src/modules/email/email.module';
+import { IResidenceRepository } from './domain/residence.repository.interface';
+import { ResidenceRepositoryImpl } from './infrastructure/residence.repository.impl';
 
 @Module({
   imports: [DatabaseModule, EmailModule, MediaModule],
@@ -29,6 +31,10 @@ import EmailModule from 'src/modules/email/email.module';
     {
       provide: ILeadRepository,
       useClass: LeadRepositoryImpl,
+    },
+    {
+      provide: IResidenceRepository,
+      useClass: ResidenceRepositoryImpl,
     },
     CreateLeadCommandHandler,
     UpdateLeadCommandHandler,

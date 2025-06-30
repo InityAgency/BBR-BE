@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EmailTemplatesEnum } from '../domain/email-templates.enum';
 import { IEmailRepository } from '../domain/email.repository.interface';
-import { SendRegisterResidenceCommand } from './command/send-register-residence.command';
 import { SendPremiumSubscriptionCommand } from './command/send-premium-subscription.command';
 
 @Injectable()

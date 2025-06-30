@@ -63,6 +63,7 @@ export class CreateReviewCommandHandler {
       to: user.email,
       variables: {
         fullName: `${user.fullName}`,
+        residenceName: `${residence.name}`,
         exploreMoreResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/residences`,
       },
     });

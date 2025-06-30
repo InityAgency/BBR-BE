@@ -49,6 +49,7 @@ export class UpdateResidenceStatusCommandHandler {
             to: user.email,
             variables: {
               fullName: `${user.fullName}`,
+              residenceName: `${residence.name}`,
               manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
             },
           });
@@ -59,6 +60,7 @@ export class UpdateResidenceStatusCommandHandler {
             to: user.email,
             variables: {
               fullName: `${user.fullName}`,
+              residenceName: `${residence.name}`,
               manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
             },
           });

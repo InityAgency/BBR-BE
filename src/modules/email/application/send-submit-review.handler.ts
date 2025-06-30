@@ -14,6 +14,7 @@ export class SendSubmitReviewCommandHandler {
       EmailTemplatesEnum.SUBMIT_REVIEW,
       {
         fullName: command.fullName,
+        residenceName: command.residenceName,
         exploreMoreResidencesLink: command.exploreMoreResidencesLink,
       }
     );

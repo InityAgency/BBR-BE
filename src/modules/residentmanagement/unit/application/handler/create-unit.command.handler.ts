@@ -106,6 +106,7 @@ export class CreateUnitCommandHandler {
         to: user.email,
         variables: {
           fullName: `${user.fullName}`,
+          unitName: `${createdUnit.name}`,
           manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
         },
       });

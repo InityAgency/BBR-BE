@@ -81,6 +81,7 @@ export class CreateClaimProfileContactFormCommandHandler {
       to: user.email,
       variables: {
         fullName: `${user.fullName}`,
+        residenceName: `${existingResidence.name}`,
         manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
       },
     });

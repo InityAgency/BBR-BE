@@ -197,6 +197,7 @@ export class CreateResidenceCommandHandler {
         to: user.email,
         variables: {
           fullName: `${user.fullName}`,
+          residenceName: `${created.name}`,
           manageResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/developer/residences`,
         },
       });

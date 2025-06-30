@@ -108,6 +108,7 @@ export class EmailHandlerRegistry {
           new SendRequestInformationCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.residenceName,
             cmd.variables.exploreMoreResidencesLink
           )
         ),
@@ -146,6 +147,7 @@ export class EmailHandlerRegistry {
           new SendSubmitReviewCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.residenceName,
             cmd.variables.exploreMoreResidencesLink
           )
         ),
@@ -164,6 +166,8 @@ export class EmailHandlerRegistry {
           new SendApplyForRankingCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.residenceName,
+            cmd.variables.categoryName,
             cmd.variables.exploreMoreResidencesLink
           )
         ),
@@ -184,6 +188,7 @@ export class EmailHandlerRegistry {
           new SendRegisterResidenceCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.residenceName,
             cmd.variables.manageResidencesLink
           )
         ),
@@ -193,6 +198,7 @@ export class EmailHandlerRegistry {
           new SendRegisterUnitCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.unitName,
             cmd.variables.manageResidencesLink
           )
         ),
@@ -211,6 +217,7 @@ export class EmailHandlerRegistry {
           new SendAcceptedResidenceCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.residenceName,
             cmd.variables.manageResidencesLink
           )
         ),
@@ -220,6 +227,7 @@ export class EmailHandlerRegistry {
           new SendRejectedResidenceCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.residenceName,
             cmd.variables.manageResidencesLink
           )
         ),
@@ -229,6 +237,7 @@ export class EmailHandlerRegistry {
           new SendOwnershipRequestCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.residenceName,
             cmd.variables.manageResidencesLink
           )
         ),
@@ -238,6 +247,7 @@ export class EmailHandlerRegistry {
           new SendOwnershipRequestAcceptedCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.residenceName,
             cmd.variables.manageResidencesLink
           )
         ),
@@ -247,6 +257,7 @@ export class EmailHandlerRegistry {
           new SendOwnershipRequestDeclinedCommand(
             cmd.to,
             cmd.variables.fullName,
+            cmd.variables.residenceName,
             cmd.variables.manageResidencesLink
           )
         ),

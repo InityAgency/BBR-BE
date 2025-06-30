@@ -14,6 +14,7 @@ export class SendOwnershipRequestAcceptedCommandHandler {
       EmailTemplatesEnum.OWNERSHIP_REQUEST_ACCEPTED,
       {
         fullName: command.fullName,
+        residenceName: command.residenceName,
         manageResidencesLink: command.manageResidencesLink,
       }
     );

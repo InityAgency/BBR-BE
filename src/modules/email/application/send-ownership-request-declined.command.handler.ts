@@ -14,6 +14,7 @@ export class SendOwnershipRequestDeclinedCommandHandler {
       EmailTemplatesEnum.OWNERSHIP_REQUEST_DECLINED,
       {
         fullName: command.fullName,
+        residenceName: command.residenceName,
         manageResidencesLink: command.manageResidencesLink,
       }
     );

@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { EmailAction } from 'src/modules/email/domain/email-action.enum';
 import { RequestTypeEnum } from '../../domain/request-type.enum';
 import { map } from 'rxjs';
+import { IResidenceRepository } from '../../domain/residence.repository.interface';
 
 @Injectable()
 export class CreateRequestCommandHandler {
@@ -21,6 +22,7 @@ export class CreateRequestCommandHandler {
     private readonly requestRepository: IRequestRepository,
     private readonly createLeadHandler: CreateLeadCommandHandler,
     private readonly updateLeadCommandHandler: UpdateLeadCommandHandler,
+    private readonly residenceRepository: IResidenceRepository,
     private readonly emailQueue: EmailQueue,
     private readonly configService: ConfigService
   ) {}
@@ -68,6 +70,8 @@ export class CreateRequestCommandHandler {
       throw new InternalServerErrorException('Failed to create request');
     }
 
+    const residence = await this.residenceRepository.findById(command.entityId);
+
     const mapRequestType = {
       [RequestTypeEnum.CONSULTATION]: EmailAction.CONTACT_CONSULTATION,
       [RequestTypeEnum.MORE_INFORMATION]: EmailAction.REQUEST_INFORMATION,
@@ -79,6 +83,7 @@ export class CreateRequestCommandHandler {
       to: command.email,
       variables: {
         fullName: `${command.firstName} ${command.lastName}`,
+        residenceName: `${residence && residence.name}`,
         exploreMoreResidencesLink: `${this.configService.get<string>('FRONTEND_URL')}/residences`,
       },
     });

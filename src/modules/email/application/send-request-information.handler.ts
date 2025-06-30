@@ -14,6 +14,7 @@ export class SendRequestInformationEmailCommandHandler {
       EmailTemplatesEnum.REQUEST_INFORMATION,
       {
         fullName: command.fullName,
+        residenceName: command.residenceName,
         exploreMoreResidencesLink: command.exploreMoreResidencesLink,
       }
     );
