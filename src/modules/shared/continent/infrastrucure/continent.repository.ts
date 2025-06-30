@@ -6,6 +6,7 @@ import { applyPagination } from '../../../../shared/utils/pagination.util';
 import { LogMethod } from 'src/shared/infrastructure/logger/log.decorator';
 import { KnexService } from '../../../../shared/infrastructure/database/knex.service';
 import { applySearchFilter } from 'src/shared/filters/query.search-filter';
+import { ResidenceStatusEnum } from 'src/modules/residentmanagement/residence/domain/residence-status.enum';
 
 export class ContinentRepositoryImpl implements IContinentRepository {
   constructor(private readonly knexService: KnexService) {}
@@ -28,6 +29,38 @@ export class ContinentRepositoryImpl implements IContinentRepository {
 
     const columnsToSearch = ['continents.name', 'continents.code'];
     query = applySearchFilter(query, searchQuery, columnsToSearch);
+    const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
+
+    return {
+      data: paginatedQuery,
+      pagination: {
+        total: totalCount,
+        totalPages,
+        page: page,
+        limit: limit,
+      },
+    };
+  }
+
+  @LogMethod()
+  async findAllPublic(
+    fetchQuery: FetchContinentsQuery
+  ): Promise<{ data: Continent[]; pagination: PaginationResponse }> {
+    const { page, limit, searchQuery: searchQuery } = fetchQuery;
+
+    let query = Continent.query().whereExists(function () {
+      this.select('*')
+        .from('residences')
+        .join('countries', 'residences.country_id', 'countries.id')
+        .whereRaw('countries.continent_id = continents.id')
+        .where('residences.status', ResidenceStatusEnum.ACTIVE)
+        .whereNull('residences.deleted_at');
+    });
+
+    const columnsToSearch = ['continents.name', 'continents.code'];
+
+    query = applySearchFilter(query.clone(), searchQuery, columnsToSearch);
+
     const { paginatedQuery, totalCount, totalPages } = await applyPagination(query, page, limit);
 
     return {

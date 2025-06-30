@@ -8,6 +8,9 @@ export abstract class IContinentRepository {
   abstract findAll(
     query: FetchContinentsQuery
   ): Promise<{ data: Continent[]; pagination: PaginationResponse }>;
+  abstract findAllPublic(
+    query: FetchContinentsQuery
+  ): Promise<{ data: Continent[]; pagination: PaginationResponse }>;
   abstract create(data: Partial<Continent>): Promise<Continent>;
   abstract update(id: string, data: Partial<Continent>): Promise<Continent | undefined>;
   abstract delete(id: string): Promise<void>;

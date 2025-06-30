@@ -9,10 +9,12 @@ import { FindContinentByIdCommandQuery } from './application/query/find-continen
 import { FetchContinentsCommandQuery } from './application/query/fetch-continents.command.query';
 import { UpdateContinentCommandHandler } from './application/handler/update-continent.command.handler';
 import { DeleteContinentCommandHandler } from './application/handler/delete-continent.command.handler';
+import { ContinentPublicController } from './ui/continent.public.controller';
+import { FetchContinentsPublicCommandQuery } from './application/query/fetch-continents.public.command.query';
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [ContinentController],
+  controllers: [ContinentController, ContinentPublicController],
   providers: [
     {
       provide: IContinentRepository,
@@ -21,6 +23,7 @@ import { DeleteContinentCommandHandler } from './application/handler/delete-cont
     CreateContinentCommandHandler,
     FindContinentByIdCommandQuery,
     FetchContinentsCommandQuery,
+    FetchContinentsPublicCommandQuery,
     UpdateContinentCommandHandler,
     DeleteContinentCommandHandler,
   ],

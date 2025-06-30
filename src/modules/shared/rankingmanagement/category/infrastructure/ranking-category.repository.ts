@@ -362,6 +362,10 @@ export class RankingCategoryRepositoryImpl implements IRankingCategoryRepository
     const data = paginatedQuery.map((row) => ({
       id: row.id,
       name: row.name,
+      slug: row.slug,
+      title: row.title,
+      description: row.description,
+      residenceLimitation: row.residenceLimitation,
       rankingType: row.rankingType,
       status: row.status,
       hasRequest: row.hasRequest,
